@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "==> Running Go build"
+go build ./...
+
+echo "==> Running go vet"
+go vet ./...
+
+echo "==> Running staticcheck"
+go run honnef.co/go/tools/cmd/staticcheck@v0.8.2 ./...
+
+echo "==> Checking tests compile"
+go test -run=^$ ./...

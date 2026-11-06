@@ -1,0 +1,53 @@
+name: Bug report
+description: An SDK does not work as documented.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: The code in this repository is generated from the Steel API spec, so we fix bugs at the source and ship the fix in the next release. Leave your API key out of everything you paste.
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: SDK
+      options:
+        - TypeScript
+        - Python
+        - Go
+        - Rust
+        - Java (beta)
+        - Kotlin (beta)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: SDK version
+      placeholder: 0.21.0
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: Code that shows the bug
+      description: The smallest code that reproduces it.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: The error message and stack trace, if there is one.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Runtime and OS
+      placeholder: Node 22 on macOS

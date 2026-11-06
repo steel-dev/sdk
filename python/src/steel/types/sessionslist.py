@@ -1,0 +1,246 @@
+# File generated from our OpenAPI spec. See CONTRIBUTING.md for details.
+
+from typing import Dict, List, Optional
+from datetime import datetime
+from typing_extensions import Literal
+
+from pydantic import Field as FieldInfo
+
+from .._models import BaseModel
+
+__all__ = [
+    "Sessionslist",
+    "Session",
+    "SessionDimensions",
+    "SessionOptimizeBandwidth",
+    "SessionDebugConfig",
+    "SessionDeviceConfig",
+    "SessionStealthConfig",
+]
+
+
+class SessionDimensions(BaseModel):
+    """Viewport and browser window dimensions for the session"""
+
+    height: int
+    """Height of the browser window"""
+
+    width: int
+    """Width of the browser window"""
+
+
+class SessionOptimizeBandwidth(BaseModel):
+    """Bandwidth optimizations that were applied to the session."""
+
+    block_hosts: Optional[List[str]] = FieldInfo(alias="blockHosts", default=None)
+
+    block_images: Optional[bool] = FieldInfo(alias="blockImages", default=None)
+
+    block_media: Optional[bool] = FieldInfo(alias="blockMedia", default=None)
+
+    block_stylesheets: Optional[bool] = FieldInfo(alias="blockStylesheets", default=None)
+
+    block_url_patterns: Optional[List[str]] = FieldInfo(alias="blockUrlPatterns", default=None)
+
+
+class SessionDebugConfig(BaseModel):
+    """Configuration for the debug URL and session viewer.
+
+    Controls interaction capabilities and cursor visibility.
+    """
+
+    interactive: Optional[bool] = None
+    """Whether interaction is allowed via the debug URL viewer.
+
+    When false, the session viewer is view-only.
+    """
+
+    system_cursor: Optional[bool] = FieldInfo(alias="systemCursor", default=None)
+    """
+    Whether the OS-level mouse cursor is shown in the WebRTC stream (headful mode
+    only).
+    """
+
+
+class SessionDeviceConfig(BaseModel):
+    """Device configuration for the session"""
+
+    device: Optional[Literal["desktop", "mobile"]] = None
+
+
+class SessionStealthConfig(BaseModel):
+    """Stealth configuration for the session"""
+
+    auto_captcha_solving: Optional[bool] = FieldInfo(alias="autoCaptchaSolving", default=None)
+    """When true, captchas will be automatically solved when detected.
+
+    When false, use the solve endpoints to manually initiate solving.
+    """
+
+    humanize_interactions: Optional[bool] = FieldInfo(alias="humanizeInteractions", default=None)
+    """
+    This flag will make the browser act more human-like by moving the mouse in a
+    more natural way
+    """
+
+    skip_fingerprint_injection: Optional[bool] = FieldInfo(alias="skipFingerprintInjection", default=None)
+    """This flag will skip the fingerprint generation for the session."""
+
+
+class Session(BaseModel):
+    """
+    Represents the data structure for a browser session, including its configuration and status.
+    """
+
+    id: str
+    """Unique identifier for the session"""
+
+    browser_mode: Literal["stealth", "standard", "unknown"] = FieldInfo(alias="browserMode")
+    """Browser mode used for this session."""
+
+    created_at: datetime = FieldInfo(alias="createdAt")
+    """Timestamp when the session started"""
+
+    credits_used: int = FieldInfo(alias="creditsUsed")
+    """Amount of credits consumed by the session"""
+
+    debug_url: str = FieldInfo(alias="debugUrl")
+    """URL for debugging the session"""
+
+    dimensions: SessionDimensions
+    """Viewport and browser window dimensions for the session"""
+
+    duration: int
+    """Duration of the session in milliseconds"""
+
+    event_count: int = FieldInfo(alias="eventCount")
+    """Number of events processed in the session"""
+
+    optimize_bandwidth: SessionOptimizeBandwidth = FieldInfo(alias="optimizeBandwidth")
+    """Bandwidth optimizations that were applied to the session."""
+
+    proxy_bytes_used: int = FieldInfo(alias="proxyBytesUsed")
+    """Amount of data transmitted through the proxy"""
+
+    proxy_source: Optional[Literal["steel", "external"]] = FieldInfo(alias="proxySource", default=None)
+    """Source of the proxy used for the session"""
+
+    session_viewer_url: str = FieldInfo(alias="sessionViewerUrl")
+    """URL to view session details"""
+
+    signals: List[
+        Literal[
+            "captcha_encountered",
+            "proxy_connection_failed",
+            "session_timeout_exceeded",
+            "bot_detection_triggered",
+            "context_restored",
+        ]
+    ]
+    """Signals observed during the session.
+
+    Filled in within a few seconds after the session ends, and empty until then. An
+    empty list does not mean nothing happened: detection is heuristic and coverage
+    is incomplete.
+    """
+
+    status: Literal["live", "released", "failed"]
+    """Status of the session"""
+
+    timeout: int
+    """Session timeout duration in milliseconds"""
+
+    websocket_url: str = FieldInfo(alias="websocketUrl")
+    """URL for the session's WebSocket connection"""
+
+    debug_config: Optional[SessionDebugConfig] = FieldInfo(alias="debugConfig", default=None)
+    """Configuration for the debug URL and session viewer.
+
+    Controls interaction capabilities and cursor visibility.
+    """
+
+    device_config: Optional[SessionDeviceConfig] = FieldInfo(alias="deviceConfig", default=None)
+    """Device configuration for the session"""
+
+    fullscreen: Optional[bool] = None
+    """
+    Launch the browser in fullscreen mode, covering the full screen with no Chrome
+    UI.
+    """
+
+    headless: Optional[bool] = None
+    """Indicates if the session is headless or headful"""
+
+    inactivity_timeout: Optional[int] = FieldInfo(alias="inactivityTimeout", default=None)
+    """Inactivity timeout in milliseconds, if one was set when the session was created"""
+
+    is_selenium: Optional[bool] = FieldInfo(alias="isSelenium", default=None)
+    """Indicates if Selenium is used in the session"""
+
+    metadata: Optional[Dict[str, str]] = None
+    """Customer-defined flat metadata.
+
+    Values are always strings: numbers and booleans sent on write come back in their
+    string form.
+    """
+
+    persist_profile: Optional[bool] = FieldInfo(alias="persistProfile", default=None)
+    """This flag will persist the profile for the session."""
+
+    profile_id: Optional[str] = FieldInfo(alias="profileId", default=None)
+    """The ID of the profile associated with the session"""
+
+    project_id: Optional[str] = FieldInfo(alias="projectId", default=None)
+    """The project associated with the session"""
+
+    region: Optional[str] = None
+    """The region where the session was created."""
+
+    release_reason: Optional[
+        Literal[
+            "user_requested",
+            "timeout",
+            "inactivity_timeout",
+            "creation_timeout",
+            "startup_failed",
+            "browser_closed",
+            "browser_crashed",
+        ]
+    ] = FieldInfo(alias="releaseReason", default=None)
+    """Why the session reached a terminal state.
+
+    Null while the session is live, or when the reason is unknown (e.g. sessions
+    created before this was tracked). One of: user_requested (released via the
+    API/SDK), timeout (hard `timeout` elapsed), inactivity_timeout (no activity for
+    the configured window), creation_timeout (never started in time), startup_failed
+    (could not be dispatched), browser_closed (the browser or agent closed itself —
+    not a crash), browser_crashed (the browser crashed or its machine became
+    unresponsive).
+    """
+
+    solve_captcha: Optional[bool] = FieldInfo(alias="solveCaptcha", default=None)
+    """Indicates if captcha solving is enabled"""
+
+    stealth_config: Optional[SessionStealthConfig] = FieldInfo(alias="stealthConfig", default=None)
+    """Stealth configuration for the session"""
+
+    user_agent: Optional[str] = FieldInfo(alias="userAgent", default=None)
+    """User agent string used in the session"""
+
+
+class Sessionslist(BaseModel):
+    """Response containing a list of browser sessions with pagination details."""
+
+    next_cursor: Optional[str] = FieldInfo(alias="nextCursor", default=None)
+    """Cursor for the next page of results. Null if no more pages."""
+
+    sessions: List[Session]
+    """List of browser sessions"""
+
+    total_count: Optional[int] = FieldInfo(alias="totalCount", default=None)
+    """Exact number of live sessions in the organization/project scope.
+
+    Only included for status=live without metadata, signal, releaseReason,
+    createdAfter or createdBefore filters. Other queries omit this field; use
+    nextCursor to paginate until it is null.
+    """

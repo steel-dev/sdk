@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discord Community
+    url: https://discord.gg/steel-dev
+    about: Ask questions and get help from the Steel team and community
+  - name: 📚 Documentation
+    url: https://docs.steel.dev/
+    about: Guides and the API reference
+  - name: 🍳 Steel Cookbook
+    url: https://github.com/steel-dev/steel-cookbook
+    about: Complete projects and agent framework integrations
+  - name: 🔒 Security Issues
+    url: https://github.com/steel-dev/sdk/security/policy
+    about: Report security issues privately, not in a public issue

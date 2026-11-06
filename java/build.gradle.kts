@@ -1,0 +1,35 @@
+plugins {
+    id("org.jetbrains.dokka") version "2.0.0"
+}
+
+repositories {
+    mavenCentral()
+}
+
+allprojects {
+    group = "dev.steel"
+    version = "0.21.0"
+}
+
+subprojects {
+    // These are populated with dependencies by `buildSrc` scripts.
+    tasks.register("format") {
+        group = "Verification"
+        description = "Formats all source files."
+    }
+    tasks.register("lint") {
+        group = "Verification"
+        description = "Verifies all source files are formatted."
+    }
+}
+
+subprojects {
+    apply(plugin = "org.jetbrains.dokka")
+}
+
+// Avoid race conditions between `dokkaJavadocCollector` and `dokkaJavadocJar` tasks
+tasks.named("dokkaJavadocCollector").configure {
+    subprojects.flatMap { it.tasks }
+        .filter { it.project.name != "steel-java" && it.name == "dokkaJavadocJar" }
+        .forEach { mustRunAfter(it) }
+}

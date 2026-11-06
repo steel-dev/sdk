@@ -1,0 +1,432 @@
+// File generated from our OpenAPI spec. See CONTRIBUTING.md for details.
+
+import { type Agent } from './_shims/index';
+import { stringifyQuery } from './internal/utils/query';
+import * as Core from './core';
+import * as Errors from './error';
+import * as Pagination from './pagination';
+import { type SessionsCursorParams, SessionsCursorResponse } from './pagination';
+import * as Uploads from './uploads';
+import * as API from './resources/index';
+import * as TopLevelAPI from './resources/top-level';
+import {
+  PdfParams,
+  PdfResponse,
+  ScrapeParams,
+  ScrapeResponse,
+  ScreenshotParams,
+  ScreenshotResponse,
+} from './resources/top-level';
+import { APIKey, APIKeyCreateParams, APIKeys } from './resources/api-keys';
+import {
+  CredentialCreateParams,
+  CredentialCreateResponse,
+  CredentialDeleteParams,
+  CredentialDeleteResponse,
+  CredentialListParams,
+  CredentialListResponse,
+  CredentialUpdateParams,
+  CredentialUpdateResponse,
+  Credentials,
+} from './resources/credentials';
+import {
+  ExtensionDeleteAllResponse,
+  ExtensionDeleteResponse,
+  ExtensionListResponse,
+  ExtensionUpdateParams,
+  ExtensionUpdateResponse,
+  ExtensionUploadParams,
+  ExtensionUploadResponse,
+  Extensions,
+} from './resources/extensions';
+import { File, FileUploadParams, Files, Fileslist } from './resources/files';
+import {
+  ProfileCreateParams,
+  ProfileCreateResponse,
+  ProfileGetParams,
+  ProfileGetResponse,
+  ProfileListParams,
+  ProfileListResponse,
+  ProfileUpdateParams,
+  ProfileUpdateResponse,
+  Profiles,
+} from './resources/profiles';
+import { Project, Projects, ProjectsList } from './resources/projects';
+import {
+  Command,
+  CommandDialog,
+  CommandErrorInfo,
+  CommandEvents,
+  CommandExpectation,
+  CommandFrame,
+  CommandLocator,
+  CommandTarget,
+  Session,
+  SessionAgentTracesParams,
+  SessionAgentTracesResponse,
+  SessionCommandsParams,
+  SessionCommandsResponse,
+  SessionComputerParams,
+  SessionComputerResponse,
+  SessionContext,
+  SessionCostResponse,
+  SessionCreateParams,
+  SessionEventsParams,
+  SessionEventsResponse,
+  SessionListParams,
+  SessionLiveDetailsResponse,
+  SessionLogsParams,
+  SessionLogsResponse,
+  SessionReleaseAllParams,
+  SessionReleaseAllResponse,
+  SessionReleaseResponse,
+  SessionReplaceMetadataParams,
+  SessionReplaceMetadataResponse,
+  SessionSignalCatalogResponse,
+  SessionUpdateMetadataParams,
+  SessionUpdateMetadataResponse,
+  Sessions,
+  Sessionslist,
+  SessionslistSessionsSessionsCursor,
+} from './resources/sessions/sessions';
+
+export interface ClientOptions {
+  /**
+   * The API key required to authenticate the request. Typically provided in the header.
+   */
+  steelAPIKey?: string | null | undefined;
+
+  /**
+   * Override the default base URL for the API, e.g., "https://api.example.com/v2/"
+   *
+   * Defaults to process.env['STEEL_BASE_URL'].
+   */
+  baseURL?: string | null | undefined;
+
+  /**
+   * The maximum amount of time (in milliseconds) that the client should wait for a response
+   * from the server before timing out a single request.
+   *
+   * Note that request timeouts are retried by default, so in a worst-case scenario you may wait
+   * much longer than this timeout before the promise succeeds or fails.
+   *
+   * @unit milliseconds
+   */
+  timeout?: number | undefined;
+
+  /**
+   * An HTTP agent used to manage HTTP(S) connections.
+   *
+   * If not provided, an agent will be constructed by default in the Node.js environment,
+   * otherwise no agent is used.
+   */
+  httpAgent?: Agent | undefined;
+
+  /**
+   * Specify a custom `fetch` function implementation.
+   *
+   * If not provided, we use `node-fetch` on Node.js and otherwise expect that `fetch` is
+   * defined globally.
+   */
+  fetch?: Core.Fetch | undefined;
+
+  /**
+   * The maximum number of times that the client will retry a request in case of a
+   * temporary failure, like a network error or a 5XX error from the server.
+   *
+   * @default 2
+   */
+  maxRetries?: number | undefined;
+
+  /**
+   * Default headers to include with every request to the API.
+   *
+   * These can be removed in individual requests by explicitly setting the
+   * header to `undefined` or `null` in request options.
+   */
+  defaultHeaders?: Core.Headers | undefined;
+
+  /**
+   * Default query parameters to include with every request to the API.
+   *
+   * These can be removed in individual requests by explicitly setting the
+   * param to `undefined` in request options.
+   */
+  defaultQuery?: Core.DefaultQuery | undefined;
+}
+
+/**
+ * API Client for interfacing with the Steel API.
+ */
+export class Steel extends Core.APIClient {
+  steelAPIKey: string | null;
+
+  private _options: ClientOptions;
+
+  /**
+   * API Client for interfacing with the Steel API.
+   *
+   * @param {string | null | undefined} [opts.steelAPIKey=process.env['STEEL_API_KEY'] ?? null]
+   * @param {string} [opts.baseURL=process.env['STEEL_BASE_URL'] ?? https://api.steel.dev] - Override the default base URL for the API.
+   * @param {number} [opts.timeout=1 minute] - The maximum amount of time (in milliseconds) the client will wait for a response before timing out.
+   * @param {number} [opts.httpAgent] - An HTTP agent used to manage HTTP(s) connections.
+   * @param {Core.Fetch} [opts.fetch] - Specify a custom `fetch` function implementation.
+   * @param {number} [opts.maxRetries=2] - The maximum number of times the client will retry a request.
+   * @param {Core.Headers} opts.defaultHeaders - Default headers to include with every request to the API.
+   * @param {Core.DefaultQuery} opts.defaultQuery - Default query parameters to include with every request to the API.
+   */
+  constructor({
+    baseURL = Core.readEnv('STEEL_BASE_URL'),
+    steelAPIKey = Core.readEnv('STEEL_API_KEY') ?? null,
+    ...opts
+  }: ClientOptions = {}) {
+    const options: ClientOptions = {
+      steelAPIKey,
+      ...opts,
+      baseURL: baseURL || `https://api.steel.dev`,
+    };
+
+    super({
+      baseURL: options.baseURL!,
+      baseURLOverridden: baseURL ? baseURL !== 'https://api.steel.dev' : false,
+      timeout: options.timeout ?? 60000 /* 1 minute */,
+      httpAgent: options.httpAgent,
+      maxRetries: options.maxRetries,
+      fetch: options.fetch,
+    });
+
+    const customHeadersEnv = Core.readEnv('STEEL_CUSTOM_HEADERS');
+    if (customHeadersEnv) {
+      const parsed: Record<string, string> = {};
+      for (const line of customHeadersEnv.split('\n')) {
+        const colon = line.indexOf(':');
+        if (colon >= 0) {
+          parsed[line.substring(0, colon).trim()] = line.substring(colon + 1).trim();
+        }
+      }
+      options.defaultHeaders = { ...parsed, ...options.defaultHeaders };
+    }
+
+    this._options = options;
+
+    this.steelAPIKey = steelAPIKey;
+  }
+
+  /**
+   * Create project-scoped API keys using an organization-scoped API key.
+   */
+  apiKeys: API.APIKeys = new API.APIKeys(this);
+  credentials: API.Credentials = new API.Credentials(this);
+  extensions: API.Extensions = new API.Extensions(this);
+  files: API.Files = new API.Files(this);
+  profiles: API.Profiles = new API.Profiles(this);
+  projects: API.Projects = new API.Projects(this);
+  sessions: API.Sessions = new API.Sessions(this);
+
+  /**
+   * Check whether the base URL is set to its default.
+   */
+  #baseURLOverridden(): boolean {
+    return this.baseURL !== 'https://api.steel.dev';
+  }
+
+  /**
+   * Generates a PDF from a specified webpage.
+   */
+  pdf(body: TopLevelAPI.PdfParams, options?: Core.RequestOptions): Core.APIPromise<TopLevelAPI.PdfResponse> {
+    return this.post('/v1/pdf', { body, ...options });
+  }
+
+  /**
+   * Extracts content from a specified URL.
+   */
+  scrape(
+    body: TopLevelAPI.ScrapeParams,
+    options?: Core.RequestOptions,
+  ): Core.APIPromise<TopLevelAPI.ScrapeResponse> {
+    return this.post('/v1/scrape', { body, ...options });
+  }
+
+  /**
+   * Captures a screenshot of a specified webpage.
+   */
+  screenshot(
+    body: TopLevelAPI.ScreenshotParams,
+    options?: Core.RequestOptions,
+  ): Core.APIPromise<TopLevelAPI.ScreenshotResponse> {
+    return this.post('/v1/screenshot', { body, ...options });
+  }
+
+  protected override defaultQuery(): Core.DefaultQuery | undefined {
+    return this._options.defaultQuery;
+  }
+
+  protected override defaultHeaders(opts: Core.FinalRequestOptions): Core.Headers {
+    return {
+      ...super.defaultHeaders(opts),
+      ...this._options.defaultHeaders,
+    };
+  }
+
+  protected override authHeaders(opts: Core.FinalRequestOptions): Core.Headers {
+    if (this.steelAPIKey == null) {
+      return {};
+    }
+    return { 'steel-api-key': this.steelAPIKey };
+  }
+
+  protected override stringifyQuery(query: object | Record<string, unknown>): string {
+    return stringifyQuery(query);
+  }
+
+  static Steel = this;
+  static DEFAULT_TIMEOUT = 60000; // 1 minute
+
+  static SteelError = Errors.SteelError;
+  static APIError = Errors.APIError;
+  static APIConnectionError = Errors.APIConnectionError;
+  static APIConnectionTimeoutError = Errors.APIConnectionTimeoutError;
+  static APIUserAbortError = Errors.APIUserAbortError;
+  static NotFoundError = Errors.NotFoundError;
+  static ConflictError = Errors.ConflictError;
+  static RateLimitError = Errors.RateLimitError;
+  static BadRequestError = Errors.BadRequestError;
+  static AuthenticationError = Errors.AuthenticationError;
+  static InternalServerError = Errors.InternalServerError;
+  static PermissionDeniedError = Errors.PermissionDeniedError;
+  static UnprocessableEntityError = Errors.UnprocessableEntityError;
+
+  static toFile = Uploads.toFile;
+  static fileFromPath = Uploads.fileFromPath;
+}
+
+Steel.APIKeys = APIKeys;
+Steel.Credentials = Credentials;
+Steel.Extensions = Extensions;
+Steel.Files = Files;
+Steel.Profiles = Profiles;
+Steel.Projects = Projects;
+Steel.Sessions = Sessions;
+Steel.SessionslistSessionsSessionsCursor = SessionslistSessionsSessionsCursor;
+
+export declare namespace Steel {
+  export type RequestOptions = Core.RequestOptions;
+
+  export import SessionsCursor = Pagination.SessionsCursor;
+  export {
+    type SessionsCursorParams as SessionsCursorParams,
+    type SessionsCursorResponse as SessionsCursorResponse,
+  };
+
+  export {
+    type PdfResponse as PdfResponse,
+    type ScrapeResponse as ScrapeResponse,
+    type ScreenshotResponse as ScreenshotResponse,
+    type PdfParams as PdfParams,
+    type ScrapeParams as ScrapeParams,
+    type ScreenshotParams as ScreenshotParams,
+  };
+
+  export { APIKeys as APIKeys, type APIKey as APIKey, type APIKeyCreateParams as APIKeyCreateParams };
+
+  export {
+    Credentials as Credentials,
+    type CredentialCreateResponse as CredentialCreateResponse,
+    type CredentialUpdateResponse as CredentialUpdateResponse,
+    type CredentialListResponse as CredentialListResponse,
+    type CredentialDeleteResponse as CredentialDeleteResponse,
+    type CredentialCreateParams as CredentialCreateParams,
+    type CredentialUpdateParams as CredentialUpdateParams,
+    type CredentialListParams as CredentialListParams,
+    type CredentialDeleteParams as CredentialDeleteParams,
+  };
+
+  export {
+    Extensions as Extensions,
+    type ExtensionUpdateResponse as ExtensionUpdateResponse,
+    type ExtensionListResponse as ExtensionListResponse,
+    type ExtensionDeleteResponse as ExtensionDeleteResponse,
+    type ExtensionDeleteAllResponse as ExtensionDeleteAllResponse,
+    type ExtensionUploadResponse as ExtensionUploadResponse,
+    type ExtensionUpdateParams as ExtensionUpdateParams,
+    type ExtensionUploadParams as ExtensionUploadParams,
+  };
+
+  export {
+    Files as Files,
+    type File as File,
+    type Fileslist as Fileslist,
+    type FileUploadParams as FileUploadParams,
+  };
+
+  export {
+    Profiles as Profiles,
+    type ProfileCreateResponse as ProfileCreateResponse,
+    type ProfileUpdateResponse as ProfileUpdateResponse,
+    type ProfileListResponse as ProfileListResponse,
+    type ProfileGetResponse as ProfileGetResponse,
+    type ProfileCreateParams as ProfileCreateParams,
+    type ProfileUpdateParams as ProfileUpdateParams,
+    type ProfileListParams as ProfileListParams,
+    type ProfileGetParams as ProfileGetParams,
+  };
+
+  export { Projects as Projects, type Project as Project, type ProjectsList as ProjectsList };
+
+  export {
+    Sessions as Sessions,
+    type Command as Command,
+    type CommandDialog as CommandDialog,
+    type CommandErrorInfo as CommandErrorInfo,
+    type CommandEvents as CommandEvents,
+    type CommandExpectation as CommandExpectation,
+    type CommandFrame as CommandFrame,
+    type CommandLocator as CommandLocator,
+    type CommandTarget as CommandTarget,
+    type Session as Session,
+    type SessionContext as SessionContext,
+    type Sessionslist as Sessionslist,
+    type SessionAgentTracesResponse as SessionAgentTracesResponse,
+    type SessionCommandsResponse as SessionCommandsResponse,
+    type SessionComputerResponse as SessionComputerResponse,
+    type SessionCostResponse as SessionCostResponse,
+    type SessionEventsResponse as SessionEventsResponse,
+    type SessionLiveDetailsResponse as SessionLiveDetailsResponse,
+    type SessionLogsResponse as SessionLogsResponse,
+    type SessionReleaseResponse as SessionReleaseResponse,
+    type SessionReleaseAllResponse as SessionReleaseAllResponse,
+    type SessionReplaceMetadataResponse as SessionReplaceMetadataResponse,
+    type SessionSignalCatalogResponse as SessionSignalCatalogResponse,
+    type SessionUpdateMetadataResponse as SessionUpdateMetadataResponse,
+    SessionslistSessionsSessionsCursor as SessionslistSessionsSessionsCursor,
+    type SessionCreateParams as SessionCreateParams,
+    type SessionListParams as SessionListParams,
+    type SessionAgentTracesParams as SessionAgentTracesParams,
+    type SessionCommandsParams as SessionCommandsParams,
+    type SessionComputerParams as SessionComputerParams,
+    type SessionEventsParams as SessionEventsParams,
+    type SessionLogsParams as SessionLogsParams,
+    type SessionReleaseAllParams as SessionReleaseAllParams,
+    type SessionReplaceMetadataParams as SessionReplaceMetadataParams,
+    type SessionUpdateMetadataParams as SessionUpdateMetadataParams,
+  };
+}
+
+export { toFile, fileFromPath } from './uploads';
+export {
+  SteelError,
+  APIError,
+  APIConnectionError,
+  APIConnectionTimeoutError,
+  APIUserAbortError,
+  NotFoundError,
+  ConflictError,
+  RateLimitError,
+  BadRequestError,
+  AuthenticationError,
+  InternalServerError,
+  PermissionDeniedError,
+  UnprocessableEntityError,
+} from './error';
+
+export default Steel;

@@ -1,0 +1,30 @@
+name: Feature request
+description: A method, an option, an example or a doc that the SDKs do not have yet.
+labels: ["enhancement"]
+body:
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: SDK
+      multiple: true
+      options:
+        - TypeScript
+        - Python
+        - Go
+        - Rust
+        - Java (beta)
+        - Kotlin (beta)
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: What you want to do
+      description: The task, and why the SDK makes it hard today.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What would help
+      description: A method, an option, an example or a change to the docs.
