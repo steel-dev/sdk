@@ -19,15 +19,15 @@ configurations.all {
 }
 
 dependencies {
-    api("com.fasterxml.jackson.core:jackson-core:2.18.2")
-    api("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    api("com.fasterxml.jackson.core:jackson-core:2.18.12")
+    api("com.fasterxml.jackson.core:jackson-databind:2.18.12")
     api("com.google.errorprone:error_prone_annotations:2.33.0")
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1")
 
-    implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.2")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+    implementation("com.fasterxml.jackson.core:jackson-annotations:2.18.12")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.18.12")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.12")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.12")
 
     testImplementation(kotlin("test"))
     testImplementation(project(":steel-kotlin-client-okhttp"))

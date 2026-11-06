@@ -18,5 +18,6 @@ fun main() =
                 .collect { println("Live: ${it.id()} since ${it.createdAt()}") }
         } finally {
             client.sessions().release(session.id())
+            client.close()
         }
     }
