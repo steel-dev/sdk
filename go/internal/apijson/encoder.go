@@ -374,7 +374,10 @@ func (e *encoder) encodeMapEntries(json []byte, v reflect.Value) ([]byte, error)
 			return nil, err
 		}
 		if len(encodedValue) == 0 {
-			continue
+			if !isNilReference(p.value) {
+				continue
+			}
+			encodedValue = []byte("null")
 		}
 		json, err = sjson.SetRawBytes(json, EscapeSJSONKey(string(p.key)), encodedValue)
 		if err != nil {
@@ -383,6 +386,15 @@ func (e *encoder) encodeMapEntries(json []byte, v reflect.Value) ([]byte, error)
 	}
 
 	return json, nil
+}
+
+func isNilReference(v reflect.Value) bool {
+	switch v.Kind() {
+	case reflect.Interface, reflect.Pointer:
+		return v.IsNil()
+	default:
+		return false
+	}
 }
 
 func (e *encoder) newMapEncoder(t reflect.Type) encoderFunc {

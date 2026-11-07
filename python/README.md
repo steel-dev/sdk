@@ -9,7 +9,7 @@ and offers both synchronous and asynchronous clients powered by [httpx](https://
 
 ## Documentation
 
-The REST API documentation can be found on [docs.steel.dev](https://docs.steel.dev). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found on [docs.steel.dev](https://docs.steel.dev). The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/python/api.md).
 
 ## Installation
 
@@ -20,7 +20,7 @@ pip install steel-sdk
 
 ## Usage
 
-The full API of this library can be found in [api.md](api.md). Runnable examples are in [examples](examples).
+The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/python/api.md). Runnable examples are in [examples](https://github.com/steel-dev/sdk/tree/main/python/examples).
 
 ```python
 import os
@@ -472,4 +472,4 @@ Python 3.9 or higher.
 
 ## Contributing
 
-See [the contributing documentation](./CONTRIBUTING.md).
+See [the contributing documentation](https://github.com/steel-dev/sdk/tree/main/python/CONTRIBUTING.md).

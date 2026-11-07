@@ -4,7 +4,7 @@
 
 This library provides convenient access to the Steel REST API from server-side TypeScript or JavaScript.
 
-The REST API documentation can be found on [docs.steel.dev](https://docs.steel.dev). The full API of this library can be found in [api.md](api.md).
+The REST API documentation can be found on [docs.steel.dev](https://docs.steel.dev). The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/typescript/api.md).
 
 ## Installation
 
@@ -14,7 +14,7 @@ npm install steel-sdk
 
 ## Usage
 
-The full API of this library can be found in [api.md](api.md). Runnable examples are in [examples](examples).
+The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/typescript/api.md). Runnable examples are in [examples](https://github.com/steel-dev/sdk/tree/main/typescript/examples).
 
 <!-- prettier-ignore -->
 ```js
@@ -345,4 +345,4 @@ If you are interested in other runtime environments, please open or upvote an is
 
 ## Contributing
 
-See [the contributing documentation](./CONTRIBUTING.md).
+See [the contributing documentation](https://github.com/steel-dev/sdk/tree/main/typescript/CONTRIBUTING.md).

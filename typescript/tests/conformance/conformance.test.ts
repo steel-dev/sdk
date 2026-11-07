@@ -927,7 +927,7 @@ describe('conformance', () => {
 
   test('sessions.update_metadata/nulls', () =>
     conform('sessions.update_metadata/nulls', make, async (client) =>
-      client.sessions.updateMetadata('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', { metadata: { foo: 'string' } }),
+      client.sessions.updateMetadata('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', { metadata: { foo: null } }),
     ));
 
   test('sessions.update_metadata/escaped', () =>

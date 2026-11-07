@@ -295,12 +295,14 @@ func (d *decoderBuilder) newMapDecoder(t reflect.Type) decoderFunc {
 			}
 
 			itemValue := reflect.New(itemType).Elem()
-			itemerr := itemDecoder(value, itemValue, state)
-			if itemerr != nil {
-				if err == nil {
-					err = itemerr
+			if value.Type != gjson.Null {
+				itemerr := itemDecoder(value, itemValue, state)
+				if itemerr != nil {
+					if err == nil {
+						err = itemerr
+					}
+					return false
 				}
-				return false
 			}
 
 			mapValue.SetMapIndex(keyValue, itemValue)

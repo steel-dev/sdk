@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.steel:steel-kotlin:0.21.0")
+    implementation("dev.steel:steel-kotlin:0.22.0")
 }
 ```
 
@@ -35,7 +35,7 @@ Maven reads the local repository by default.
 <dependency>
   <groupId>dev.steel</groupId>
   <artifactId>steel-kotlin</artifactId>
-  <version>0.21.0</version>
+  <version>0.22.0</version>
 </dependency>
 ```
 

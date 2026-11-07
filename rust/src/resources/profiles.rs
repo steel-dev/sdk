@@ -178,6 +178,12 @@ pub struct ProfileCreateParamsDimensions {
     pub width: f64,
 }
 
+impl ProfileCreateParamsDimensions {
+    pub fn new(height: f64, width: f64) -> Self {
+        ProfileCreateParamsDimensions { height, width }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileCreateResponse {
     /// The unique identifier for the profile
@@ -231,9 +237,9 @@ pub struct ProfileCreateResponseFingerprint {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileCreateResponseFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
-    pub audio_codecs: std::collections::HashMap<String, String>,
+    pub audio_codecs: std::collections::HashMap<String, Option<String>>,
     pub battery: ProfileCreateResponseFingerprintFingerprintBattery,
-    pub fonts: Vec<String>,
+    pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
     #[serde(rename = "multimediaDevices")]
@@ -247,7 +253,7 @@ pub struct ProfileCreateResponseFingerprintFingerprint {
     #[serde(rename = "videoCard")]
     pub video_card: ProfileCreateResponseFingerprintFingerprintVideoCard,
     #[serde(rename = "videoCodecs")]
-    pub video_codecs: std::collections::HashMap<String, String>,
+    pub video_codecs: std::collections::HashMap<String, Option<String>>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -321,7 +327,7 @@ pub struct ProfileCreateResponseFingerprintFingerprintNavigator {
     pub hardware_concurrency: Option<f64>,
     #[serde(default)]
     pub language: Option<String>,
-    pub languages: Vec<String>,
+    pub languages: Vec<Option<String>>,
     #[serde(rename = "maxTouchPoints", default)]
     pub max_touch_points: Option<f64>,
     #[serde(default)]
@@ -355,11 +361,11 @@ pub struct ProfileCreateResponseFingerprintFingerprintNavigatorExtraProperties {
     #[serde(rename = "globalPrivacyControl", default)]
     pub global_privacy_control: Option<bool>,
     #[serde(rename = "installedApps")]
-    pub installed_apps: Vec<String>,
+    pub installed_apps: Vec<Option<String>>,
     #[serde(rename = "pdfViewerEnabled", default)]
     pub pdf_viewer_enabled: Option<bool>,
     #[serde(rename = "vendorFlavors")]
-    pub vendor_flavors: Vec<String>,
+    pub vendor_flavors: Vec<Option<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -382,7 +388,7 @@ pub struct ProfileCreateResponseFingerprintFingerprintNavigatorUserAgentDataBran
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileCreateResponseFingerprintFingerprintPluginsData {
     #[serde(rename = "mimeTypes")]
-    pub mime_types: Vec<String>,
+    pub mime_types: Vec<Option<String>>,
     pub plugins: Vec<ProfileCreateResponseFingerprintFingerprintPluginsDataPlugin>,
 }
 
@@ -576,6 +582,12 @@ pub struct ProfileUpdateParamsDimensions {
     pub width: f64,
 }
 
+impl ProfileUpdateParamsDimensions {
+    pub fn new(height: f64, width: f64) -> Self {
+        ProfileUpdateParamsDimensions { height, width }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileUpdateResponse {
     /// The unique identifier for the profile
@@ -629,9 +641,9 @@ pub struct ProfileUpdateResponseFingerprint {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileUpdateResponseFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
-    pub audio_codecs: std::collections::HashMap<String, String>,
+    pub audio_codecs: std::collections::HashMap<String, Option<String>>,
     pub battery: ProfileUpdateResponseFingerprintFingerprintBattery,
-    pub fonts: Vec<String>,
+    pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
     #[serde(rename = "multimediaDevices")]
@@ -645,7 +657,7 @@ pub struct ProfileUpdateResponseFingerprintFingerprint {
     #[serde(rename = "videoCard")]
     pub video_card: ProfileUpdateResponseFingerprintFingerprintVideoCard,
     #[serde(rename = "videoCodecs")]
-    pub video_codecs: std::collections::HashMap<String, String>,
+    pub video_codecs: std::collections::HashMap<String, Option<String>>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -719,7 +731,7 @@ pub struct ProfileUpdateResponseFingerprintFingerprintNavigator {
     pub hardware_concurrency: Option<f64>,
     #[serde(default)]
     pub language: Option<String>,
-    pub languages: Vec<String>,
+    pub languages: Vec<Option<String>>,
     #[serde(rename = "maxTouchPoints", default)]
     pub max_touch_points: Option<f64>,
     #[serde(default)]
@@ -753,11 +765,11 @@ pub struct ProfileUpdateResponseFingerprintFingerprintNavigatorExtraProperties {
     #[serde(rename = "globalPrivacyControl", default)]
     pub global_privacy_control: Option<bool>,
     #[serde(rename = "installedApps")]
-    pub installed_apps: Vec<String>,
+    pub installed_apps: Vec<Option<String>>,
     #[serde(rename = "pdfViewerEnabled", default)]
     pub pdf_viewer_enabled: Option<bool>,
     #[serde(rename = "vendorFlavors")]
-    pub vendor_flavors: Vec<String>,
+    pub vendor_flavors: Vec<Option<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -780,7 +792,7 @@ pub struct ProfileUpdateResponseFingerprintFingerprintNavigatorUserAgentDataBran
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileUpdateResponseFingerprintFingerprintPluginsData {
     #[serde(rename = "mimeTypes")]
-    pub mime_types: Vec<String>,
+    pub mime_types: Vec<Option<String>>,
     pub plugins: Vec<ProfileUpdateResponseFingerprintFingerprintPluginsDataPlugin>,
 }
 
@@ -1003,9 +1015,9 @@ pub struct ProfileListResponseProfileFingerprint {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileListResponseProfileFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
-    pub audio_codecs: std::collections::HashMap<String, String>,
+    pub audio_codecs: std::collections::HashMap<String, Option<String>>,
     pub battery: ProfileListResponseProfileFingerprintFingerprintBattery,
-    pub fonts: Vec<String>,
+    pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
     #[serde(rename = "multimediaDevices")]
@@ -1019,7 +1031,7 @@ pub struct ProfileListResponseProfileFingerprintFingerprint {
     #[serde(rename = "videoCard")]
     pub video_card: ProfileListResponseProfileFingerprintFingerprintVideoCard,
     #[serde(rename = "videoCodecs")]
-    pub video_codecs: std::collections::HashMap<String, String>,
+    pub video_codecs: std::collections::HashMap<String, Option<String>>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1093,7 +1105,7 @@ pub struct ProfileListResponseProfileFingerprintFingerprintNavigator {
     pub hardware_concurrency: Option<f64>,
     #[serde(default)]
     pub language: Option<String>,
-    pub languages: Vec<String>,
+    pub languages: Vec<Option<String>>,
     #[serde(rename = "maxTouchPoints", default)]
     pub max_touch_points: Option<f64>,
     #[serde(default)]
@@ -1127,11 +1139,11 @@ pub struct ProfileListResponseProfileFingerprintFingerprintNavigatorExtraPropert
     #[serde(rename = "globalPrivacyControl", default)]
     pub global_privacy_control: Option<bool>,
     #[serde(rename = "installedApps")]
-    pub installed_apps: Vec<String>,
+    pub installed_apps: Vec<Option<String>>,
     #[serde(rename = "pdfViewerEnabled", default)]
     pub pdf_viewer_enabled: Option<bool>,
     #[serde(rename = "vendorFlavors")]
-    pub vendor_flavors: Vec<String>,
+    pub vendor_flavors: Vec<Option<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1154,7 +1166,7 @@ pub struct ProfileListResponseProfileFingerprintFingerprintNavigatorUserAgentDat
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileListResponseProfileFingerprintFingerprintPluginsData {
     #[serde(rename = "mimeTypes")]
-    pub mime_types: Vec<String>,
+    pub mime_types: Vec<Option<String>>,
     pub plugins: Vec<ProfileListResponseProfileFingerprintFingerprintPluginsDataPlugin>,
 }
 
@@ -1369,9 +1381,9 @@ pub struct ProfileGetResponseFingerprint {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileGetResponseFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
-    pub audio_codecs: std::collections::HashMap<String, String>,
+    pub audio_codecs: std::collections::HashMap<String, Option<String>>,
     pub battery: ProfileGetResponseFingerprintFingerprintBattery,
-    pub fonts: Vec<String>,
+    pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
     #[serde(rename = "multimediaDevices")]
@@ -1385,7 +1397,7 @@ pub struct ProfileGetResponseFingerprintFingerprint {
     #[serde(rename = "videoCard")]
     pub video_card: ProfileGetResponseFingerprintFingerprintVideoCard,
     #[serde(rename = "videoCodecs")]
-    pub video_codecs: std::collections::HashMap<String, String>,
+    pub video_codecs: std::collections::HashMap<String, Option<String>>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1459,7 +1471,7 @@ pub struct ProfileGetResponseFingerprintFingerprintNavigator {
     pub hardware_concurrency: Option<f64>,
     #[serde(default)]
     pub language: Option<String>,
-    pub languages: Vec<String>,
+    pub languages: Vec<Option<String>>,
     #[serde(rename = "maxTouchPoints", default)]
     pub max_touch_points: Option<f64>,
     #[serde(default)]
@@ -1493,11 +1505,11 @@ pub struct ProfileGetResponseFingerprintFingerprintNavigatorExtraProperties {
     #[serde(rename = "globalPrivacyControl", default)]
     pub global_privacy_control: Option<bool>,
     #[serde(rename = "installedApps")]
-    pub installed_apps: Vec<String>,
+    pub installed_apps: Vec<Option<String>>,
     #[serde(rename = "pdfViewerEnabled", default)]
     pub pdf_viewer_enabled: Option<bool>,
     #[serde(rename = "vendorFlavors")]
-    pub vendor_flavors: Vec<String>,
+    pub vendor_flavors: Vec<Option<String>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1520,7 +1532,7 @@ pub struct ProfileGetResponseFingerprintFingerprintNavigatorUserAgentDataBrand {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ProfileGetResponseFingerprintFingerprintPluginsData {
     #[serde(rename = "mimeTypes")]
-    pub mime_types: Vec<String>,
+    pub mime_types: Vec<Option<String>>,
     pub plugins: Vec<ProfileGetResponseFingerprintFingerprintPluginsDataPlugin>,
 }
 

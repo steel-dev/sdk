@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Dict, Union, Optional
+from typing import Dict, Union
 from typing_extensions import Required, TypedDict
 
 __all__ = ["SessionUpdateMetadataParams"]
 
 
 class SessionUpdateMetadataParams(TypedDict, total=False):
-    metadata: Required[Dict[str, Union[str, float, bool, Optional[str]]]]
+    metadata: Required[Dict[str, Union[str, float, bool, None]]]
     """Metadata keys to change, up to 100 per update.
 
     Keys follow the same rules as metadata keys. Send a string, finite number or

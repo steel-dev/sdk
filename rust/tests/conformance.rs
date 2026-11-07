@@ -2376,7 +2376,9 @@ async fn sessions_update_metadata_full() {
                 steel_rs::SessionUpdateMetadataParams {
                     metadata: std::collections::HashMap::from([(
                         "foo".to_owned(),
-                        steel_rs::SessionUpdateMetadataParamsMetadata::String("string".to_owned()),
+                        Some(steel_rs::SessionUpdateMetadataParamsMetadata::String(
+                            "string".to_owned(),
+                        )),
                     )]),
                 },
             )
@@ -2397,7 +2399,9 @@ async fn sessions_update_metadata_required() {
                 steel_rs::SessionUpdateMetadataParams {
                     metadata: std::collections::HashMap::from([(
                         "foo".to_owned(),
-                        steel_rs::SessionUpdateMetadataParamsMetadata::String("string".to_owned()),
+                        Some(steel_rs::SessionUpdateMetadataParamsMetadata::String(
+                            "string".to_owned(),
+                        )),
                     )]),
                 },
             )
@@ -2416,10 +2420,7 @@ async fn sessions_update_metadata_nulls() {
             .update_metadata(
                 "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
                 steel_rs::SessionUpdateMetadataParams {
-                    metadata: std::collections::HashMap::from([(
-                        "foo".to_owned(),
-                        steel_rs::SessionUpdateMetadataParamsMetadata::String("string".to_owned()),
-                    )]),
+                    metadata: std::collections::HashMap::from([("foo".to_owned(), None)]),
                 },
             )
             .await
@@ -2439,7 +2440,9 @@ async fn sessions_update_metadata_escaped() {
                 steel_rs::SessionUpdateMetadataParams {
                     metadata: std::collections::HashMap::from([(
                         "foo".to_owned(),
-                        steel_rs::SessionUpdateMetadataParamsMetadata::String("string".to_owned()),
+                        Some(steel_rs::SessionUpdateMetadataParamsMetadata::String(
+                            "string".to_owned(),
+                        )),
                     )]),
                 },
             )

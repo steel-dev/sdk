@@ -275,7 +275,9 @@ async fn update_metadata() {
             steel_rs::SessionUpdateMetadataParams {
                 metadata: std::collections::HashMap::from([(
                     "foo".to_owned(),
-                    steel_rs::SessionUpdateMetadataParamsMetadata::String("string".to_owned()),
+                    Some(steel_rs::SessionUpdateMetadataParamsMetadata::String(
+                        "string".to_owned(),
+                    )),
                 )]),
             },
         )

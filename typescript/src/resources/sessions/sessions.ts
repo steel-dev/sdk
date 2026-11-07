@@ -5268,7 +5268,7 @@ export interface SessionUpdateMetadataParams {
    * remove it; keys you leave out are kept. The merged metadata must stay within 50
    * keys and 8192 UTF-8 JSON bytes.
    */
-  metadata: { [key: string]: string | number | boolean | string | null };
+  metadata: { [key: string]: string | number | boolean | null };
 }
 
 Sessions.SessionslistSessionsSessionsCursor = SessionslistSessionsSessionsCursor;

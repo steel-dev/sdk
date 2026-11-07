@@ -16,7 +16,7 @@ import (
 Or to pin the version:
 
 ```sh
-go get -u 'github.com/steel-dev/sdk/go@v0.21.0'
+go get -u 'github.com/steel-dev/sdk/go@v0.22.0'
 ```
 
 ## Requirements

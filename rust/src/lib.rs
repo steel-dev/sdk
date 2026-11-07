@@ -14,7 +14,7 @@ pub use error::Error;
 pub use resources::*;
 pub use upload::Upload;
 
-pub const VERSION: &str = "0.21.0";
+pub const VERSION: &str = "0.22.0";
 pub const DEFAULT_BASE_URL: &str = "https://api.steel.dev";
 pub(crate) const CLIENT: &str = "Steel";
 pub(crate) const API_KEY_HEADER: &str = "steel-api-key";

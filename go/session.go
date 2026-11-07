@@ -3765,8 +3765,7 @@ func (r SessionUpdateMetadataParams) MarshalJSON() (data []byte, err error) {
 // metadata keys. Send a string, finite number or boolean to set a key, or null
 // to remove it; keys you leave out are kept. The merged metadata must stay
 // within 50 keys and 8192 UTF-8 JSON bytes.
-// Satisfied by [shared.UnionString], [shared.UnionFloat], [shared.UnionBool],
-// [shared.UnionString].
+// Satisfied by [shared.UnionString], [shared.UnionFloat], [shared.UnionBool].
 type SessionUpdateMetadataParamsMetadataUnion interface {
 	ImplementsSessionUpdateMetadataParamsMetadataUnion()
 }

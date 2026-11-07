@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.22.0 (2026-11-07)
+
+- Fixed: Go and Rust can send `null` in `sessions.updateMetadata`, which removes a metadata key. TypeScript and Python already could.
+- Changed: Go sends a `nil` map value as `null`. It used to leave the key out. This also applies to `metadata` in `Sessions.New` and `Sessions.ReplaceMetadata`.
+- Breaking types: in Rust, `SessionUpdateMetadataParams.metadata` is a `HashMap<String, Option<SessionUpdateMetadataParamsMetadata>>`, where `None` removes the key, and `SessionUpdateMetadataParamsMetadata::String2` is gone. The string lists and maps in the profile fingerprint, such as `fonts` and `audio_codecs`, hold `Option<String>`, because the API can send `null` in them.
+- Added: Rust request objects with required fields have a `new` constructor that takes only those fields. Fields with a single allowed value, such as `command`, fill themselves, and objects with no other required field implement `Default`.
+- Fixed: the links in the TypeScript and Python READMEs work on npm and PyPI.
+
+- Updated the generator and the runtimes.
+
 ## 0.21.0 (2026-11-06)
 
 The SDKs now live in this repository, and all six languages share one version. This release follows 0.18.0 on npm and 0.19.0 on PyPI.

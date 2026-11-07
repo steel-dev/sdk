@@ -641,6 +641,12 @@ pub struct SessionCreateParamsDimensions {
     pub width: i64,
 }
 
+impl SessionCreateParamsDimensions {
+    pub fn new(height: i64, width: i64) -> Self {
+        SessionCreateParamsDimensions { height, width }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum SessionCreateParamsMetadata {
@@ -779,6 +785,29 @@ pub struct SessionCreateParamsSessionContextCookie {
     pub url: Option<String>,
 }
 
+impl SessionCreateParamsSessionContextCookie {
+    pub fn new(name: String, value: String) -> Self {
+        SessionCreateParamsSessionContextCookie {
+            name,
+            value,
+            domain: None,
+            expires: None,
+            http_only: None,
+            partition_key: None,
+            path: None,
+            priority: None,
+            same_party: None,
+            same_site: None,
+            secure: None,
+            session: None,
+            size: None,
+            source_port: None,
+            source_scheme: None,
+            url: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCreateParamsSessionContextCookiePartitionKey {
     /// Indicates if the cookie has any ancestors that are cross-site to the topLevelSite.
@@ -787,6 +816,15 @@ pub struct SessionCreateParamsSessionContextCookiePartitionKey {
     /// The site of the top-level URL the browser was visiting at the start of the request to the endpoint that set the cookie.
     #[serde(rename = "topLevelSite")]
     pub top_level_site: String,
+}
+
+impl SessionCreateParamsSessionContextCookiePartitionKey {
+    pub fn new(has_cross_site_ancestor: bool, top_level_site: String) -> Self {
+        SessionCreateParamsSessionContextCookiePartitionKey {
+            has_cross_site_ancestor,
+            top_level_site,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -832,11 +870,31 @@ pub struct SessionCreateParamsSessionContextIndexedDb {
     pub name: String,
 }
 
+impl SessionCreateParamsSessionContextIndexedDb {
+    pub fn new(
+        id: f64,
+        data: Vec<SessionCreateParamsSessionContextIndexedDbData>,
+        name: String,
+    ) -> Self {
+        SessionCreateParamsSessionContextIndexedDb { id, data, name }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCreateParamsSessionContextIndexedDbData {
     pub id: f64,
     pub name: String,
     pub records: Vec<SessionCreateParamsSessionContextIndexedDbDataRecord>,
+}
+
+impl SessionCreateParamsSessionContextIndexedDbData {
+    pub fn new(
+        id: f64,
+        name: String,
+        records: Vec<SessionCreateParamsSessionContextIndexedDbDataRecord>,
+    ) -> Self {
+        SessionCreateParamsSessionContextIndexedDbData { id, name, records }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -845,6 +903,16 @@ pub struct SessionCreateParamsSessionContextIndexedDbDataRecord {
     pub value: serde_json::Value,
     #[serde(rename = "blobFiles", default, skip_serializing_if = "Option::is_none")]
     pub blob_files: Option<Vec<SessionCreateParamsSessionContextIndexedDbDataRecordBlobFile>>,
+}
+
+impl SessionCreateParamsSessionContextIndexedDbDataRecord {
+    pub fn new(key: serde_json::Value, value: serde_json::Value) -> Self {
+        SessionCreateParamsSessionContextIndexedDbDataRecord {
+            key,
+            value,
+            blob_files: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -864,6 +932,19 @@ pub struct SessionCreateParamsSessionContextIndexedDbDataRecordBlobFile {
     pub last_modified: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub path: Option<String>,
+}
+
+impl SessionCreateParamsSessionContextIndexedDbDataRecordBlobFile {
+    pub fn new(blob_number: f64, mime_type: String, size: f64) -> Self {
+        SessionCreateParamsSessionContextIndexedDbDataRecordBlobFile {
+            blob_number,
+            mime_type,
+            size,
+            filename: None,
+            last_modified: None,
+            path: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1342,13 +1423,24 @@ pub struct SessionCommandsParamsCommandsNavigateCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsNavigateCommand {
+    pub fn new(url: String) -> Self {
+        SessionCommandsParamsCommandsNavigateCommand {
+            url,
+            command: Default::default(),
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsNavigateCommandCommand {
+    #[default]
     #[serde(rename = "navigate")]
     Navigate,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsBackCommand {
     pub command: SessionCommandsParamsCommandsBackCommandCommand,
     /// A tab id such as t2. A command on a ref does not need it.
@@ -1356,13 +1448,14 @@ pub struct SessionCommandsParamsCommandsBackCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsBackCommandCommand {
+    #[default]
     #[serde(rename = "back")]
     Back,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsForwardCommand {
     pub command: SessionCommandsParamsCommandsForwardCommandCommand,
     /// A tab id such as t2. A command on a ref does not need it.
@@ -1370,13 +1463,14 @@ pub struct SessionCommandsParamsCommandsForwardCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsForwardCommandCommand {
+    #[default]
     #[serde(rename = "forward")]
     Forward,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsReloadCommand {
     pub command: SessionCommandsParamsCommandsReloadCommandCommand,
     /// A tab id such as t2. A command on a ref does not need it.
@@ -1384,13 +1478,14 @@ pub struct SessionCommandsParamsCommandsReloadCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsReloadCommandCommand {
+    #[default]
     #[serde(rename = "reload")]
     Reload,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsSnapshotCommand {
     pub command: SessionCommandsParamsCommandsSnapshotCommandCommand,
     /// Only lines with refs or values, and their ancestors.
@@ -1407,8 +1502,9 @@ pub struct SessionCommandsParamsCommandsSnapshotCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsSnapshotCommandCommand {
+    #[default]
     #[serde(rename = "snapshot")]
     Snapshot,
 }
@@ -1429,8 +1525,21 @@ pub struct SessionCommandsParamsCommandsClickCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsClickCommand {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsClickCommand {
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsClickCommandCommand {
+    #[default]
     #[serde(rename = "click")]
     Click,
 }
@@ -1451,8 +1560,21 @@ pub struct SessionCommandsParamsCommandsDblclickCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsDblclickCommand {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsDblclickCommand {
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsDblclickCommandCommand {
+    #[default]
     #[serde(rename = "dblclick")]
     Dblclick,
 }
@@ -1473,8 +1595,21 @@ pub struct SessionCommandsParamsCommandsHoverCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsHoverCommand {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsHoverCommand {
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsHoverCommandCommand {
+    #[default]
     #[serde(rename = "hover")]
     Hover,
 }
@@ -1495,8 +1630,21 @@ pub struct SessionCommandsParamsCommandsFocusCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsFocusCommand {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsFocusCommand {
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsFocusCommandCommand {
+    #[default]
     #[serde(rename = "focus")]
     Focus,
 }
@@ -1524,8 +1672,24 @@ pub struct SessionCommandsParamsCommandsTypeCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsTypeCommand {
+    pub fn new(target: crate::CommandTarget, text: String) -> Self {
+        SessionCommandsParamsCommandsTypeCommand {
+            target,
+            text,
+            command: Default::default(),
+            clear: None,
+            delay: None,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsTypeCommandCommand {
+    #[default]
     #[serde(rename = "type")]
     Type,
 }
@@ -1547,8 +1711,22 @@ pub struct SessionCommandsParamsCommandsFillCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsFillCommand {
+    pub fn new(target: crate::CommandTarget, value: String) -> Self {
+        SessionCommandsParamsCommandsFillCommand {
+            target,
+            value,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsFillCommandCommand {
+    #[default]
     #[serde(rename = "fill")]
     Fill,
 }
@@ -1571,8 +1749,22 @@ pub struct SessionCommandsParamsCommandsPressCommand {
     pub target: Option<crate::CommandTarget>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsPressCommand {
+    pub fn new(key: String) -> Self {
+        SessionCommandsParamsCommandsPressCommand {
+            key,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+            target: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsPressCommandCommand {
+    #[default]
     #[serde(rename = "press")]
     Press,
 }
@@ -1586,8 +1778,19 @@ pub struct SessionCommandsParamsCommandsKeydownCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsKeydownCommand {
+    pub fn new(key: String) -> Self {
+        SessionCommandsParamsCommandsKeydownCommand {
+            key,
+            command: Default::default(),
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsKeydownCommandCommand {
+    #[default]
     #[serde(rename = "keydown")]
     Keydown,
 }
@@ -1601,8 +1804,19 @@ pub struct SessionCommandsParamsCommandsKeyupCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsKeyupCommand {
+    pub fn new(key: String) -> Self {
+        SessionCommandsParamsCommandsKeyupCommand {
+            key,
+            command: Default::default(),
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsKeyupCommandCommand {
+    #[default]
     #[serde(rename = "keyup")]
     Keyup,
 }
@@ -1628,6 +1842,22 @@ pub struct SessionCommandsParamsCommandsMouseCommand {
     pub y: Option<f64>,
 }
 
+impl SessionCommandsParamsCommandsMouseCommand {
+    pub fn new(action: SessionCommandsParamsCommandsMouseCommandAction) -> Self {
+        SessionCommandsParamsCommandsMouseCommand {
+            action,
+            command: Default::default(),
+            button: None,
+            clicks: None,
+            delta_x: None,
+            delta_y: None,
+            tab: None,
+            x: None,
+            y: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsMouseCommandAction {
     #[serde(rename = "move")]
@@ -1644,8 +1874,9 @@ pub enum SessionCommandsParamsCommandsMouseCommandAction {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsMouseCommandCommand {
+    #[default]
     #[serde(rename = "mouse")]
     Mouse,
 }
@@ -1679,8 +1910,25 @@ pub struct SessionCommandsParamsCommandsSelectCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsSelectCommand {
+    pub fn new(
+        target: crate::CommandTarget,
+        values: SessionCommandsParamsCommandsSelectCommandValues,
+    ) -> Self {
+        SessionCommandsParamsCommandsSelectCommand {
+            target,
+            values,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsSelectCommandCommand {
+    #[default]
     #[serde(rename = "select")]
     Select,
 }
@@ -1708,8 +1956,21 @@ pub struct SessionCommandsParamsCommandsCheckCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsCheckCommand {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsCheckCommand {
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsCheckCommandCommand {
+    #[default]
     #[serde(rename = "check")]
     Check,
 }
@@ -1731,8 +1992,25 @@ pub struct SessionCommandsParamsCommandsUploadCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsUploadCommand {
+    pub fn new(
+        files: SessionCommandsParamsCommandsUploadCommandFiles,
+        target: crate::CommandTarget,
+    ) -> Self {
+        SessionCommandsParamsCommandsUploadCommand {
+            files,
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsUploadCommandCommand {
+    #[default]
     #[serde(rename = "upload")]
     Upload,
 }
@@ -1759,8 +2037,21 @@ pub struct SessionCommandsParamsCommandsDragCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsDragCommand {
+    pub fn new(source: crate::CommandTarget, target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsDragCommand {
+            source,
+            target,
+            command: Default::default(),
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsDragCommandCommand {
+    #[default]
     #[serde(rename = "drag")]
     Drag,
 }
@@ -1781,8 +2072,21 @@ pub struct SessionCommandsParamsCommandsUncheckCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsUncheckCommand {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        SessionCommandsParamsCommandsUncheckCommand {
+            target,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsUncheckCommandCommand {
+    #[default]
     #[serde(rename = "uncheck")]
     Uncheck,
 }
@@ -1808,8 +2112,23 @@ pub struct SessionCommandsParamsCommandsGetCommand {
     pub target: Option<crate::CommandTarget>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsGetCommand {
+    pub fn new(what: SessionCommandsParamsCommandsGetCommandWhat) -> Self {
+        SessionCommandsParamsCommandsGetCommand {
+            what,
+            command: Default::default(),
+            attribute: None,
+            expect: None,
+            frame: None,
+            tab: None,
+            target: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsGetCommandCommand {
+    #[default]
     #[serde(rename = "get")]
     Get,
 }
@@ -1857,8 +2176,25 @@ pub struct SessionCommandsParamsCommandsIsCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsIsCommand {
+    pub fn new(
+        target: crate::CommandTarget,
+        what: SessionCommandsParamsCommandsIsCommandWhat,
+    ) -> Self {
+        SessionCommandsParamsCommandsIsCommand {
+            target,
+            what,
+            command: Default::default(),
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsIsCommandCommand {
+    #[default]
     #[serde(rename = "is")]
     Is,
 }
@@ -1875,7 +2211,7 @@ pub enum SessionCommandsParamsCommandsIsCommandWhat {
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsWaitCommand {
     pub command: SessionCommandsParamsCommandsWaitCommandCommand,
     /// Waits for the next download to finish.
@@ -1909,8 +2245,9 @@ pub struct SessionCommandsParamsCommandsWaitCommand {
     pub url: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsWaitCommandCommand {
+    #[default]
     #[serde(rename = "wait")]
     Wait,
 }
@@ -1941,7 +2278,7 @@ pub enum SessionCommandsParamsCommandsWaitCommandState {
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsScreenshotCommand {
     pub command: SessionCommandsParamsCommandsScreenshotCommandCommand,
     /// Fails the command when the element does not have this role or name.
@@ -1964,8 +2301,9 @@ pub struct SessionCommandsParamsCommandsScreenshotCommand {
     pub target: Option<crate::CommandTarget>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsScreenshotCommandCommand {
+    #[default]
     #[serde(rename = "screenshot")]
     Screenshot,
 }
@@ -1994,13 +2332,25 @@ pub struct SessionCommandsParamsCommandsEvalCommand {
     pub timeout: Option<i64>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsEvalCommand {
+    pub fn new(script: String) -> Self {
+        SessionCommandsParamsCommandsEvalCommand {
+            script,
+            command: Default::default(),
+            tab: None,
+            timeout: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsEvalCommandCommand {
+    #[default]
     #[serde(rename = "eval")]
     Eval,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsPdfCommand {
     pub command: SessionCommandsParamsCommandsPdfCommandCommand,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2016,13 +2366,14 @@ pub struct SessionCommandsParamsCommandsPdfCommand {
     pub tab: Option<String>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsPdfCommandCommand {
+    #[default]
     #[serde(rename = "pdf")]
     Pdf,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsScrollCommand {
     pub command: SessionCommandsParamsCommandsScrollCommandCommand,
     /// Pixels. 300 by default.
@@ -2044,8 +2395,9 @@ pub struct SessionCommandsParamsCommandsScrollCommand {
     pub target: Option<crate::CommandTarget>,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsScrollCommandCommand {
+    #[default]
     #[serde(rename = "scroll")]
     Scroll,
 }
@@ -2082,6 +2434,20 @@ pub struct SessionCommandsParamsCommandsFindCommand {
     pub tab: Option<String>,
 }
 
+impl SessionCommandsParamsCommandsFindCommand {
+    pub fn new(by: SessionCommandsParamsCommandsFindCommandBy, value: String) -> Self {
+        SessionCommandsParamsCommandsFindCommand {
+            by,
+            value,
+            command: Default::default(),
+            exact: None,
+            frame: None,
+            name: None,
+            tab: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsFindCommandBy {
     #[serde(rename = "role")]
@@ -2104,8 +2470,9 @@ pub enum SessionCommandsParamsCommandsFindCommandBy {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsFindCommandCommand {
+    #[default]
     #[serde(rename = "find")]
     Find,
 }
@@ -2121,6 +2488,17 @@ pub struct SessionCommandsParamsCommandsTabCommand {
     pub url: Option<String>,
 }
 
+impl SessionCommandsParamsCommandsTabCommand {
+    pub fn new(action: SessionCommandsParamsCommandsTabCommandAction) -> Self {
+        SessionCommandsParamsCommandsTabCommand {
+            action,
+            command: Default::default(),
+            tab: None,
+            url: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsTabCommandAction {
     #[serde(rename = "list")]
@@ -2133,8 +2511,9 @@ pub enum SessionCommandsParamsCommandsTabCommandAction {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsTabCommandCommand {
+    #[default]
     #[serde(rename = "tab")]
     Tab,
 }
@@ -2145,8 +2524,18 @@ pub struct SessionCommandsParamsCommandsStatusCommand {
     pub execution: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsStatusCommand {
+    pub fn new(execution: String) -> Self {
+        SessionCommandsParamsCommandsStatusCommand {
+            execution,
+            command: Default::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsStatusCommandCommand {
+    #[default]
     #[serde(rename = "status")]
     Status,
 }
@@ -2157,8 +2546,18 @@ pub struct SessionCommandsParamsCommandsCancelCommand {
     pub execution: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+impl SessionCommandsParamsCommandsCancelCommand {
+    pub fn new(execution: String) -> Self {
+        SessionCommandsParamsCommandsCancelCommand {
+            execution,
+            command: Default::default(),
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsCancelCommandCommand {
+    #[default]
     #[serde(rename = "cancel")]
     Cancel,
 }
@@ -2173,6 +2572,17 @@ pub struct SessionCommandsParamsCommandsDialogCommand {
     pub text: Option<String>,
 }
 
+impl SessionCommandsParamsCommandsDialogCommand {
+    pub fn new(action: SessionCommandsParamsCommandsDialogCommandAction, dialog: String) -> Self {
+        SessionCommandsParamsCommandsDialogCommand {
+            action,
+            dialog,
+            command: Default::default(),
+            text: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsDialogCommandAction {
     #[serde(rename = "accept")]
@@ -2183,8 +2593,9 @@ pub enum SessionCommandsParamsCommandsDialogCommandAction {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsDialogCommandCommand {
+    #[default]
     #[serde(rename = "dialog")]
     Dialog,
 }
@@ -2207,6 +2618,19 @@ pub struct SessionCommandsParamsObserve {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl SessionCommandsParamsObserve {
+    pub fn new(mode: SessionCommandsParamsObserveMode) -> Self {
+        SessionCommandsParamsObserve {
+            mode,
+            base: None,
+            compact: None,
+            depth: None,
+            interactive: None,
+            tab: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -2406,6 +2830,16 @@ pub struct SessionComputerParamsMoveMouse {
     pub screenshot: Option<bool>,
 }
 
+impl SessionComputerParamsMoveMouse {
+    pub fn new(coordinates: Vec<f64>) -> Self {
+        SessionComputerParamsMoveMouse {
+            coordinates,
+            hold_keys: None,
+            screenshot: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionComputerParamsClickMouse {
     /// Mouse button to click. Defaults to 'left'
@@ -2468,6 +2902,16 @@ pub struct SessionComputerParamsDragMouse {
     pub screenshot: Option<bool>,
 }
 
+impl SessionComputerParamsDragMouse {
+    pub fn new(path: Vec<Vec<f64>>) -> Self {
+        SessionComputerParamsDragMouse {
+            path,
+            hold_keys: None,
+            screenshot: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionComputerParamsScroll {
     /// X and Y coordinates [x, y]
@@ -2499,6 +2943,16 @@ pub struct SessionComputerParamsPressKey {
     pub screenshot: Option<bool>,
 }
 
+impl SessionComputerParamsPressKey {
+    pub fn new(keys: Vec<String>) -> Self {
+        SessionComputerParamsPressKey {
+            keys,
+            duration: None,
+            screenshot: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionComputerParamsTypeText {
     /// Text to type
@@ -2511,6 +2965,16 @@ pub struct SessionComputerParamsTypeText {
     pub screenshot: Option<bool>,
 }
 
+impl SessionComputerParamsTypeText {
+    pub fn new(text: String) -> Self {
+        SessionComputerParamsTypeText {
+            text,
+            hold_keys: None,
+            screenshot: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionComputerParamsWait {
     /// Duration to wait in seconds
@@ -2518,6 +2982,15 @@ pub struct SessionComputerParamsWait {
     /// Whether to take a screenshot after the action
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub screenshot: Option<bool>,
+}
+
+impl SessionComputerParamsWait {
+    pub fn new(duration: f64) -> Self {
+        SessionComputerParamsWait {
+            duration,
+            screenshot: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -2779,12 +3252,12 @@ pub enum SessionSignalCatalogResponseSignalValue {
 #[derive(Debug, Clone, PartialEq)]
 pub struct SessionUpdateMetadataParams {
     /// Metadata keys to change, up to 100 per update. Keys follow the same rules as metadata keys. Send a string, finite number or boolean to set a key, or null to remove it; keys you leave out are kept. The merged metadata must stay within 50 keys and 8192 UTF-8 JSON bytes.
-    pub metadata: std::collections::HashMap<String, SessionUpdateMetadataParamsMetadata>,
+    pub metadata: std::collections::HashMap<String, Option<SessionUpdateMetadataParamsMetadata>>,
 }
 
 impl SessionUpdateMetadataParams {
     pub fn new(
-        metadata: std::collections::HashMap<String, SessionUpdateMetadataParamsMetadata>,
+        metadata: std::collections::HashMap<String, Option<SessionUpdateMetadataParamsMetadata>>,
     ) -> Self {
         SessionUpdateMetadataParams { metadata }
     }
@@ -2796,7 +3269,6 @@ pub enum SessionUpdateMetadataParamsMetadata {
     String(String),
     Number(f64),
     Bool(bool),
-    String2(String),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2883,6 +3355,12 @@ pub struct CommandNavigate {
     pub tab: Option<String>,
 }
 
+impl CommandNavigate {
+    pub fn new(url: String) -> Self {
+        CommandNavigate { url, tab: None }
+    }
+}
+
 /// Goes back one history entry.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct CommandBack {
@@ -2940,6 +3418,17 @@ pub struct CommandClick {
     pub tab: Option<String>,
 }
 
+impl CommandClick {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        CommandClick {
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
 /// Double-clicks the element with the mouse.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandDblclick {
@@ -2954,6 +3443,17 @@ pub struct CommandDblclick {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandDblclick {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        CommandDblclick {
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
 }
 
 /// Moves the mouse onto the element.
@@ -2972,6 +3472,17 @@ pub struct CommandHover {
     pub tab: Option<String>,
 }
 
+impl CommandHover {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        CommandHover {
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
 /// Focuses the element.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandFocus {
@@ -2986,6 +3497,17 @@ pub struct CommandFocus {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandFocus {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        CommandFocus {
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
 }
 
 /// Types text one key press at a time, after the current content.
@@ -3011,6 +3533,20 @@ pub struct CommandType {
     pub tab: Option<String>,
 }
 
+impl CommandType {
+    pub fn new(target: crate::CommandTarget, text: String) -> Self {
+        CommandType {
+            target,
+            text,
+            clear: None,
+            delay: None,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
 /// Replaces the content of a field in one step, without key presses.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandFill {
@@ -3026,6 +3562,18 @@ pub struct CommandFill {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandFill {
+    pub fn new(target: crate::CommandTarget, value: String) -> Self {
+        CommandFill {
+            target,
+            value,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
 }
 
 /// Presses a key, such as Enter, or a combination such as Control+a.
@@ -3046,6 +3594,18 @@ pub struct CommandPress {
     pub target: Option<crate::CommandTarget>,
 }
 
+impl CommandPress {
+    pub fn new(key: String) -> Self {
+        CommandPress {
+            key,
+            expect: None,
+            frame: None,
+            tab: None,
+            target: None,
+        }
+    }
+}
+
 /// Holds a key down until its keyup.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandKeydown {
@@ -3055,6 +3615,12 @@ pub struct CommandKeydown {
     pub tab: Option<String>,
 }
 
+impl CommandKeydown {
+    pub fn new(key: String) -> Self {
+        CommandKeydown { key, tab: None }
+    }
+}
+
 /// Lets go of a key held with keydown.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandKeyup {
@@ -3062,6 +3628,12 @@ pub struct CommandKeyup {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandKeyup {
+    pub fn new(key: String) -> Self {
+        CommandKeyup { key, tab: None }
+    }
 }
 
 /// Mouse input at a point in CSS pixels of the visible part of the page, for pages without useful elements such as a canvas.
@@ -3083,6 +3655,21 @@ pub struct CommandMouse {
     pub x: Option<f64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub y: Option<f64>,
+}
+
+impl CommandMouse {
+    pub fn new(action: CommandMouseAction) -> Self {
+        CommandMouse {
+            action,
+            button: None,
+            clicks: None,
+            delta_x: None,
+            delta_y: None,
+            tab: None,
+            x: None,
+            y: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -3130,6 +3717,18 @@ pub struct CommandSelect {
     pub tab: Option<String>,
 }
 
+impl CommandSelect {
+    pub fn new(target: crate::CommandTarget, values: CommandSelectValues) -> Self {
+        CommandSelect {
+            target,
+            values,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum CommandSelectValues {
@@ -3153,6 +3752,17 @@ pub struct CommandCheck {
     pub tab: Option<String>,
 }
 
+impl CommandCheck {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        CommandCheck {
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
 /// Sets the files of a file input. Upload the files to the session first.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandUpload {
@@ -3168,6 +3778,18 @@ pub struct CommandUpload {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandUpload {
+    pub fn new(files: CommandUploadFiles, target: crate::CommandTarget) -> Self {
+        CommandUpload {
+            files,
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3192,6 +3814,17 @@ pub struct CommandDrag {
     pub tab: Option<String>,
 }
 
+impl CommandDrag {
+    pub fn new(source: crate::CommandTarget, target: crate::CommandTarget) -> Self {
+        CommandDrag {
+            source,
+            target,
+            frame: None,
+            tab: None,
+        }
+    }
+}
+
 /// Unchecks a checkbox, switch, or toggle button.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandUncheck {
@@ -3206,6 +3839,17 @@ pub struct CommandUncheck {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandUncheck {
+    pub fn new(target: crate::CommandTarget) -> Self {
+        CommandUncheck {
+            target,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
 }
 
 /// Reads something from the page or an element.
@@ -3227,6 +3871,19 @@ pub struct CommandGet {
     /// A ref from a snapshot such as e12, a CSS selector, or a locator.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub target: Option<crate::CommandTarget>,
+}
+
+impl CommandGet {
+    pub fn new(what: CommandGetWhat) -> Self {
+        CommandGet {
+            what,
+            attribute: None,
+            expect: None,
+            frame: None,
+            tab: None,
+            target: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -3270,6 +3927,18 @@ pub struct CommandIs {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
+}
+
+impl CommandIs {
+    pub fn new(target: crate::CommandTarget, what: CommandIsWhat) -> Self {
+        CommandIs {
+            target,
+            what,
+            expect: None,
+            frame: None,
+            tab: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -3391,6 +4060,16 @@ pub struct CommandEval {
     pub timeout: Option<i64>,
 }
 
+impl CommandEval {
+    pub fn new(script: String) -> Self {
+        CommandEval {
+            script,
+            tab: None,
+            timeout: None,
+        }
+    }
+}
+
 /// Prints the page to a PDF as base64 data.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct CommandPdf {
@@ -3461,6 +4140,19 @@ pub struct CommandFind {
     pub tab: Option<String>,
 }
 
+impl CommandFind {
+    pub fn new(by: CommandFindBy, value: String) -> Self {
+        CommandFind {
+            by,
+            value,
+            exact: None,
+            frame: None,
+            name: None,
+            tab: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandFindBy {
     #[serde(rename = "role")]
@@ -3494,6 +4186,16 @@ pub struct CommandTab {
     pub url: Option<String>,
 }
 
+impl CommandTab {
+    pub fn new(action: CommandTabAction) -> Self {
+        CommandTab {
+            action,
+            tab: None,
+            url: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandTabAction {
     #[serde(rename = "list")]
@@ -3512,10 +4214,22 @@ pub struct CommandStatus {
     pub execution: String,
 }
 
+impl CommandStatus {
+    pub fn new(execution: String) -> Self {
+        CommandStatus { execution }
+    }
+}
+
 /// Stops an execution. Send it alone.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandCancel {
     pub execution: String,
+}
+
+impl CommandCancel {
+    pub fn new(execution: String) -> Self {
+        CommandCancel { execution }
+    }
 }
 
 /// Answers an open dialog. Send it alone.
@@ -3526,6 +4240,16 @@ pub struct CommandDialogInline {
     /// The answer to a prompt.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub text: Option<String>,
+}
+
+impl CommandDialogInline {
+    pub fn new(action: CommandDialogInlineAction, dialog: String) -> Self {
+        CommandDialogInline {
+            action,
+            dialog,
+            text: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

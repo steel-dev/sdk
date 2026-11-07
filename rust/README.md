@@ -6,7 +6,7 @@ The Steel Rust library provides access to the [Steel REST API](https://docs.stee
 
 ```toml
 [dependencies]
-steel-rs = "0.21.0"
+steel-rs = "0.22.0"
 ```
 
 ## Usage
@@ -22,6 +22,8 @@ async fn main() -> Result<(), steel_rs::Error> {
     Ok(())
 }
 ```
+
+Params and request objects without required fields implement `Default`. The ones with required fields have a `new` constructor that takes only those fields. Set the fields you need and fill in the rest with struct update syntax, such as `..Default::default()` or `..Params::new(required)`.
 
 ## Pagination
 

@@ -364,6 +364,7 @@ var tests = map[string]struct {
 	"map_string":                       {`{"foo":"bar"}`, map[string]string{"foo": "bar"}},
 	"map_string_with_sjson_path_chars": {`{":a.b.c*:d*-1e.f@g?h":"bar"}`, map[string]string{":a.b.c*:d*-1e.f@g?h": "bar"}},
 	"map_interface":                    {`{"a":1,"b":"str","c":false}`, map[string]interface{}{"a": float64(1), "b": "str", "c": false}},
+	"map_interface_null":               {`{"a":null,"b":"str"}`, map[string]interface{}{"a": nil, "b": "str"}},
 
 	"primitive_struct": {
 		`{"a":false,"b":237628372683,"c":654,"d":9999.43,"e":43.76,"f":[1,2,3,4]}`,

@@ -1352,7 +1352,7 @@ def test_sessions_update_metadata_required() -> None:
 
 def test_sessions_update_metadata_nulls() -> None:
     def call(client: Steel) -> object:
-        return client.sessions.update_metadata("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", metadata={"foo": "string"})
+        return client.sessions.update_metadata("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", metadata={"foo": None})
 
     conform("sessions.update_metadata/nulls", make, call)
 

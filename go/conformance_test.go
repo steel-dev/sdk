@@ -1695,7 +1695,7 @@ func TestConformanceSessionsUpdateMetadataNulls(t *testing.T) {
 		client := conformanceClient(baseURL, apiKey)
 		res, err := client.Sessions.UpdateMetadata(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionUpdateMetadataParams{
 			Metadata: steel.F(map[string]steel.SessionUpdateMetadataParamsMetadataUnion{
-				"foo": shared.UnionString("string"),
+				"foo": nil,
 			}),
 		})
 		return conformance.JSON(res), err
