@@ -264,8 +264,7 @@ func TestSessionCommandsWithOptionalParams(t *testing.T) {
 				URL:     steel.F("x"),
 				Tab:     steel.F("t321669910225"),
 			}),
-			After:       steel.F("x"),
-			EventsAfter: steel.F("c-321669910225"),
+			After: steel.F("x"),
 			Observe: steel.F(steel.SessionCommandsParamsObserve{
 				Mode:        steel.F(steel.SessionCommandsParamsObserveModeNone),
 				Base:        steel.F("x"),

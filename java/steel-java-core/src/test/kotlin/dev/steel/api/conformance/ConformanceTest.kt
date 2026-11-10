@@ -49,6 +49,8 @@ import dev.steel.api.models.sessions.SessionUpdateMetadataParams
 import dev.steel.api.models.sessions.captchas.CaptchaSolveImageParams
 import dev.steel.api.models.sessions.captchas.CaptchaSolveParams
 import dev.steel.api.models.sessions.captchas.CaptchaStatusParams
+import dev.steel.api.models.sessions.commandexecutions.CommandExecutionCancelParams
+import dev.steel.api.models.sessions.commandexecutions.CommandExecutionRetrieveParams
 import dev.steel.api.models.sessions.files.FileDeleteAllParams
 import dev.steel.api.models.sessions.files.FileDownloadArchiveParams
 import java.time.OffsetDateTime
@@ -1437,7 +1439,6 @@ internal class ConformanceTest {
                                 .build()
                         )
                         .after("x")
-                        .eventsAfter("c-321669910225")
                         .observe(
                             SessionCommandsParams.Observe.builder()
                                 .mode(SessionCommandsParams.Observe.Mode.NONE)
@@ -1513,6 +1514,519 @@ internal class ConformanceTest {
     @Test
     fun sessionsCommandsVariant01() {
         Harness.conform("sessions.commands/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant02() {
+        Harness.conform("sessions.commands/variant-0-2", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant03() {
+        Harness.conform("sessions.commands/variant-0-3", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant04() {
+        Harness.conform("sessions.commands/variant-0-4", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant05() {
+        Harness.conform("sessions.commands/variant-0-5", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant06() {
+        Harness.conform("sessions.commands/variant-0-6", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant07() {
+        Harness.conform("sessions.commands/variant-0-7", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant08() {
+        Harness.conform("sessions.commands/variant-0-8", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant09() {
+        Harness.conform("sessions.commands/variant-0-9", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant010() {
+        Harness.conform("sessions.commands/variant-0-10", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant011() {
+        Harness.conform("sessions.commands/variant-0-11", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant012() {
+        Harness.conform("sessions.commands/variant-0-12", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant013() {
+        Harness.conform("sessions.commands/variant-0-13", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant014() {
+        Harness.conform("sessions.commands/variant-0-14", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant015() {
+        Harness.conform("sessions.commands/variant-0-15", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant016() {
+        Harness.conform("sessions.commands/variant-0-16", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant017() {
+        Harness.conform("sessions.commands/variant-0-17", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant018() {
+        Harness.conform("sessions.commands/variant-0-18", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant019() {
+        Harness.conform("sessions.commands/variant-0-19", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant020() {
+        Harness.conform("sessions.commands/variant-0-20", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant021() {
+        Harness.conform("sessions.commands/variant-0-21", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant022() {
+        Harness.conform("sessions.commands/variant-0-22", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant023() {
+        Harness.conform("sessions.commands/variant-0-23", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant024() {
+        Harness.conform("sessions.commands/variant-0-24", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant025() {
+        Harness.conform("sessions.commands/variant-0-25", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant026() {
+        Harness.conform("sessions.commands/variant-0-26", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant027() {
+        Harness.conform("sessions.commands/variant-0-27", ::make) { client ->
+            client
+                .sessions()
+                .commands(
+                    SessionCommandsParams.builder()
+                        .sessionId("sessionId")
+                        .commands(
+                            SessionCommandsParams.Commands.NavigateCommand.builder()
+                                .url("x")
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandsVariant028() {
+        Harness.conform("sessions.commands/variant-0-28", ::make) { client ->
             client
                 .sessions()
                 .commands(
@@ -2412,6 +2926,1060 @@ internal class ConformanceTest {
                 .captchas()
                 .status(CaptchaStatusParams.builder().sessionId("a b/c?d#e%f+g&h=i é").build())
                 .also { it.forEach { it.validate() } }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveFull() {
+        Harness.conform("sessions.command_executions.retrieve/full", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveRequired() {
+        Harness.conform("sessions.command_executions.retrieve/required", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveNulls() {
+        Harness.conform("sessions.command_executions.retrieve/nulls", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveUnknown() {
+        Harness.conform("sessions.command_executions.retrieve/unknown", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant01() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant02() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-2", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant03() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-3", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant04() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-4", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant05() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-5", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant06() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-6", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant07() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-7", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant08() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-8", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant09() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-9", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant010() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-10", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant011() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-11", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant012() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-12", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant013() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-13", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant014() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-14", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant015() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-15", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant016() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-16", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant017() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-17", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant018() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-18", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant019() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-19", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant020() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-20", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant021() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-21", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant022() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-22", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant023() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-23", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant024() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-24", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant025() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-25", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant026() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-26", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant027() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-27", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveVariant028() {
+        Harness.conform("sessions.command_executions.retrieve/variant-0-28", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsRetrieveEscaped() {
+        Harness.conform("sessions.command_executions.retrieve/escaped", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .retrieve(
+                    CommandExecutionRetrieveParams.builder()
+                        .sessionId("a b/c?d#e%f+g&h=i é")
+                        .executionId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelFull() {
+        Harness.conform("sessions.command_executions.cancel/full", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelRequired() {
+        Harness.conform("sessions.command_executions.cancel/required", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelNulls() {
+        Harness.conform("sessions.command_executions.cancel/nulls", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelUnknown() {
+        Harness.conform("sessions.command_executions.cancel/unknown", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant01() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant02() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-2", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant03() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-3", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant04() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-4", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant05() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-5", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant06() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-6", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant07() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-7", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant08() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-8", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant09() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-9", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant010() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-10", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant011() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-11", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant012() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-12", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant013() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-13", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant014() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-14", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant015() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-15", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant016() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-16", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant017() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-17", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant018() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-18", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant019() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-19", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant020() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-20", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant021() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-21", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant022() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-22", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant023() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-23", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant024() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-24", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant025() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-25", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant026() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-26", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant027() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-27", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelVariant028() {
+        Harness.conform("sessions.command_executions.cancel/variant-0-28", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("sessionId")
+                        .executionId("executionId")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCommandExecutionsCancelEscaped() {
+        Harness.conform("sessions.command_executions.cancel/escaped", ::make) { client ->
+            client
+                .sessions()
+                .commandExecutions()
+                .cancel(
+                    CommandExecutionCancelParams.builder()
+                        .sessionId("a b/c?d#e%f+g&h=i é")
+                        .executionId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
         }
     }
 

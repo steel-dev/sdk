@@ -6,7 +6,7 @@ The Steel Rust library provides access to the [Steel REST API](https://docs.stee
 
 ```toml
 [dependencies]
-steel-rs = "0.22.0"
+steel-rs = "0.23.0"
 ```
 
 ## Usage

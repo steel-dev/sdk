@@ -37,6 +37,7 @@ import dev.steel.api.models.sessions.SessionSignalCatalogResponse
 import dev.steel.api.models.sessions.SessionUpdateMetadataParams
 import dev.steel.api.models.sessions.SessionUpdateMetadataResponse
 import dev.steel.api.services.async.sessions.CaptchaServiceAsync
+import dev.steel.api.services.async.sessions.CommandExecutionServiceAsync
 import dev.steel.api.services.async.sessions.FileServiceAsync
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
@@ -56,6 +57,8 @@ interface SessionServiceAsync {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionServiceAsync
 
     fun captchas(): CaptchaServiceAsync
+
+    fun commandExecutions(): CommandExecutionServiceAsync
 
     fun files(): FileServiceAsync
 
@@ -558,6 +561,8 @@ interface SessionServiceAsync {
         ): SessionServiceAsync.WithRawResponse
 
         fun captchas(): CaptchaServiceAsync.WithRawResponse
+
+        fun commandExecutions(): CommandExecutionServiceAsync.WithRawResponse
 
         fun files(): FileServiceAsync.WithRawResponse
 

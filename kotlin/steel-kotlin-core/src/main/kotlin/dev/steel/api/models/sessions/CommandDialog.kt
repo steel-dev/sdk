@@ -23,10 +23,7 @@ private constructor(
     private val message: JsonField<String>,
     private val tab: JsonField<String>,
     private val type: JsonField<Type>,
-    private val accepted: JsonField<Boolean>,
-    private val by: JsonField<By>,
     private val defaultPrompt: JsonField<String>,
-    private val text: JsonField<String>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
@@ -36,13 +33,10 @@ private constructor(
         @JsonProperty("message") @ExcludeMissing message: JsonField<String> = JsonMissing.of(),
         @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
         @JsonProperty("type") @ExcludeMissing type: JsonField<Type> = JsonMissing.of(),
-        @JsonProperty("accepted") @ExcludeMissing accepted: JsonField<Boolean> = JsonMissing.of(),
-        @JsonProperty("by") @ExcludeMissing by: JsonField<By> = JsonMissing.of(),
         @JsonProperty("defaultPrompt")
         @ExcludeMissing
         defaultPrompt: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-    ) : this(id, message, tab, type, accepted, by, defaultPrompt, text, mutableMapOf())
+    ) : this(id, message, tab, type, defaultPrompt, mutableMapOf())
 
     fun id(): String = id.getRequired("id")
 
@@ -52,13 +46,7 @@ private constructor(
 
     fun type(): Type = type.getRequired("type")
 
-    fun accepted(): Boolean? = accepted.getNullable("accepted")
-
-    fun by(): By? = by.getNullable("by")
-
     fun defaultPrompt(): String? = defaultPrompt.getNullable("defaultPrompt")
-
-    fun text(): String? = text.getNullable("text")
 
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
@@ -68,15 +56,9 @@ private constructor(
 
     @JsonProperty("type") @ExcludeMissing fun _type(): JsonField<Type> = type
 
-    @JsonProperty("accepted") @ExcludeMissing fun _accepted(): JsonField<Boolean> = accepted
-
-    @JsonProperty("by") @ExcludeMissing fun _by(): JsonField<By> = by
-
     @JsonProperty("defaultPrompt")
     @ExcludeMissing
     fun _defaultPrompt(): JsonField<String> = defaultPrompt
-
-    @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -103,10 +85,7 @@ private constructor(
         private var message: JsonField<String>? = null
         private var tab: JsonField<String>? = null
         private var type: JsonField<Type>? = null
-        private var accepted: JsonField<Boolean> = JsonMissing.of()
-        private var by: JsonField<By> = JsonMissing.of()
         private var defaultPrompt: JsonField<String> = JsonMissing.of()
-        private var text: JsonField<String> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
@@ -115,10 +94,7 @@ private constructor(
             this.message = commandDialog.message
             this.tab = commandDialog.tab
             this.type = commandDialog.type
-            this.accepted = commandDialog.accepted
-            this.by = commandDialog.by
             this.defaultPrompt = commandDialog.defaultPrompt
-            this.text = commandDialog.text
             this.additionalProperties = commandDialog.additionalProperties.toMutableMap()
         }
 
@@ -138,23 +114,11 @@ private constructor(
 
         fun type(type: JsonField<Type>) = apply { this.type = type }
 
-        fun accepted(accepted: Boolean) = accepted(JsonField.of(accepted))
-
-        fun accepted(accepted: JsonField<Boolean>) = apply { this.accepted = accepted }
-
-        fun by(by: By) = by(JsonField.of(by))
-
-        fun by(by: JsonField<By>) = apply { this.by = by }
-
         fun defaultPrompt(defaultPrompt: String) = defaultPrompt(JsonField.of(defaultPrompt))
 
         fun defaultPrompt(defaultPrompt: JsonField<String>) = apply {
             this.defaultPrompt = defaultPrompt
         }
-
-        fun text(text: String) = text(JsonField.of(text))
-
-        fun text(text: JsonField<String>) = apply { this.text = text }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -181,10 +145,7 @@ private constructor(
                 checkRequired("message", message),
                 checkRequired("tab", tab),
                 checkRequired("type", type),
-                accepted,
-                by,
                 defaultPrompt,
-                text,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -208,10 +169,7 @@ private constructor(
         message()
         tab()
         type().validate()
-        accepted()
-        by()?.let { it.validate() }
         defaultPrompt()
-        text()
         validated = true
     }
 
@@ -221,10 +179,7 @@ private constructor(
             (if (message.asKnown().isPresent) 1 else 0) +
             (if (tab.asKnown().isPresent) 1 else 0) +
             (type.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-            (if (accepted.asKnown().isPresent) 1 else 0) +
-            (by.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-            (if (defaultPrompt.asKnown().isPresent) 1 else 0) +
-            (if (text.asKnown().isPresent) 1 else 0)
+            (if (defaultPrompt.asKnown().isPresent) 1 else 0)
 
     class Type @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -313,87 +268,6 @@ private constructor(
         override fun toString() = value.toString()
     }
 
-    class By @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-        companion object {
-
-            @JvmField val COMMAND = of("command")
-
-            @JvmField val CLIENT = of("client")
-
-            @JvmField val CLOSED = of("closed")
-
-            @JvmStatic fun of(value: String) = By(JsonField.of(value))
-        }
-
-        enum class Known {
-            COMMAND,
-            CLIENT,
-            CLOSED,
-        }
-
-        enum class Value {
-            COMMAND,
-            CLIENT,
-            CLOSED,
-            _UNKNOWN,
-        }
-
-        fun value(): Value =
-            when (this) {
-                COMMAND -> Value.COMMAND
-                CLIENT -> Value.CLIENT
-                CLOSED -> Value.CLOSED
-                else -> Value._UNKNOWN
-            }
-
-        fun known(): Known =
-            when (this) {
-                COMMAND -> Known.COMMAND
-                CLIENT -> Known.CLIENT
-                CLOSED -> Known.CLOSED
-                else -> throw SteelInvalidDataException("Unknown By: $value")
-            }
-
-        fun asString(): String =
-            _value().asString().orElseThrow { SteelInvalidDataException("Value is not a String") }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): By = apply {
-            if (validated) {
-                return@apply
-            }
-
-            known()
-            validated = true
-        }
-
-        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is By && value == other.value
-        }
-
-        override fun hashCode() = value.hashCode()
-
-        override fun toString() = value.toString()
-    }
-
     override fun equals(other: Any?): Boolean {
         if (this === other) {
             return true
@@ -404,29 +278,16 @@ private constructor(
             this.message == other.message &&
             this.tab == other.tab &&
             this.type == other.type &&
-            this.accepted == other.accepted &&
-            this.by == other.by &&
             this.defaultPrompt == other.defaultPrompt &&
-            this.text == other.text &&
             this.additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
-        Objects.hash(
-            id,
-            message,
-            tab,
-            type,
-            accepted,
-            by,
-            defaultPrompt,
-            text,
-            additionalProperties,
-        )
+        Objects.hash(id, message, tab, type, defaultPrompt, additionalProperties)
     }
 
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CommandDialog{id=$id, message=$message, tab=$tab, type=$type, accepted=$accepted, by=$by, defaultPrompt=$defaultPrompt, text=$text, additionalProperties=$additionalProperties}"
+        "CommandDialog{id=$id, message=$message, tab=$tab, type=$type, defaultPrompt=$defaultPrompt, additionalProperties=$additionalProperties}"
 }

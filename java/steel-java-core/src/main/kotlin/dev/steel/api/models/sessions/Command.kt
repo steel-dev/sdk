@@ -26,7 +26,6 @@ import dev.steel.api.errors.SteelInvalidDataException
 import java.util.Collections
 import java.util.Objects
 import java.util.Optional
-import kotlin.io.path.name
 import kotlin.jvm.optionals.getOrNull
 
 @JsonDeserialize(using = Command.Deserializer::class)
@@ -62,9 +61,6 @@ private constructor(
     private val scroll: Scroll? = null,
     private val find: Find? = null,
     private val tab: Tab? = null,
-    private val status: Status? = null,
-    private val cancel: Cancel? = null,
-    private val dialog: Dialog? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -126,12 +122,6 @@ private constructor(
 
     fun tab(): Optional<Tab> = Optional.ofNullable(tab)
 
-    fun status(): Optional<Status> = Optional.ofNullable(status)
-
-    fun cancel(): Optional<Cancel> = Optional.ofNullable(cancel)
-
-    fun dialog(): Optional<Dialog> = Optional.ofNullable(dialog)
-
     fun isNavigate(): Boolean = navigate != null
 
     fun isBack(): Boolean = back != null
@@ -189,12 +179,6 @@ private constructor(
     fun isFind(): Boolean = find != null
 
     fun isTab(): Boolean = tab != null
-
-    fun isStatus(): Boolean = status != null
-
-    fun isCancel(): Boolean = cancel != null
-
-    fun isDialog(): Boolean = dialog != null
 
     fun asNavigate(): Navigate = navigate.getOrThrow("navigate")
 
@@ -254,12 +238,6 @@ private constructor(
 
     fun asTab(): Tab = tab.getOrThrow("tab")
 
-    fun asStatus(): Status = status.getOrThrow("status")
-
-    fun asCancel(): Cancel = cancel.getOrThrow("cancel")
-
-    fun asDialog(): Dialog = dialog.getOrThrow("dialog")
-
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -293,9 +271,6 @@ private constructor(
             scroll != null -> visitor.visitScroll(scroll)
             find != null -> visitor.visitFind(find)
             tab != null -> visitor.visitTab(tab)
-            status != null -> visitor.visitStatus(status)
-            cancel != null -> visitor.visitCancel(cancel)
-            dialog != null -> visitor.visitDialog(dialog)
             else -> visitor.unknown(_json)
         }
 
@@ -431,18 +406,6 @@ private constructor(
                 override fun visitTab(tab: Tab) {
                     tab.validate()
                 }
-
-                override fun visitStatus(status: Status) {
-                    status.validate()
-                }
-
-                override fun visitCancel(cancel: Cancel) {
-                    cancel.validate()
-                }
-
-                override fun visitDialog(dialog: Dialog) {
-                    dialog.validate()
-                }
             }
         )
         validated = true
@@ -510,12 +473,6 @@ private constructor(
 
                 override fun visitTab(tab: Tab) = tab.validity()
 
-                override fun visitStatus(status: Status) = status.validity()
-
-                override fun visitCancel(cancel: Cancel) = cancel.validity()
-
-                override fun visitDialog(dialog: Dialog) = dialog.validity()
-
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -554,10 +511,7 @@ private constructor(
             this.pdf == other.pdf &&
             this.scroll == other.scroll &&
             this.find == other.find &&
-            this.tab == other.tab &&
-            this.status == other.status &&
-            this.cancel == other.cancel &&
-            this.dialog == other.dialog
+            this.tab == other.tab
     }
 
     override fun hashCode(): Int =
@@ -591,9 +545,6 @@ private constructor(
             scroll,
             find,
             tab,
-            status,
-            cancel,
-            dialog,
         )
 
     override fun toString(): String =
@@ -627,9 +578,6 @@ private constructor(
             scroll != null -> "Command{scroll=$scroll}"
             find != null -> "Command{find=$find}"
             tab != null -> "Command{tab=$tab}"
-            status != null -> "Command{status=$status}"
-            cancel != null -> "Command{cancel=$cancel}"
-            dialog != null -> "Command{dialog=$dialog}"
             _json != null -> "Command{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Command")
         }
@@ -693,12 +641,6 @@ private constructor(
         @JvmStatic fun ofFind(find: Find) = Command(find = find)
 
         @JvmStatic fun ofTab(tab: Tab) = Command(tab = tab)
-
-        @JvmStatic fun ofStatus(status: Status) = Command(status = status)
-
-        @JvmStatic fun ofCancel(cancel: Cancel) = Command(cancel = cancel)
-
-        @JvmStatic fun ofDialog(dialog: Dialog) = Command(dialog = dialog)
     }
 
     interface Visitor<out T> {
@@ -760,12 +702,6 @@ private constructor(
         fun visitFind(find: Find): T
 
         fun visitTab(tab: Tab): T
-
-        fun visitStatus(status: Status): T
-
-        fun visitCancel(cancel: Cancel): T
-
-        fun visitDialog(dialog: Dialog): T
 
         fun unknown(json: JsonValue?): T {
             throw SteelInvalidDataException("Unknown Command: $json")
@@ -865,15 +801,6 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Tab>())?.let {
                             Command(tab = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<Status>())?.let {
-                            Command(status = it, _json = json)
-                        },
-                        tryDeserialize(node, jacksonTypeRef<Cancel>())?.let {
-                            Command(cancel = it, _json = json)
-                        },
-                        tryDeserialize(node, jacksonTypeRef<Dialog>())?.let {
-                            Command(dialog = it, _json = json)
-                        },
                     )
                     .filterNotNull()
                     .allMaxBy { it.validity() }
@@ -923,9 +850,6 @@ private constructor(
                 value.scroll != null -> generator.writeObject(value.scroll)
                 value.find != null -> generator.writeObject(value.find)
                 value.tab != null -> generator.writeObject(value.tab)
-                value.status != null -> generator.writeObject(value.status)
-                value.cancel != null -> generator.writeObject(value.cancel)
-                value.dialog != null -> generator.writeObject(value.dialog)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Command")
             }
@@ -7887,60 +7811,46 @@ private constructor(
             "Scroll{command=$command, amount=$amount, direction=$direction, expect=$expect, frame=$frame, tab=$tab, target=$target, additionalProperties=$additionalProperties}"
     }
 
-    /** Finds elements and returns refs for up to 50 matches. */
+    /**
+     * Finds elements and returns refs for up to 50 matches. With nth, it returns that one match.
+     */
     class Find
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
-        private val by: JsonField<By>,
         private val command: JsonValue,
-        private val value: JsonField<String>,
-        private val exact: JsonField<Boolean>,
+        private val target: JsonField<CommandTarget>,
         private val frame: JsonField<CommandFrame>,
-        private val name: JsonField<String>,
         private val tab: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
         @JsonCreator
         private constructor(
-            @JsonProperty("by") @ExcludeMissing by: JsonField<By> = JsonMissing.of(),
             @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("value") @ExcludeMissing value: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("exact") @ExcludeMissing exact: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("target")
+            @ExcludeMissing
+            target: JsonField<CommandTarget> = JsonMissing.of(),
             @JsonProperty("frame")
             @ExcludeMissing
             frame: JsonField<CommandFrame> = JsonMissing.of(),
-            @JsonProperty("name") @ExcludeMissing name: JsonField<String> = JsonMissing.of(),
             @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-        ) : this(by, command, value, exact, frame, name, tab, mutableMapOf())
+        ) : this(command, target, frame, tab, mutableMapOf())
 
-        fun by(): By = by.getRequired("by")
-
-        fun value(): String = value.getRequired("value")
-
-        fun exact(): Optional<Boolean> = exact.getOptional("exact")
+        /** A CSS selector or a locator, not a ref. */
+        fun target(): CommandTarget = target.getRequired("target")
 
         /** The iframe to look in. List nested iframes from the outside in. */
         fun frame(): Optional<CommandFrame> = frame.getOptional("frame")
 
-        /** The accessible name. Works only with by role. */
-        fun name(): Optional<String> = name.getOptional("name")
-
         /** A tab id such as t2. A command on a ref does not need it. */
         fun tab(): Optional<String> = tab.getOptional("tab")
-
-        @JsonProperty("by") @ExcludeMissing fun _by(): JsonField<By> = by
 
         /** Expected to always return `JsonValue.from("find")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
-        @JsonProperty("value") @ExcludeMissing fun _value(): JsonField<String> = value
-
-        @JsonProperty("exact") @ExcludeMissing fun _exact(): JsonField<Boolean> = exact
+        @JsonProperty("target") @ExcludeMissing fun _target(): JsonField<CommandTarget> = target
 
         @JsonProperty("frame") @ExcludeMissing fun _frame(): JsonField<CommandFrame> = frame
-
-        @JsonProperty("name") @ExcludeMissing fun _name(): JsonField<String> = name
 
         @JsonProperty("tab") @ExcludeMissing fun _tab(): JsonField<String> = tab
 
@@ -7965,40 +7875,35 @@ private constructor(
         /** A builder for [Find]. */
         class Builder internal constructor() {
 
-            private var by: JsonField<By>? = null
             private var command: JsonValue = JsonValue.from("find")
-            private var value: JsonField<String>? = null
-            private var exact: JsonField<Boolean> = JsonMissing.of()
+            private var target: JsonField<CommandTarget>? = null
             private var frame: JsonField<CommandFrame> = JsonMissing.of()
-            private var name: JsonField<String> = JsonMissing.of()
             private var tab: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(find: Find) = apply {
-                this.by = find.by
                 this.command = find.command
-                this.value = find.value
-                this.exact = find.exact
+                this.target = find.target
                 this.frame = find.frame
-                this.name = find.name
                 this.tab = find.tab
                 this.additionalProperties = find.additionalProperties.toMutableMap()
             }
 
-            fun by(by: By) = by(JsonField.of(by))
-
-            fun by(by: JsonField<By>) = apply { this.by = by }
-
             fun command(command: JsonValue) = apply { this.command = command }
 
-            fun value(value: String) = value(JsonField.of(value))
+            /** A CSS selector or a locator, not a ref. */
+            fun target(target: CommandTarget) = target(JsonField.of(target))
 
-            fun value(value: JsonField<String>) = apply { this.value = value }
+            /** A CSS selector or a locator, not a ref. */
+            fun target(target: JsonField<CommandTarget>) = apply { this.target = target }
 
-            fun exact(exact: Boolean) = exact(JsonField.of(exact))
+            /** A CSS selector or a locator, not a ref. */
+            fun target(string: String) = target(CommandTarget.ofString(string))
 
-            fun exact(exact: JsonField<Boolean>) = apply { this.exact = exact }
+            /** A CSS selector or a locator, not a ref. */
+            fun target(commandLocator: CommandLocator) =
+                target(CommandTarget.ofCommandLocator(commandLocator))
 
             /** The iframe to look in. List nested iframes from the outside in. */
             fun frame(frame: CommandFrame) = frame(JsonField.of(frame))
@@ -8016,12 +7921,6 @@ private constructor(
             /** The iframe to look in. List nested iframes from the outside in. */
             fun frame(unionMember2: List<CommandTarget>) =
                 frame(CommandFrame.ofUnionMember2(unionMember2))
-
-            /** The accessible name. Works only with by role. */
-            fun name(name: String) = name(JsonField.of(name))
-
-            /** The accessible name. Works only with by role. */
-            fun name(name: JsonField<String>) = apply { this.name = name }
 
             /** A tab id such as t2. A command on a ref does not need it. */
             fun tab(tab: String) = tab(JsonField.of(tab))
@@ -8050,12 +7949,9 @@ private constructor(
 
             fun build(): Find =
                 Find(
-                    checkRequired("by", by),
                     command,
-                    checkRequired("value", value),
-                    exact,
+                    checkRequired("target", target),
                     frame,
-                    name,
                     tab,
                     additionalProperties.toMutableMap(),
                 )
@@ -8076,142 +7972,23 @@ private constructor(
                 return@apply
             }
 
-            by().validate()
             _command().let {
                 if (it != JsonValue.from("find")) {
                     throw SteelInvalidDataException("'command' is invalid, received $it")
                 }
             }
-            value()
-            exact()
+            target().validate()
             frame().ifPresent { it.validate() }
-            name()
             tab()
             validated = true
         }
 
         @JvmSynthetic
         internal fun validity(): Int =
-            (by.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (command.let { if (it == JsonValue.from("find")) 1 else 0 }) +
-                (if (value.asKnown().isPresent) 1 else 0) +
-                (if (exact.asKnown().isPresent) 1 else 0) +
+            (command.let { if (it == JsonValue.from("find")) 1 else 0 }) +
+                (target.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (frame.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (name.asKnown().isPresent) 1 else 0) +
                 (if (tab.asKnown().isPresent) 1 else 0)
-
-        class By @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val ROLE = of("role")
-
-                @JvmField val TEXT = of("text")
-
-                @JvmField val LABEL = of("label")
-
-                @JvmField val PLACEHOLDER = of("placeholder")
-
-                @JvmField val ALT = of("alt")
-
-                @JvmField val TITLE = of("title")
-
-                @JvmField val TESTID = of("testid")
-
-                @JvmField val CSS = of("css")
-
-                @JvmStatic fun of(value: String) = By(JsonField.of(value))
-            }
-
-            enum class Known {
-                ROLE,
-                TEXT,
-                LABEL,
-                PLACEHOLDER,
-                ALT,
-                TITLE,
-                TESTID,
-                CSS,
-            }
-
-            enum class Value {
-                ROLE,
-                TEXT,
-                LABEL,
-                PLACEHOLDER,
-                ALT,
-                TITLE,
-                TESTID,
-                CSS,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    ROLE -> Value.ROLE
-                    TEXT -> Value.TEXT
-                    LABEL -> Value.LABEL
-                    PLACEHOLDER -> Value.PLACEHOLDER
-                    ALT -> Value.ALT
-                    TITLE -> Value.TITLE
-                    TESTID -> Value.TESTID
-                    CSS -> Value.CSS
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    ROLE -> Known.ROLE
-                    TEXT -> Known.TEXT
-                    LABEL -> Known.LABEL
-                    PLACEHOLDER -> Known.PLACEHOLDER
-                    ALT -> Known.ALT
-                    TITLE -> Known.TITLE
-                    TESTID -> Known.TESTID
-                    CSS -> Known.CSS
-                    else -> throw SteelInvalidDataException("Unknown By: $value")
-                }
-
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    SteelInvalidDataException("Value is not a String")
-                }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): By = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is By && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -8219,24 +7996,21 @@ private constructor(
             }
 
             return other is Find &&
-                this.by == other.by &&
                 this.command == other.command &&
-                this.value == other.value &&
-                this.exact == other.exact &&
+                this.target == other.target &&
                 this.frame == other.frame &&
-                this.name == other.name &&
                 this.tab == other.tab &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(by, command, value, exact, frame, name, tab, additionalProperties)
+            Objects.hash(command, target, frame, tab, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Find{by=$by, command=$command, value=$value, exact=$exact, frame=$frame, name=$name, tab=$tab, additionalProperties=$additionalProperties}"
+            "Find{command=$command, target=$target, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
     }
 
     /** Lists, opens, or closes tabs. The last tab cannot be closed. */
@@ -8496,532 +8270,5 @@ private constructor(
 
         override fun toString() =
             "Tab{action=$action, command=$command, tab=$tab, url=$url, additionalProperties=$additionalProperties}"
-    }
-
-    /** Waits for an execution and returns it. Send it alone. */
-    class Status
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val command: JsonValue,
-        private val execution: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("execution")
-            @ExcludeMissing
-            execution: JsonField<String> = JsonMissing.of(),
-        ) : this(command, execution, mutableMapOf())
-
-        fun execution(): String = execution.getRequired("execution")
-
-        /** Expected to always return `JsonValue.from("status")`. It is set by default. */
-        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("execution") @ExcludeMissing fun _execution(): JsonField<String> = execution
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Status]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Status]. */
-        class Builder internal constructor() {
-
-            private var command: JsonValue = JsonValue.from("status")
-            private var execution: JsonField<String>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(status: Status) = apply {
-                this.command = status.command
-                this.execution = status.execution
-                this.additionalProperties = status.additionalProperties.toMutableMap()
-            }
-
-            fun command(command: JsonValue) = apply { this.command = command }
-
-            fun execution(execution: String) = execution(JsonField.of(execution))
-
-            fun execution(execution: JsonField<String>) = apply { this.execution = execution }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Status =
-                Status(
-                    command,
-                    checkRequired("execution", execution),
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Status = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _command().let {
-                if (it != JsonValue.from("status")) {
-                    throw SteelInvalidDataException("'command' is invalid, received $it")
-                }
-            }
-            execution()
-            validated = true
-        }
-
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("status")) 1 else 0 }) +
-                (if (execution.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Status &&
-                this.command == other.command &&
-                this.execution == other.execution &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(command, execution, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Status{command=$command, execution=$execution, additionalProperties=$additionalProperties}"
-    }
-
-    /** Stops an execution. Send it alone. */
-    class Cancel
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val command: JsonValue,
-        private val execution: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("execution")
-            @ExcludeMissing
-            execution: JsonField<String> = JsonMissing.of(),
-        ) : this(command, execution, mutableMapOf())
-
-        fun execution(): String = execution.getRequired("execution")
-
-        /** Expected to always return `JsonValue.from("cancel")`. It is set by default. */
-        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("execution") @ExcludeMissing fun _execution(): JsonField<String> = execution
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Cancel]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Cancel]. */
-        class Builder internal constructor() {
-
-            private var command: JsonValue = JsonValue.from("cancel")
-            private var execution: JsonField<String>? = null
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(cancel: Cancel) = apply {
-                this.command = cancel.command
-                this.execution = cancel.execution
-                this.additionalProperties = cancel.additionalProperties.toMutableMap()
-            }
-
-            fun command(command: JsonValue) = apply { this.command = command }
-
-            fun execution(execution: String) = execution(JsonField.of(execution))
-
-            fun execution(execution: JsonField<String>) = apply { this.execution = execution }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Cancel =
-                Cancel(
-                    command,
-                    checkRequired("execution", execution),
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Cancel = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _command().let {
-                if (it != JsonValue.from("cancel")) {
-                    throw SteelInvalidDataException("'command' is invalid, received $it")
-                }
-            }
-            execution()
-            validated = true
-        }
-
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("cancel")) 1 else 0 }) +
-                (if (execution.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Cancel &&
-                this.command == other.command &&
-                this.execution == other.execution &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy { Objects.hash(command, execution, additionalProperties) }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Cancel{command=$command, execution=$execution, additionalProperties=$additionalProperties}"
-    }
-
-    /** Answers an open dialog. Send it alone. */
-    class Dialog
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val action: JsonField<Command.Dialog.Action>,
-        private val command: JsonValue,
-        private val dialog: JsonField<String>,
-        private val text: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("action")
-            @ExcludeMissing
-            action: JsonField<Command.Dialog.Action> = JsonMissing.of(),
-            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("dialog") @ExcludeMissing dialog: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
-        ) : this(action, command, dialog, text, mutableMapOf())
-
-        fun action(): Command.Dialog.Action = action.getRequired("action")
-
-        fun dialog(): String = dialog.getRequired("dialog")
-
-        /** The answer to a prompt. */
-        fun text(): Optional<String> = text.getOptional("text")
-
-        @JsonProperty("action")
-        @ExcludeMissing
-        fun _action(): JsonField<Command.Dialog.Action> = action
-
-        /** Expected to always return `JsonValue.from("dialog")`. It is set by default. */
-        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<String> = dialog
-
-        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Dialog]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Dialog]. */
-        class Builder internal constructor() {
-
-            private var action: JsonField<Command.Dialog.Action>? = null
-            private var command: JsonValue = JsonValue.from("dialog")
-            private var dialog: JsonField<String>? = null
-            private var text: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(dialog: Dialog) = apply {
-                this.action = dialog.action
-                this.command = dialog.command
-                this.dialog = dialog.dialog
-                this.text = dialog.text
-                this.additionalProperties = dialog.additionalProperties.toMutableMap()
-            }
-
-            fun action(action: Command.Dialog.Action) = action(JsonField.of(action))
-
-            fun action(action: JsonField<Command.Dialog.Action>) = apply { this.action = action }
-
-            fun command(command: JsonValue) = apply { this.command = command }
-
-            fun dialog(dialog: String) = dialog(JsonField.of(dialog))
-
-            fun dialog(dialog: JsonField<String>) = apply { this.dialog = dialog }
-
-            /** The answer to a prompt. */
-            fun text(text: String) = text(JsonField.of(text))
-
-            /** The answer to a prompt. */
-            fun text(text: JsonField<String>) = apply { this.text = text }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Dialog =
-                Dialog(
-                    checkRequired("action", action),
-                    command,
-                    checkRequired("dialog", dialog),
-                    text,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Dialog = apply {
-            if (validated) {
-                return@apply
-            }
-
-            action().validate()
-            _command().let {
-                if (it != JsonValue.from("dialog")) {
-                    throw SteelInvalidDataException("'command' is invalid, received $it")
-                }
-            }
-            dialog()
-            text()
-            validated = true
-        }
-
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (action.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (command.let { if (it == JsonValue.from("dialog")) 1 else 0 }) +
-                (if (dialog.asKnown().isPresent) 1 else 0) +
-                (if (text.asKnown().isPresent) 1 else 0)
-
-        class Action @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val ACCEPT = of("accept")
-
-                @JvmField val DISMISS = of("dismiss")
-
-                @JvmStatic fun of(value: String) = Action(JsonField.of(value))
-            }
-
-            enum class Known {
-                ACCEPT,
-                DISMISS,
-            }
-
-            enum class Value {
-                ACCEPT,
-                DISMISS,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    ACCEPT -> Value.ACCEPT
-                    DISMISS -> Value.DISMISS
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    ACCEPT -> Known.ACCEPT
-                    DISMISS -> Known.DISMISS
-                    else -> throw SteelInvalidDataException("Unknown Action: $value")
-                }
-
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    SteelInvalidDataException("Value is not a String")
-                }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Action = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Action && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Dialog &&
-                this.action == other.action &&
-                this.command == other.command &&
-                this.dialog == other.dialog &&
-                this.text == other.text &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(action, command, dialog, text, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Dialog{action=$action, command=$command, dialog=$dialog, text=$text, additionalProperties=$additionalProperties}"
     }
 }

@@ -481,3 +481,94 @@ describe('retries', () => {
     expect(count).toEqual(3);
   });
 });
+
+describe('idempotency key', () => {
+  const recorder = (failures = 0) => {
+    const sent: Headers[] = [];
+    const fetch = async (url: RequestInfo, init: RequestInit = {}): Promise<Response> => {
+      sent.push(init.headers as Headers);
+      if (sent.length <= failures) {
+        return new Response(undefined, { status: 503, headers: { 'Retry-After-Ms': '10' } });
+      }
+      return new Response(JSON.stringify({ a: 1 }), { headers: { 'Content-Type': 'application/json' } });
+    };
+    return { sent, client: new Steel({ steelAPIKey: 'My Steel API Key', fetch }) };
+  };
+
+  const keys = (headers: Headers) =>
+    Object.keys(headers).filter((name) => name.toLowerCase() === 'idempotency-key');
+
+  test('a request other than GET sends one key and reuses it on retry', async () => {
+    const { sent, client } = recorder(1);
+
+    await client.request({ path: '/foo', method: 'post' });
+
+    expect(sent).toHaveLength(2);
+    expect(sent[0]!['idempotency-key']).toMatch(/^steel-node-retry-/);
+    expect(sent[1]!['idempotency-key']).toEqual(sent[0]!['idempotency-key']);
+  });
+
+  test('each call gets its own key and leaves the headers it was given alone', async () => {
+    const { sent, client } = recorder();
+    const headers = { 'X-Custom': 'value' };
+
+    await client.request({ path: '/foo', method: 'post', headers });
+    await client.request({ path: '/foo', method: 'post', headers });
+
+    expect(headers).toEqual({ 'X-Custom': 'value' });
+    expect(sent[0]!['idempotency-key']).toBeTruthy();
+    expect(sent[1]!['idempotency-key']).toBeTruthy();
+    expect(sent[1]!['idempotency-key']).not.toEqual(sent[0]!['idempotency-key']);
+  });
+
+  test('an options object passed twice gets a new key each time and stays as it was', async () => {
+    const { sent, client } = recorder();
+    const options = { path: '/foo', method: 'post' as const };
+
+    await client.request(options);
+    await client.request(options);
+
+    expect(options).toEqual({ path: '/foo', method: 'post' });
+    expect(sent[0]!['idempotency-key']).toBeTruthy();
+    expect(sent[1]!['idempotency-key']).not.toEqual(sent[0]!['idempotency-key']);
+  });
+
+  test('GET sends no key', async () => {
+    const { sent, client } = recorder();
+
+    await client.request({ path: '/foo', method: 'get' });
+
+    expect(keys(sent[0]!)).toEqual([]);
+  });
+
+  test('a key in the headers wins and is sent once', async () => {
+    const { sent, client } = recorder(1);
+
+    await client.request({ path: '/foo', method: 'post', headers: { 'idempotency-key': 'mine' } });
+
+    expect(sent.map((headers) => headers['idempotency-key'])).toEqual(['mine', 'mine']);
+    expect(keys(sent[0]!)).toEqual(['idempotency-key']);
+  });
+
+  test('the idempotencyKey option wins', async () => {
+    const { sent, client } = recorder();
+
+    await client.request({
+      path: '/foo',
+      method: 'post',
+      idempotencyKey: 'option',
+      headers: { 'Idempotency-Key': 'header' },
+    });
+
+    expect(sent[0]!['idempotency-key']).toEqual('option');
+    expect(keys(sent[0]!)).toEqual(['idempotency-key']);
+  });
+
+  test('null removes the key', async () => {
+    const { sent, client } = recorder();
+
+    await client.request({ path: '/foo', method: 'post', headers: { 'Idempotency-Key': null } });
+
+    expect(keys(sent[0]!)).toEqual([]);
+  });
+});

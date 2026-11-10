@@ -311,7 +311,8 @@ export abstract class APIClient {
     { retryCount = 0 }: { retryCount?: number } = {},
   ): Promise<{ req: RequestInit; url: string; timeout: number }> {
     const options = { ...inputOptions };
-    const { method, path, query, defaultBaseURL, headers: headers = {} } = options;
+    const { method, path, query, defaultBaseURL } = options;
+    const headers: Record<string, string | null | undefined> = { ...options.headers };
 
     const body =
       ArrayBuffer.isView(options.body) || (options.__binaryRequest && typeof options.body === 'string') ?
@@ -338,8 +339,16 @@ export abstract class APIClient {
     }
 
     if (this.idempotencyHeader && method !== 'get') {
-      if (!inputOptions.idempotencyKey) inputOptions.idempotencyKey = this.defaultIdempotencyKey();
-      headers[this.idempotencyHeader] = inputOptions.idempotencyKey;
+      const name = this.idempotencyHeader.toLowerCase();
+      const given = Object.keys(headers).filter((key) => key.toLowerCase() === name);
+      const value = given.length ? headers[given[given.length - 1]!] : undefined;
+      if (!inputOptions.idempotencyKey && value !== null) {
+        inputOptions.idempotencyKey = value ?? this.defaultIdempotencyKey();
+      }
+      if (inputOptions.idempotencyKey) {
+        for (const key of given) delete headers[key];
+        headers[this.idempotencyHeader] = inputOptions.idempotencyKey;
+      }
     }
 
     const reqHeaders = this.buildHeaders({ options, headers, contentLength, retryCount });
@@ -449,7 +458,7 @@ export abstract class APIClient {
     optionsInput: PromiseOrValue<FinalRequestOptions<Req>>,
     retriesRemaining: number | null,
   ): Promise<APIResponseProps> {
-    const options = await optionsInput;
+    const options = { ...(await optionsInput) };
     const maxRetries = options.maxRetries ?? this.maxRetries;
     if (retriesRemaining == null) {
       retriesRemaining = maxRetries;

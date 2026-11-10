@@ -38,6 +38,7 @@ import dev.steel.api.models.sessions.SessionSignalCatalogResponse
 import dev.steel.api.models.sessions.SessionUpdateMetadataParams
 import dev.steel.api.models.sessions.SessionUpdateMetadataResponse
 import dev.steel.api.services.blocking.sessions.CaptchaService
+import dev.steel.api.services.blocking.sessions.CommandExecutionService
 import dev.steel.api.services.blocking.sessions.FileService
 import java.util.function.Consumer
 
@@ -56,6 +57,8 @@ interface SessionService {
     fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService
 
     fun captchas(): CaptchaService
+
+    fun commandExecutions(): CommandExecutionService
 
     fun files(): FileService
 
@@ -475,6 +478,8 @@ interface SessionService {
         fun withOptions(modifier: Consumer<ClientOptions.Builder>): SessionService.WithRawResponse
 
         fun captchas(): CaptchaService.WithRawResponse
+
+        fun commandExecutions(): CommandExecutionService.WithRawResponse
 
         fun files(): FileService.WithRawResponse
 

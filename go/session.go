@@ -28,9 +28,10 @@ import (
 // environment automatically. You should not instantiate this service directly,
 // and instead use the [NewSessionService] method instead.
 type SessionService struct {
-	Options  []option.RequestOption
-	Captchas *SessionCaptchaService
-	Files    *SessionFileService
+	Options           []option.RequestOption
+	Captchas          *SessionCaptchaService
+	CommandExecutions *SessionCommandExecutionService
+	Files             *SessionFileService
 }
 
 // NewSessionService generates a new service that applies the given options to
@@ -40,6 +41,7 @@ func NewSessionService(opts ...option.RequestOption) (r *SessionService) {
 	r = &SessionService{}
 	r.Options = opts
 	r.Captchas = NewSessionCaptchaService(opts...)
+	r.CommandExecutions = NewSessionCommandExecutionService(opts...)
 	r.Files = NewSessionFileService(opts...)
 	return
 }
@@ -1019,8 +1021,6 @@ type SessionCommandsParams struct {
 	// The next value from your last response. A retry with the same after and
 	// commands runs only once.
 	After param.Field[string] `json:"after"`
-	// c-0 the first time, then the last events.cursor.
-	EventsAfter param.Field[string] `json:"eventsAfter"`
 	// Returns a snapshot, or a diff against the last one, after the commands.
 	Observe param.Field[SessionCommandsParamsObserve] `json:"observe"`
 	// A random value. A retry with the same key returns the stored result.
@@ -1062,10 +1062,7 @@ func (r SessionCommandsParams) MarshalJSON() (data []byte, err error) {
 // [SessionCommandsParamsCommandsScrollCommand],
 // [SessionCommandsParamsCommandsFindCommand],
 // [SessionCommandsParamsCommandsTabCommand],
-// [SessionCommandsParamsCommandsStatusCommand],
-// [SessionCommandsParamsCommandsCancelCommand],
-// [SessionCommandsParamsCommandsDialogCommand],
-// [SessionCommandsParamsCommandsUnionMember32].
+// [SessionCommandsParamsCommandsUnionMember29].
 type SessionCommandsParamsCommandsUnion interface {
 	ImplementsSessionCommandsParamsCommandsUnion()
 }
@@ -2135,43 +2132,20 @@ func (r SessionCommandsParamsCommandsScrollCommandDirection) IsKnown() bool {
 
 func (r SessionCommandsParamsCommandsScrollCommand) ImplementsSessionCommandsParamsCommandsUnion() {}
 
-// Finds elements and returns refs for up to 50 matches.
+// Finds elements and returns refs for up to 50 matches. With nth, it returns
+// that one match.
 type SessionCommandsParamsCommandsFindCommand struct {
-	By      param.Field[SessionCommandsParamsCommandsFindCommandBy]      `json:"by" api:"required"`
 	Command param.Field[SessionCommandsParamsCommandsFindCommandCommand] `json:"command" api:"required"`
-	Value   param.Field[string]                                          `json:"value" api:"required"`
-	Exact   param.Field[bool]                                            `json:"exact"`
+	// A CSS selector or a locator, not a ref.
+	Target param.Field[CommandTargetParam] `json:"target" api:"required"`
 	// The iframe to look in. List nested iframes from the outside in.
 	Frame param.Field[CommandFrameParam] `json:"frame"`
-	// The accessible name. Works only with by role.
-	Name param.Field[string] `json:"name"`
 	// A tab id such as t2. A command on a ref does not need it.
 	Tab param.Field[string] `json:"tab"`
 }
 
 func (r SessionCommandsParamsCommandsFindCommand) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
-}
-
-type SessionCommandsParamsCommandsFindCommandBy string
-
-const (
-	SessionCommandsParamsCommandsFindCommandByRole        SessionCommandsParamsCommandsFindCommandBy = "role"
-	SessionCommandsParamsCommandsFindCommandByText        SessionCommandsParamsCommandsFindCommandBy = "text"
-	SessionCommandsParamsCommandsFindCommandByLabel       SessionCommandsParamsCommandsFindCommandBy = "label"
-	SessionCommandsParamsCommandsFindCommandByPlaceholder SessionCommandsParamsCommandsFindCommandBy = "placeholder"
-	SessionCommandsParamsCommandsFindCommandByAlt         SessionCommandsParamsCommandsFindCommandBy = "alt"
-	SessionCommandsParamsCommandsFindCommandByTitle       SessionCommandsParamsCommandsFindCommandBy = "title"
-	SessionCommandsParamsCommandsFindCommandByTestid      SessionCommandsParamsCommandsFindCommandBy = "testid"
-	SessionCommandsParamsCommandsFindCommandByCss         SessionCommandsParamsCommandsFindCommandBy = "css"
-)
-
-func (r SessionCommandsParamsCommandsFindCommandBy) IsKnown() bool {
-	switch r {
-	case SessionCommandsParamsCommandsFindCommandByRole, SessionCommandsParamsCommandsFindCommandByText, SessionCommandsParamsCommandsFindCommandByLabel, SessionCommandsParamsCommandsFindCommandByPlaceholder, SessionCommandsParamsCommandsFindCommandByAlt, SessionCommandsParamsCommandsFindCommandByTitle, SessionCommandsParamsCommandsFindCommandByTestid, SessionCommandsParamsCommandsFindCommandByCss:
-		return true
-	}
-	return false
 }
 
 type SessionCommandsParamsCommandsFindCommandCommand string
@@ -2235,105 +2209,9 @@ func (r SessionCommandsParamsCommandsTabCommandCommand) IsKnown() bool {
 
 func (r SessionCommandsParamsCommandsTabCommand) ImplementsSessionCommandsParamsCommandsUnion() {}
 
-// Waits for an execution and returns it. Send it alone.
-type SessionCommandsParamsCommandsStatusCommand struct {
-	Command   param.Field[SessionCommandsParamsCommandsStatusCommandCommand] `json:"command" api:"required"`
-	Execution param.Field[string]                                            `json:"execution" api:"required"`
-}
+type SessionCommandsParamsCommandsUnionMember29 []CommandParam
 
-func (r SessionCommandsParamsCommandsStatusCommand) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type SessionCommandsParamsCommandsStatusCommandCommand string
-
-const (
-	SessionCommandsParamsCommandsStatusCommandCommandStatus SessionCommandsParamsCommandsStatusCommandCommand = "status"
-)
-
-func (r SessionCommandsParamsCommandsStatusCommandCommand) IsKnown() bool {
-	switch r {
-	case SessionCommandsParamsCommandsStatusCommandCommandStatus:
-		return true
-	}
-	return false
-}
-
-func (r SessionCommandsParamsCommandsStatusCommand) ImplementsSessionCommandsParamsCommandsUnion() {}
-
-// Stops an execution. Send it alone.
-type SessionCommandsParamsCommandsCancelCommand struct {
-	Command   param.Field[SessionCommandsParamsCommandsCancelCommandCommand] `json:"command" api:"required"`
-	Execution param.Field[string]                                            `json:"execution" api:"required"`
-}
-
-func (r SessionCommandsParamsCommandsCancelCommand) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type SessionCommandsParamsCommandsCancelCommandCommand string
-
-const (
-	SessionCommandsParamsCommandsCancelCommandCommandCancel SessionCommandsParamsCommandsCancelCommandCommand = "cancel"
-)
-
-func (r SessionCommandsParamsCommandsCancelCommandCommand) IsKnown() bool {
-	switch r {
-	case SessionCommandsParamsCommandsCancelCommandCommandCancel:
-		return true
-	}
-	return false
-}
-
-func (r SessionCommandsParamsCommandsCancelCommand) ImplementsSessionCommandsParamsCommandsUnion() {}
-
-// Answers an open dialog. Send it alone.
-type SessionCommandsParamsCommandsDialogCommand struct {
-	Action  param.Field[SessionCommandsParamsCommandsDialogCommandAction]  `json:"action" api:"required"`
-	Command param.Field[SessionCommandsParamsCommandsDialogCommandCommand] `json:"command" api:"required"`
-	Dialog  param.Field[string]                                            `json:"dialog" api:"required"`
-	// The answer to a prompt.
-	Text param.Field[string] `json:"text"`
-}
-
-func (r SessionCommandsParamsCommandsDialogCommand) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type SessionCommandsParamsCommandsDialogCommandAction string
-
-const (
-	SessionCommandsParamsCommandsDialogCommandActionAccept  SessionCommandsParamsCommandsDialogCommandAction = "accept"
-	SessionCommandsParamsCommandsDialogCommandActionDismiss SessionCommandsParamsCommandsDialogCommandAction = "dismiss"
-)
-
-func (r SessionCommandsParamsCommandsDialogCommandAction) IsKnown() bool {
-	switch r {
-	case SessionCommandsParamsCommandsDialogCommandActionAccept, SessionCommandsParamsCommandsDialogCommandActionDismiss:
-		return true
-	}
-	return false
-}
-
-type SessionCommandsParamsCommandsDialogCommandCommand string
-
-const (
-	SessionCommandsParamsCommandsDialogCommandCommandDialog SessionCommandsParamsCommandsDialogCommandCommand = "dialog"
-)
-
-func (r SessionCommandsParamsCommandsDialogCommandCommand) IsKnown() bool {
-	switch r {
-	case SessionCommandsParamsCommandsDialogCommandCommandDialog:
-		return true
-	}
-	return false
-}
-
-func (r SessionCommandsParamsCommandsDialogCommand) ImplementsSessionCommandsParamsCommandsUnion() {}
-
-type SessionCommandsParamsCommandsUnionMember32 []CommandParam
-
-func (r SessionCommandsParamsCommandsUnionMember32) ImplementsSessionCommandsParamsCommandsUnion() {}
+func (r SessionCommandsParamsCommandsUnionMember29) ImplementsSessionCommandsParamsCommandsUnion() {}
 
 // Returns a snapshot, or a diff against the last one, after the commands.
 type SessionCommandsParamsObserve struct {
@@ -2370,152 +2248,66 @@ func (r SessionCommandsParamsObserveMode) IsKnown() bool {
 	return false
 }
 
-// Response to the dialog command.
 type SessionCommandsResponse struct {
-	// Goes up when commands or a dialog answer change the page, and when the
-	// browser restarts.
-	Epoch     int64       `json:"epoch"`
-	Execution interface{} `json:"execution"`
+	// The id of this execution, the same as execution.id. Use it to get or cancel
+	// the execution.
+	ID        string                           `json:"id" api:"required"`
+	Execution SessionCommandsResponseExecution `json:"execution" api:"required"`
 	// The tab the execution used.
-	Page        interface{} `json:"page"`
-	Results     interface{} `json:"results"`
-	BodyExpired bool        `json:"bodyExpired"`
-	// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
-	Dialog interface{} `json:"dialog"`
-	// Whether another Commands API client changed the session since after.
+	Page        SessionCommandsResponsePage `json:"page" api:"required,nullable"`
+	Results     []CommandResult             `json:"results" api:"required"`
+	BodyExpired bool                        `json:"bodyExpired"`
+	// A dialog that is open on the tab and blocks it until it closes.
+	Dialog CommandDialog `json:"dialog"`
+	// Set when the execution ran with after. Whether another execution, a quick
+	// action, or a browser restart changed the session since then. Input from CDP
+	// clients or the live view does not count.
 	EpochChanged bool `json:"epochChanged"`
-	// Navigations, opened and closed tabs, dialogs, and downloads since
-	// eventsAfter.
-	Events interface{} `json:"events"`
 	// Send it as after in the next request.
-	Next    string      `json:"next"`
-	Observe interface{} `json:"observe"`
-	// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
-	Answered interface{}                 `json:"answered"`
-	JSON     sessionCommandsResponseJSON `json:"-"`
-	union    SessionCommandsResponseUnion
+	Next    string                         `json:"next"`
+	Observe SessionCommandsResponseObserve `json:"observe"`
+	JSON    sessionCommandsResponseJSON    `json:"-"`
 }
 
 // sessionCommandsResponseJSON contains the JSON metadata for the struct
 // [SessionCommandsResponse]
 type sessionCommandsResponseJSON struct {
-	Epoch        apijson.Field
+	ID           apijson.Field
 	Execution    apijson.Field
 	Page         apijson.Field
 	Results      apijson.Field
 	BodyExpired  apijson.Field
 	Dialog       apijson.Field
 	EpochChanged apijson.Field
-	Events       apijson.Field
 	Next         apijson.Field
 	Observe      apijson.Field
-	Answered     apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
+}
+
+func (r *SessionCommandsResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
 }
 
 func (r sessionCommandsResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r *SessionCommandsResponse) UnmarshalJSON(data []byte) (err error) {
-	*r = SessionCommandsResponse{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [SessionCommandsResponseUnion] interface which you can cast
-// to the specific types for more type safety. Possible runtime types of the
-// union are [SessionCommandsResponseCommandsExecution],
-// [SessionCommandsResponseCommandsDialogAnswer].
-func (r SessionCommandsResponse) AsUnion() SessionCommandsResponseUnion {
-	return r.union
-}
-
-type SessionCommandsResponseUnion interface {
-	implementsSessionCommandsResponse()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*SessionCommandsResponseUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(SessionCommandsResponseCommandsExecution{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(SessionCommandsResponseCommandsDialogAnswer{}),
-		},
-	)
-}
-
-type SessionCommandsResponseCommandsExecution struct {
-	// Goes up when commands or a dialog answer change the page, and when the
-	// browser restarts.
-	Epoch     int64                                             `json:"epoch" api:"required"`
-	Execution SessionCommandsResponseCommandsExecutionExecution `json:"execution" api:"required"`
-	// The tab the execution used.
-	Page        SessionCommandsResponseCommandsExecutionPage     `json:"page" api:"required,nullable"`
-	Results     []SessionCommandsResponseCommandsExecutionResult `json:"results" api:"required"`
-	BodyExpired bool                                             `json:"bodyExpired"`
-	// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
-	Dialog CommandDialog `json:"dialog"`
-	// Whether another Commands API client changed the session since after.
-	EpochChanged bool `json:"epochChanged"`
-	// Navigations, opened and closed tabs, dialogs, and downloads since
-	// eventsAfter.
-	Events CommandEvents `json:"events"`
-	// Send it as after in the next request.
-	Next    string                                          `json:"next"`
-	Observe SessionCommandsResponseCommandsExecutionObserve `json:"observe"`
-	JSON    sessionCommandsResponseCommandsExecutionJSON    `json:"-"`
-}
-
-// sessionCommandsResponseCommandsExecutionJSON contains the JSON metadata for
-// the struct [SessionCommandsResponseCommandsExecution]
-type sessionCommandsResponseCommandsExecutionJSON struct {
-	Epoch        apijson.Field
-	Execution    apijson.Field
-	Page         apijson.Field
-	Results      apijson.Field
-	BodyExpired  apijson.Field
-	Dialog       apijson.Field
-	EpochChanged apijson.Field
-	Events       apijson.Field
-	Next         apijson.Field
-	Observe      apijson.Field
-	raw          string
-	ExtraFields  map[string]apijson.Field
-}
-
-func (r *SessionCommandsResponseCommandsExecution) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r sessionCommandsResponseCommandsExecutionJSON) RawJSON() string {
-	return r.raw
-}
-
-type SessionCommandsResponseCommandsExecutionExecution struct {
+type SessionCommandsResponseExecution struct {
 	ID string `json:"id" api:"required"`
 	// What happened to the page: nothing, a change, or a possible change.
-	Effect SessionCommandsResponseCommandsExecutionExecutionEffect `json:"effect" api:"required"`
+	Effect SessionCommandsResponseExecutionEffect `json:"effect" api:"required"`
 	// Commands started.
-	Ran      int64                                                  `json:"ran" api:"required"`
-	Replayed bool                                                   `json:"replayed" api:"required"`
-	State    SessionCommandsResponseCommandsExecutionExecutionState `json:"state" api:"required"`
-	Error    CommandErrorInfo                                       `json:"error"`
-	JSON     sessionCommandsResponseCommandsExecutionExecutionJSON  `json:"-"`
+	Ran      int64                                 `json:"ran" api:"required"`
+	Replayed bool                                  `json:"replayed" api:"required"`
+	State    SessionCommandsResponseExecutionState `json:"state" api:"required"`
+	Error    CommandErrorInfo                      `json:"error"`
+	JSON     sessionCommandsResponseExecutionJSON  `json:"-"`
 }
 
-// sessionCommandsResponseCommandsExecutionExecutionJSON contains the JSON
-// metadata for the struct [SessionCommandsResponseCommandsExecutionExecution]
-type sessionCommandsResponseCommandsExecutionExecutionJSON struct {
+// sessionCommandsResponseExecutionJSON contains the JSON metadata for the
+// struct [SessionCommandsResponseExecution]
+type sessionCommandsResponseExecutionJSON struct {
 	ID          apijson.Field
 	Effect      apijson.Field
 	Ran         apijson.Field
@@ -2526,62 +2318,62 @@ type sessionCommandsResponseCommandsExecutionExecutionJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *SessionCommandsResponseCommandsExecutionExecution) UnmarshalJSON(data []byte) (err error) {
+func (r *SessionCommandsResponseExecution) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r sessionCommandsResponseCommandsExecutionExecutionJSON) RawJSON() string {
+func (r sessionCommandsResponseExecutionJSON) RawJSON() string {
 	return r.raw
 }
 
 // What happened to the page: nothing, a change, or a possible change.
-type SessionCommandsResponseCommandsExecutionExecutionEffect string
+type SessionCommandsResponseExecutionEffect string
 
 const (
-	SessionCommandsResponseCommandsExecutionExecutionEffectNone    SessionCommandsResponseCommandsExecutionExecutionEffect = "none"
-	SessionCommandsResponseCommandsExecutionExecutionEffectApplied SessionCommandsResponseCommandsExecutionExecutionEffect = "applied"
-	SessionCommandsResponseCommandsExecutionExecutionEffectUnknown SessionCommandsResponseCommandsExecutionExecutionEffect = "unknown"
+	SessionCommandsResponseExecutionEffectNone    SessionCommandsResponseExecutionEffect = "none"
+	SessionCommandsResponseExecutionEffectApplied SessionCommandsResponseExecutionEffect = "applied"
+	SessionCommandsResponseExecutionEffectUnknown SessionCommandsResponseExecutionEffect = "unknown"
 )
 
-func (r SessionCommandsResponseCommandsExecutionExecutionEffect) IsKnown() bool {
+func (r SessionCommandsResponseExecutionEffect) IsKnown() bool {
 	switch r {
-	case SessionCommandsResponseCommandsExecutionExecutionEffectNone, SessionCommandsResponseCommandsExecutionExecutionEffectApplied, SessionCommandsResponseCommandsExecutionExecutionEffectUnknown:
+	case SessionCommandsResponseExecutionEffectNone, SessionCommandsResponseExecutionEffectApplied, SessionCommandsResponseExecutionEffectUnknown:
 		return true
 	}
 	return false
 }
 
-type SessionCommandsResponseCommandsExecutionExecutionState string
+type SessionCommandsResponseExecutionState string
 
 const (
-	SessionCommandsResponseCommandsExecutionExecutionStateQueued    SessionCommandsResponseCommandsExecutionExecutionState = "queued"
-	SessionCommandsResponseCommandsExecutionExecutionStateRunning   SessionCommandsResponseCommandsExecutionExecutionState = "running"
-	SessionCommandsResponseCommandsExecutionExecutionStateCompleted SessionCommandsResponseCommandsExecutionExecutionState = "completed"
-	SessionCommandsResponseCommandsExecutionExecutionStateFailed    SessionCommandsResponseCommandsExecutionExecutionState = "failed"
-	SessionCommandsResponseCommandsExecutionExecutionStateCancelled SessionCommandsResponseCommandsExecutionExecutionState = "cancelled"
-	SessionCommandsResponseCommandsExecutionExecutionStateTimeout   SessionCommandsResponseCommandsExecutionExecutionState = "timeout"
-	SessionCommandsResponseCommandsExecutionExecutionStateExpired   SessionCommandsResponseCommandsExecutionExecutionState = "expired"
+	SessionCommandsResponseExecutionStateQueued    SessionCommandsResponseExecutionState = "queued"
+	SessionCommandsResponseExecutionStateRunning   SessionCommandsResponseExecutionState = "running"
+	SessionCommandsResponseExecutionStateCompleted SessionCommandsResponseExecutionState = "completed"
+	SessionCommandsResponseExecutionStateFailed    SessionCommandsResponseExecutionState = "failed"
+	SessionCommandsResponseExecutionStateCancelled SessionCommandsResponseExecutionState = "cancelled"
+	SessionCommandsResponseExecutionStateTimeout   SessionCommandsResponseExecutionState = "timeout"
+	SessionCommandsResponseExecutionStateExpired   SessionCommandsResponseExecutionState = "expired"
 )
 
-func (r SessionCommandsResponseCommandsExecutionExecutionState) IsKnown() bool {
+func (r SessionCommandsResponseExecutionState) IsKnown() bool {
 	switch r {
-	case SessionCommandsResponseCommandsExecutionExecutionStateQueued, SessionCommandsResponseCommandsExecutionExecutionStateRunning, SessionCommandsResponseCommandsExecutionExecutionStateCompleted, SessionCommandsResponseCommandsExecutionExecutionStateFailed, SessionCommandsResponseCommandsExecutionExecutionStateCancelled, SessionCommandsResponseCommandsExecutionExecutionStateTimeout, SessionCommandsResponseCommandsExecutionExecutionStateExpired:
+	case SessionCommandsResponseExecutionStateQueued, SessionCommandsResponseExecutionStateRunning, SessionCommandsResponseExecutionStateCompleted, SessionCommandsResponseExecutionStateFailed, SessionCommandsResponseExecutionStateCancelled, SessionCommandsResponseExecutionStateTimeout, SessionCommandsResponseExecutionStateExpired:
 		return true
 	}
 	return false
 }
 
 // The tab the execution used.
-type SessionCommandsResponseCommandsExecutionPage struct {
-	Tab   string                                           `json:"tab" api:"required"`
-	Title string                                           `json:"title" api:"required"`
-	URL   string                                           `json:"url" api:"required"`
-	JSON  sessionCommandsResponseCommandsExecutionPageJSON `json:"-"`
+type SessionCommandsResponsePage struct {
+	Tab   string                          `json:"tab" api:"required"`
+	Title string                          `json:"title" api:"required"`
+	URL   string                          `json:"url" api:"required"`
+	JSON  sessionCommandsResponsePageJSON `json:"-"`
 }
 
-// sessionCommandsResponseCommandsExecutionPageJSON contains the JSON metadata
-// for the struct [SessionCommandsResponseCommandsExecutionPage]
-type sessionCommandsResponseCommandsExecutionPageJSON struct {
+// sessionCommandsResponsePageJSON contains the JSON metadata for the struct
+// [SessionCommandsResponsePage]
+type sessionCommandsResponsePageJSON struct {
 	Tab         apijson.Field
 	Title       apijson.Field
 	URL         apijson.Field
@@ -2589,72 +2381,29 @@ type sessionCommandsResponseCommandsExecutionPageJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *SessionCommandsResponseCommandsExecutionPage) UnmarshalJSON(data []byte) (err error) {
+func (r *SessionCommandsResponsePage) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r sessionCommandsResponseCommandsExecutionPageJSON) RawJSON() string {
+func (r sessionCommandsResponsePageJSON) RawJSON() string {
 	return r.raw
 }
 
-type SessionCommandsResponseCommandsExecutionResult struct {
-	// What happened to the page: nothing, a change, or a possible change.
-	Effect SessionCommandsResponseCommandsExecutionResultEffect `json:"effect" api:"required"`
-	Ok     bool                                                 `json:"ok" api:"required"`
-	Error  CommandErrorInfo                                     `json:"error"`
-	JSON   sessionCommandsResponseCommandsExecutionResultJSON   `json:"-"`
+type SessionCommandsResponseObserve struct {
+	Additions  int64                              `json:"additions"`
+	Base       string                             `json:"base"`
+	Diff       string                             `json:"diff"`
+	Error      CommandErrorInfo                   `json:"error"`
+	Full       bool                               `json:"full"`
+	Removals   int64                              `json:"removals"`
+	Snapshot   string                             `json:"snapshot"`
+	SnapshotID string                             `json:"snapshotId"`
+	JSON       sessionCommandsResponseObserveJSON `json:"-"`
 }
 
-// sessionCommandsResponseCommandsExecutionResultJSON contains the JSON metadata
-// for the struct [SessionCommandsResponseCommandsExecutionResult]
-type sessionCommandsResponseCommandsExecutionResultJSON struct {
-	Effect      apijson.Field
-	Ok          apijson.Field
-	Error       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *SessionCommandsResponseCommandsExecutionResult) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r sessionCommandsResponseCommandsExecutionResultJSON) RawJSON() string {
-	return r.raw
-}
-
-// What happened to the page: nothing, a change, or a possible change.
-type SessionCommandsResponseCommandsExecutionResultEffect string
-
-const (
-	SessionCommandsResponseCommandsExecutionResultEffectNone    SessionCommandsResponseCommandsExecutionResultEffect = "none"
-	SessionCommandsResponseCommandsExecutionResultEffectApplied SessionCommandsResponseCommandsExecutionResultEffect = "applied"
-	SessionCommandsResponseCommandsExecutionResultEffectUnknown SessionCommandsResponseCommandsExecutionResultEffect = "unknown"
-)
-
-func (r SessionCommandsResponseCommandsExecutionResultEffect) IsKnown() bool {
-	switch r {
-	case SessionCommandsResponseCommandsExecutionResultEffectNone, SessionCommandsResponseCommandsExecutionResultEffectApplied, SessionCommandsResponseCommandsExecutionResultEffectUnknown:
-		return true
-	}
-	return false
-}
-
-type SessionCommandsResponseCommandsExecutionObserve struct {
-	Additions  int64                                               `json:"additions"`
-	Base       string                                              `json:"base"`
-	Diff       string                                              `json:"diff"`
-	Error      CommandErrorInfo                                    `json:"error"`
-	Full       bool                                                `json:"full"`
-	Removals   int64                                               `json:"removals"`
-	Snapshot   string                                              `json:"snapshot"`
-	SnapshotID string                                              `json:"snapshotId"`
-	JSON       sessionCommandsResponseCommandsExecutionObserveJSON `json:"-"`
-}
-
-// sessionCommandsResponseCommandsExecutionObserveJSON contains the JSON
-// metadata for the struct [SessionCommandsResponseCommandsExecutionObserve]
-type sessionCommandsResponseCommandsExecutionObserveJSON struct {
+// sessionCommandsResponseObserveJSON contains the JSON metadata for the struct
+// [SessionCommandsResponseObserve]
+type sessionCommandsResponseObserveJSON struct {
 	Additions   apijson.Field
 	Base        apijson.Field
 	Diff        apijson.Field
@@ -2667,46 +2416,13 @@ type sessionCommandsResponseCommandsExecutionObserveJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *SessionCommandsResponseCommandsExecutionObserve) UnmarshalJSON(data []byte) (err error) {
+func (r *SessionCommandsResponseObserve) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r sessionCommandsResponseCommandsExecutionObserveJSON) RawJSON() string {
+func (r sessionCommandsResponseObserveJSON) RawJSON() string {
 	return r.raw
 }
-
-func (r SessionCommandsResponseCommandsExecution) implementsSessionCommandsResponse() {}
-
-// Response to the dialog command.
-type SessionCommandsResponseCommandsDialogAnswer struct {
-	// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
-	Answered CommandDialog `json:"answered" api:"required"`
-	Epoch    int64         `json:"epoch" api:"required"`
-	// Navigations, opened and closed tabs, dialogs, and downloads since
-	// eventsAfter.
-	Events CommandEvents                                   `json:"events"`
-	JSON   sessionCommandsResponseCommandsDialogAnswerJSON `json:"-"`
-}
-
-// sessionCommandsResponseCommandsDialogAnswerJSON contains the JSON metadata
-// for the struct [SessionCommandsResponseCommandsDialogAnswer]
-type sessionCommandsResponseCommandsDialogAnswerJSON struct {
-	Answered    apijson.Field
-	Epoch       apijson.Field
-	Events      apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *SessionCommandsResponseCommandsDialogAnswer) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r sessionCommandsResponseCommandsDialogAnswerJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r SessionCommandsResponseCommandsDialogAnswer) implementsSessionCommandsResponse() {}
 
 // Execute computer actions like mouse movements, clicks, keyboard input, and
 // more
@@ -3802,8 +3518,7 @@ func (r sessionUpdateMetadataResponseJSON) RawJSON() string {
 // [CommandUploadParam], [CommandDragParam], [CommandUncheckParam],
 // [CommandGetParam], [CommandIsParam], [CommandWaitParam],
 // [CommandScreenshotParam], [CommandEvalParam], [CommandPdfParam],
-// [CommandScrollParam], [CommandFindParam], [CommandTabParam],
-// [CommandStatusParam], [CommandCancelParam], [CommandDialogParam].
+// [CommandScrollParam], [CommandFindParam], [CommandTabParam].
 type CommandUnionParam interface {
 	ImplementsCommandUnionParam()
 }
@@ -4865,43 +4580,20 @@ func (r CommandScrollDirection) IsKnown() bool {
 
 func (r CommandScrollParam) ImplementsCommandUnionParam() {}
 
-// Finds elements and returns refs for up to 50 matches.
+// Finds elements and returns refs for up to 50 matches. With nth, it returns
+// that one match.
 type CommandFindParam struct {
-	By      param.Field[CommandFindBy]      `json:"by" api:"required"`
 	Command param.Field[CommandFindCommand] `json:"command" api:"required"`
-	Value   param.Field[string]             `json:"value" api:"required"`
-	Exact   param.Field[bool]               `json:"exact"`
+	// A CSS selector or a locator, not a ref.
+	Target param.Field[CommandTargetParam] `json:"target" api:"required"`
 	// The iframe to look in. List nested iframes from the outside in.
 	Frame param.Field[CommandFrameParam] `json:"frame"`
-	// The accessible name. Works only with by role.
-	Name param.Field[string] `json:"name"`
 	// A tab id such as t2. A command on a ref does not need it.
 	Tab param.Field[string] `json:"tab"`
 }
 
 func (r CommandFindParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
-}
-
-type CommandFindBy string
-
-const (
-	CommandFindByRole        CommandFindBy = "role"
-	CommandFindByText        CommandFindBy = "text"
-	CommandFindByLabel       CommandFindBy = "label"
-	CommandFindByPlaceholder CommandFindBy = "placeholder"
-	CommandFindByAlt         CommandFindBy = "alt"
-	CommandFindByTitle       CommandFindBy = "title"
-	CommandFindByTestid      CommandFindBy = "testid"
-	CommandFindByCss         CommandFindBy = "css"
-)
-
-func (r CommandFindBy) IsKnown() bool {
-	switch r {
-	case CommandFindByRole, CommandFindByText, CommandFindByLabel, CommandFindByPlaceholder, CommandFindByAlt, CommandFindByTitle, CommandFindByTestid, CommandFindByCss:
-		return true
-	}
-	return false
 }
 
 type CommandFindCommand string
@@ -4965,102 +4657,6 @@ func (r CommandTabCommand) IsKnown() bool {
 
 func (r CommandTabParam) ImplementsCommandUnionParam() {}
 
-// Waits for an execution and returns it. Send it alone.
-type CommandStatusParam struct {
-	Command   param.Field[CommandStatusCommand] `json:"command" api:"required"`
-	Execution param.Field[string]               `json:"execution" api:"required"`
-}
-
-func (r CommandStatusParam) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type CommandStatusCommand string
-
-const (
-	CommandStatusCommandStatus CommandStatusCommand = "status"
-)
-
-func (r CommandStatusCommand) IsKnown() bool {
-	switch r {
-	case CommandStatusCommandStatus:
-		return true
-	}
-	return false
-}
-
-func (r CommandStatusParam) ImplementsCommandUnionParam() {}
-
-// Stops an execution. Send it alone.
-type CommandCancelParam struct {
-	Command   param.Field[CommandCancelCommand] `json:"command" api:"required"`
-	Execution param.Field[string]               `json:"execution" api:"required"`
-}
-
-func (r CommandCancelParam) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type CommandCancelCommand string
-
-const (
-	CommandCancelCommandCancel CommandCancelCommand = "cancel"
-)
-
-func (r CommandCancelCommand) IsKnown() bool {
-	switch r {
-	case CommandCancelCommandCancel:
-		return true
-	}
-	return false
-}
-
-func (r CommandCancelParam) ImplementsCommandUnionParam() {}
-
-// Answers an open dialog. Send it alone.
-type CommandDialogParam struct {
-	Action  param.Field[CommandDialogAction]  `json:"action" api:"required"`
-	Command param.Field[CommandDialogCommand] `json:"command" api:"required"`
-	Dialog  param.Field[string]               `json:"dialog" api:"required"`
-	// The answer to a prompt.
-	Text param.Field[string] `json:"text"`
-}
-
-func (r CommandDialogParam) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type CommandDialogAction string
-
-const (
-	CommandDialogActionAccept  CommandDialogAction = "accept"
-	CommandDialogActionDismiss CommandDialogAction = "dismiss"
-)
-
-func (r CommandDialogAction) IsKnown() bool {
-	switch r {
-	case CommandDialogActionAccept, CommandDialogActionDismiss:
-		return true
-	}
-	return false
-}
-
-type CommandDialogCommand string
-
-const (
-	CommandDialogCommandDialog CommandDialogCommand = "dialog"
-)
-
-func (r CommandDialogCommand) IsKnown() bool {
-	switch r {
-	case CommandDialogCommandDialog:
-		return true
-	}
-	return false
-}
-
-func (r CommandDialogParam) ImplementsCommandUnionParam() {}
-
 type CommandParam = CommandUnionParam
 
 // A JavaScript dialog: alert, confirm, prompt, or beforeunload.
@@ -5069,10 +4665,7 @@ type CommandDialog struct {
 	Message       string            `json:"message" api:"required"`
 	Tab           string            `json:"tab" api:"required"`
 	Type          CommandDialogType `json:"type" api:"required"`
-	Accepted      bool              `json:"accepted"`
-	By            CommandDialogBy   `json:"by"`
 	DefaultPrompt string            `json:"defaultPrompt"`
-	Text          string            `json:"text"`
 	JSON          commandDialogJSON `json:"-"`
 }
 
@@ -5082,10 +4675,7 @@ type commandDialogJSON struct {
 	Message       apijson.Field
 	Tab           apijson.Field
 	Type          apijson.Field
-	Accepted      apijson.Field
-	By            apijson.Field
 	DefaultPrompt apijson.Field
-	Text          apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -5115,22 +4705,6 @@ func (r CommandDialogType) IsKnown() bool {
 	return false
 }
 
-type CommandDialogBy string
-
-const (
-	CommandDialogByCommand CommandDialogBy = "command"
-	CommandDialogByClient  CommandDialogBy = "client"
-	CommandDialogByClosed  CommandDialogBy = "closed"
-)
-
-func (r CommandDialogBy) IsKnown() bool {
-	switch r {
-	case CommandDialogByCommand, CommandDialogByClient, CommandDialogByClosed:
-		return true
-	}
-	return false
-}
-
 type CommandErrorInfo struct {
 	// Error code, such as stale_ref or not_actionable.
 	Code    string `json:"code" api:"required"`
@@ -5155,61 +4729,6 @@ func (r *CommandErrorInfo) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r commandErrorInfoJSON) RawJSON() string {
-	return r.raw
-}
-
-// Navigations, opened and closed tabs, dialogs, and downloads since
-// eventsAfter.
-type CommandEvents struct {
-	Cursor    string              `json:"cursor" api:"required"`
-	Items     []CommandEventsItem `json:"items" api:"required"`
-	More      bool                `json:"more"`
-	Truncated bool                `json:"truncated"`
-	JSON      commandEventsJSON   `json:"-"`
-}
-
-// commandEventsJSON contains the JSON metadata for the struct [CommandEvents]
-type commandEventsJSON struct {
-	Cursor      apijson.Field
-	Items       apijson.Field
-	More        apijson.Field
-	Truncated   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CommandEvents) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r commandEventsJSON) RawJSON() string {
-	return r.raw
-}
-
-type CommandEventsItem struct {
-	ID   string                `json:"id" api:"required"`
-	At   string                `json:"at" api:"required"`
-	Tab  string                `json:"tab" api:"required"`
-	Type string                `json:"type" api:"required"`
-	JSON commandEventsItemJSON `json:"-"`
-}
-
-// commandEventsItemJSON contains the JSON metadata for the struct
-// [CommandEventsItem]
-type commandEventsItemJSON struct {
-	ID          apijson.Field
-	At          apijson.Field
-	Tab         apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CommandEventsItem) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r commandEventsItemJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -5260,6 +4779,2320 @@ type CommandLocatorParam struct {
 func (r CommandLocatorParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
+
+// Result of one command, with the fields of that command.
+type CommandResult struct {
+	Command interface{} `json:"command"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect interface{} `json:"effect"`
+	Ok     bool        `json:"ok"`
+	Error  interface{} `json:"error"`
+	URL    string      `json:"url"`
+	// False when there was no history entry.
+	Navigated  bool   `json:"navigated"`
+	Snapshot   string `json:"snapshot"`
+	SnapshotID string `json:"snapshotId"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog interface{} `json:"dialog"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool `json:"loading"`
+	// The values of the selected options.
+	Selected interface{} `json:"selected"`
+	Checked  bool        `json:"checked"`
+	Files    interface{} `json:"files"`
+	// The value is a secret, so it is left out.
+	Masked bool `json:"masked"`
+	// A string for text, html, markdown, value, attr, title, and url. A number for
+	// count. { x, y, width, height } or null for box. A list of locators for
+	// locator.
+	Value interface{} `json:"value"`
+	Bytes int64       `json:"bytes"`
+	// The downloaded file, for download.
+	File    string            `json:"file"`
+	Waited  interface{}       `json:"waited"`
+	Data    string            `json:"data"`
+	Format  interface{}       `json:"format"`
+	Moved   bool              `json:"moved"`
+	X       float64           `json:"x"`
+	Y       float64           `json:"y"`
+	Count   int64             `json:"count"`
+	Matches interface{}       `json:"matches"`
+	Tab     string            `json:"tab"`
+	Tabs    interface{}       `json:"tabs"`
+	JSON    commandResultJSON `json:"-"`
+	union   CommandResultUnion
+}
+
+// commandResultJSON contains the JSON metadata for the struct [CommandResult]
+type commandResultJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	URL         apijson.Field
+	Navigated   apijson.Field
+	Snapshot    apijson.Field
+	SnapshotID  apijson.Field
+	Dialog      apijson.Field
+	Loading     apijson.Field
+	Selected    apijson.Field
+	Checked     apijson.Field
+	Files       apijson.Field
+	Masked      apijson.Field
+	Value       apijson.Field
+	Bytes       apijson.Field
+	File        apijson.Field
+	Waited      apijson.Field
+	Data        apijson.Field
+	Format      apijson.Field
+	Moved       apijson.Field
+	X           apijson.Field
+	Y           apijson.Field
+	Count       apijson.Field
+	Matches     apijson.Field
+	Tab         apijson.Field
+	Tabs        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r commandResultJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *CommandResult) UnmarshalJSON(data []byte) (err error) {
+	*r = CommandResult{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [CommandResultUnion] interface which you can cast to the
+// specific types for more type safety. Possible runtime types of the union are
+// [CommandResultNavigate], [CommandResultBack], [CommandResultForward],
+// [CommandResultReload], [CommandResultSnapshot], [CommandResultClick],
+// [CommandResultDblclick], [CommandResultHover], [CommandResultFocus],
+// [CommandResultType], [CommandResultFill], [CommandResultPress],
+// [CommandResultKeydown], [CommandResultKeyup], [CommandResultMouse],
+// [CommandResultSelect], [CommandResultCheck], [CommandResultUncheck],
+// [CommandResultUpload], [CommandResultDrag], [CommandResultGet],
+// [CommandResultIs], [CommandResultWait], [CommandResultScreenshot],
+// [CommandResultEval], [CommandResultPdf], [CommandResultScroll],
+// [CommandResultFind], [CommandResultTab].
+func (r CommandResult) AsUnion() CommandResultUnion {
+	return r.union
+}
+
+type CommandResultUnion interface {
+	implementsCommandResult()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*CommandResultUnion)(nil)).Elem(),
+		"command",
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultNavigate{}),
+			DiscriminatorValue: "navigate",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultBack{}),
+			DiscriminatorValue: "back",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultForward{}),
+			DiscriminatorValue: "forward",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultReload{}),
+			DiscriminatorValue: "reload",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultSnapshot{}),
+			DiscriminatorValue: "snapshot",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultClick{}),
+			DiscriminatorValue: "click",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultDblclick{}),
+			DiscriminatorValue: "dblclick",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultHover{}),
+			DiscriminatorValue: "hover",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultFocus{}),
+			DiscriminatorValue: "focus",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultType{}),
+			DiscriminatorValue: "type",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultFill{}),
+			DiscriminatorValue: "fill",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultPress{}),
+			DiscriminatorValue: "press",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultKeydown{}),
+			DiscriminatorValue: "keydown",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultKeyup{}),
+			DiscriminatorValue: "keyup",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultMouse{}),
+			DiscriminatorValue: "mouse",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultSelect{}),
+			DiscriminatorValue: "select",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultCheck{}),
+			DiscriminatorValue: "check",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultUncheck{}),
+			DiscriminatorValue: "uncheck",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultUpload{}),
+			DiscriminatorValue: "upload",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultDrag{}),
+			DiscriminatorValue: "drag",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultGet{}),
+			DiscriminatorValue: "get",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultIs{}),
+			DiscriminatorValue: "is",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultWait{}),
+			DiscriminatorValue: "wait",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultScreenshot{}),
+			DiscriminatorValue: "screenshot",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultEval{}),
+			DiscriminatorValue: "eval",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultPdf{}),
+			DiscriminatorValue: "pdf",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultScroll{}),
+			DiscriminatorValue: "scroll",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultFind{}),
+			DiscriminatorValue: "find",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CommandResultTab{}),
+			DiscriminatorValue: "tab",
+		},
+	)
+}
+
+// Result of a navigate command.
+type CommandResultNavigate struct {
+	Command CommandResultNavigateCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultNavigateEffect `json:"effect" api:"required"`
+	Ok     bool                        `json:"ok" api:"required"`
+	Error  CommandErrorInfo            `json:"error"`
+	URL    string                      `json:"url"`
+	JSON   commandResultNavigateJSON   `json:"-"`
+}
+
+// commandResultNavigateJSON contains the JSON metadata for the struct
+// [CommandResultNavigate]
+type commandResultNavigateJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	URL         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultNavigate) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultNavigateJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultNavigateCommand string
+
+const (
+	CommandResultNavigateCommandNavigate CommandResultNavigateCommand = "navigate"
+)
+
+func (r CommandResultNavigateCommand) IsKnown() bool {
+	switch r {
+	case CommandResultNavigateCommandNavigate:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultNavigateEffect string
+
+const (
+	CommandResultNavigateEffectNone    CommandResultNavigateEffect = "none"
+	CommandResultNavigateEffectApplied CommandResultNavigateEffect = "applied"
+	CommandResultNavigateEffectUnknown CommandResultNavigateEffect = "unknown"
+)
+
+func (r CommandResultNavigateEffect) IsKnown() bool {
+	switch r {
+	case CommandResultNavigateEffectNone, CommandResultNavigateEffectApplied, CommandResultNavigateEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultNavigate) implementsCommandResult() {}
+
+// Result of a back command.
+type CommandResultBack struct {
+	Command CommandResultBackCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultBackEffect `json:"effect" api:"required"`
+	Ok     bool                    `json:"ok" api:"required"`
+	Error  CommandErrorInfo        `json:"error"`
+	// False when there was no history entry.
+	Navigated bool                  `json:"navigated"`
+	URL       string                `json:"url"`
+	JSON      commandResultBackJSON `json:"-"`
+}
+
+// commandResultBackJSON contains the JSON metadata for the struct
+// [CommandResultBack]
+type commandResultBackJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Navigated   apijson.Field
+	URL         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultBack) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultBackJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultBackCommand string
+
+const (
+	CommandResultBackCommandBack CommandResultBackCommand = "back"
+)
+
+func (r CommandResultBackCommand) IsKnown() bool {
+	switch r {
+	case CommandResultBackCommandBack:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultBackEffect string
+
+const (
+	CommandResultBackEffectNone    CommandResultBackEffect = "none"
+	CommandResultBackEffectApplied CommandResultBackEffect = "applied"
+	CommandResultBackEffectUnknown CommandResultBackEffect = "unknown"
+)
+
+func (r CommandResultBackEffect) IsKnown() bool {
+	switch r {
+	case CommandResultBackEffectNone, CommandResultBackEffectApplied, CommandResultBackEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultBack) implementsCommandResult() {}
+
+// Result of a forward command.
+type CommandResultForward struct {
+	Command CommandResultForwardCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultForwardEffect `json:"effect" api:"required"`
+	Ok     bool                       `json:"ok" api:"required"`
+	Error  CommandErrorInfo           `json:"error"`
+	// False when there was no history entry.
+	Navigated bool                     `json:"navigated"`
+	URL       string                   `json:"url"`
+	JSON      commandResultForwardJSON `json:"-"`
+}
+
+// commandResultForwardJSON contains the JSON metadata for the struct
+// [CommandResultForward]
+type commandResultForwardJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Navigated   apijson.Field
+	URL         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultForward) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultForwardJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultForwardCommand string
+
+const (
+	CommandResultForwardCommandForward CommandResultForwardCommand = "forward"
+)
+
+func (r CommandResultForwardCommand) IsKnown() bool {
+	switch r {
+	case CommandResultForwardCommandForward:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultForwardEffect string
+
+const (
+	CommandResultForwardEffectNone    CommandResultForwardEffect = "none"
+	CommandResultForwardEffectApplied CommandResultForwardEffect = "applied"
+	CommandResultForwardEffectUnknown CommandResultForwardEffect = "unknown"
+)
+
+func (r CommandResultForwardEffect) IsKnown() bool {
+	switch r {
+	case CommandResultForwardEffectNone, CommandResultForwardEffectApplied, CommandResultForwardEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultForward) implementsCommandResult() {}
+
+// Result of a reload command.
+type CommandResultReload struct {
+	Command CommandResultReloadCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultReloadEffect `json:"effect" api:"required"`
+	Ok     bool                      `json:"ok" api:"required"`
+	Error  CommandErrorInfo          `json:"error"`
+	URL    string                    `json:"url"`
+	JSON   commandResultReloadJSON   `json:"-"`
+}
+
+// commandResultReloadJSON contains the JSON metadata for the struct
+// [CommandResultReload]
+type commandResultReloadJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	URL         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultReload) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultReloadJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultReloadCommand string
+
+const (
+	CommandResultReloadCommandReload CommandResultReloadCommand = "reload"
+)
+
+func (r CommandResultReloadCommand) IsKnown() bool {
+	switch r {
+	case CommandResultReloadCommandReload:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultReloadEffect string
+
+const (
+	CommandResultReloadEffectNone    CommandResultReloadEffect = "none"
+	CommandResultReloadEffectApplied CommandResultReloadEffect = "applied"
+	CommandResultReloadEffectUnknown CommandResultReloadEffect = "unknown"
+)
+
+func (r CommandResultReloadEffect) IsKnown() bool {
+	switch r {
+	case CommandResultReloadEffectNone, CommandResultReloadEffectApplied, CommandResultReloadEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultReload) implementsCommandResult() {}
+
+// Result of a snapshot command.
+type CommandResultSnapshot struct {
+	Command CommandResultSnapshotCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect     CommandResultSnapshotEffect `json:"effect" api:"required"`
+	Ok         bool                        `json:"ok" api:"required"`
+	Error      CommandErrorInfo            `json:"error"`
+	Snapshot   string                      `json:"snapshot"`
+	SnapshotID string                      `json:"snapshotId"`
+	JSON       commandResultSnapshotJSON   `json:"-"`
+}
+
+// commandResultSnapshotJSON contains the JSON metadata for the struct
+// [CommandResultSnapshot]
+type commandResultSnapshotJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Snapshot    apijson.Field
+	SnapshotID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultSnapshot) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultSnapshotJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultSnapshotCommand string
+
+const (
+	CommandResultSnapshotCommandSnapshot CommandResultSnapshotCommand = "snapshot"
+)
+
+func (r CommandResultSnapshotCommand) IsKnown() bool {
+	switch r {
+	case CommandResultSnapshotCommandSnapshot:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultSnapshotEffect string
+
+const (
+	CommandResultSnapshotEffectNone    CommandResultSnapshotEffect = "none"
+	CommandResultSnapshotEffectApplied CommandResultSnapshotEffect = "applied"
+	CommandResultSnapshotEffectUnknown CommandResultSnapshotEffect = "unknown"
+)
+
+func (r CommandResultSnapshotEffect) IsKnown() bool {
+	switch r {
+	case CommandResultSnapshotEffectNone, CommandResultSnapshotEffectApplied, CommandResultSnapshotEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultSnapshot) implementsCommandResult() {}
+
+// Result of a click command.
+type CommandResultClick struct {
+	Command CommandResultClickCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultClickEffect `json:"effect" api:"required"`
+	Ok     bool                     `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                   `json:"loading"`
+	JSON    commandResultClickJSON `json:"-"`
+}
+
+// commandResultClickJSON contains the JSON metadata for the struct
+// [CommandResultClick]
+type commandResultClickJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultClick) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultClickJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultClickCommand string
+
+const (
+	CommandResultClickCommandClick CommandResultClickCommand = "click"
+)
+
+func (r CommandResultClickCommand) IsKnown() bool {
+	switch r {
+	case CommandResultClickCommandClick:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultClickEffect string
+
+const (
+	CommandResultClickEffectNone    CommandResultClickEffect = "none"
+	CommandResultClickEffectApplied CommandResultClickEffect = "applied"
+	CommandResultClickEffectUnknown CommandResultClickEffect = "unknown"
+)
+
+func (r CommandResultClickEffect) IsKnown() bool {
+	switch r {
+	case CommandResultClickEffectNone, CommandResultClickEffectApplied, CommandResultClickEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultClick) implementsCommandResult() {}
+
+// Result of a dblclick command.
+type CommandResultDblclick struct {
+	Command CommandResultDblclickCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultDblclickEffect `json:"effect" api:"required"`
+	Ok     bool                        `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                      `json:"loading"`
+	JSON    commandResultDblclickJSON `json:"-"`
+}
+
+// commandResultDblclickJSON contains the JSON metadata for the struct
+// [CommandResultDblclick]
+type commandResultDblclickJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultDblclick) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultDblclickJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultDblclickCommand string
+
+const (
+	CommandResultDblclickCommandDblclick CommandResultDblclickCommand = "dblclick"
+)
+
+func (r CommandResultDblclickCommand) IsKnown() bool {
+	switch r {
+	case CommandResultDblclickCommandDblclick:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultDblclickEffect string
+
+const (
+	CommandResultDblclickEffectNone    CommandResultDblclickEffect = "none"
+	CommandResultDblclickEffectApplied CommandResultDblclickEffect = "applied"
+	CommandResultDblclickEffectUnknown CommandResultDblclickEffect = "unknown"
+)
+
+func (r CommandResultDblclickEffect) IsKnown() bool {
+	switch r {
+	case CommandResultDblclickEffectNone, CommandResultDblclickEffectApplied, CommandResultDblclickEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultDblclick) implementsCommandResult() {}
+
+// Result of a hover command.
+type CommandResultHover struct {
+	Command CommandResultHoverCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultHoverEffect `json:"effect" api:"required"`
+	Ok     bool                     `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog          `json:"dialog"`
+	Error  CommandErrorInfo       `json:"error"`
+	JSON   commandResultHoverJSON `json:"-"`
+}
+
+// commandResultHoverJSON contains the JSON metadata for the struct
+// [CommandResultHover]
+type commandResultHoverJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultHover) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultHoverJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultHoverCommand string
+
+const (
+	CommandResultHoverCommandHover CommandResultHoverCommand = "hover"
+)
+
+func (r CommandResultHoverCommand) IsKnown() bool {
+	switch r {
+	case CommandResultHoverCommandHover:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultHoverEffect string
+
+const (
+	CommandResultHoverEffectNone    CommandResultHoverEffect = "none"
+	CommandResultHoverEffectApplied CommandResultHoverEffect = "applied"
+	CommandResultHoverEffectUnknown CommandResultHoverEffect = "unknown"
+)
+
+func (r CommandResultHoverEffect) IsKnown() bool {
+	switch r {
+	case CommandResultHoverEffectNone, CommandResultHoverEffectApplied, CommandResultHoverEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultHover) implementsCommandResult() {}
+
+// Result of a focus command.
+type CommandResultFocus struct {
+	Command CommandResultFocusCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultFocusEffect `json:"effect" api:"required"`
+	Ok     bool                     `json:"ok" api:"required"`
+	Error  CommandErrorInfo         `json:"error"`
+	JSON   commandResultFocusJSON   `json:"-"`
+}
+
+// commandResultFocusJSON contains the JSON metadata for the struct
+// [CommandResultFocus]
+type commandResultFocusJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultFocus) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultFocusJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultFocusCommand string
+
+const (
+	CommandResultFocusCommandFocus CommandResultFocusCommand = "focus"
+)
+
+func (r CommandResultFocusCommand) IsKnown() bool {
+	switch r {
+	case CommandResultFocusCommandFocus:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultFocusEffect string
+
+const (
+	CommandResultFocusEffectNone    CommandResultFocusEffect = "none"
+	CommandResultFocusEffectApplied CommandResultFocusEffect = "applied"
+	CommandResultFocusEffectUnknown CommandResultFocusEffect = "unknown"
+)
+
+func (r CommandResultFocusEffect) IsKnown() bool {
+	switch r {
+	case CommandResultFocusEffectNone, CommandResultFocusEffectApplied, CommandResultFocusEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultFocus) implementsCommandResult() {}
+
+// Result of a type command.
+type CommandResultType struct {
+	Command CommandResultTypeCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultTypeEffect `json:"effect" api:"required"`
+	Ok     bool                    `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                  `json:"loading"`
+	JSON    commandResultTypeJSON `json:"-"`
+}
+
+// commandResultTypeJSON contains the JSON metadata for the struct
+// [CommandResultType]
+type commandResultTypeJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultType) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultTypeJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultTypeCommand string
+
+const (
+	CommandResultTypeCommandType CommandResultTypeCommand = "type"
+)
+
+func (r CommandResultTypeCommand) IsKnown() bool {
+	switch r {
+	case CommandResultTypeCommandType:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultTypeEffect string
+
+const (
+	CommandResultTypeEffectNone    CommandResultTypeEffect = "none"
+	CommandResultTypeEffectApplied CommandResultTypeEffect = "applied"
+	CommandResultTypeEffectUnknown CommandResultTypeEffect = "unknown"
+)
+
+func (r CommandResultTypeEffect) IsKnown() bool {
+	switch r {
+	case CommandResultTypeEffectNone, CommandResultTypeEffectApplied, CommandResultTypeEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultType) implementsCommandResult() {}
+
+// Result of a fill command.
+type CommandResultFill struct {
+	Command CommandResultFillCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultFillEffect `json:"effect" api:"required"`
+	Ok     bool                    `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                  `json:"loading"`
+	JSON    commandResultFillJSON `json:"-"`
+}
+
+// commandResultFillJSON contains the JSON metadata for the struct
+// [CommandResultFill]
+type commandResultFillJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultFill) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultFillJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultFillCommand string
+
+const (
+	CommandResultFillCommandFill CommandResultFillCommand = "fill"
+)
+
+func (r CommandResultFillCommand) IsKnown() bool {
+	switch r {
+	case CommandResultFillCommandFill:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultFillEffect string
+
+const (
+	CommandResultFillEffectNone    CommandResultFillEffect = "none"
+	CommandResultFillEffectApplied CommandResultFillEffect = "applied"
+	CommandResultFillEffectUnknown CommandResultFillEffect = "unknown"
+)
+
+func (r CommandResultFillEffect) IsKnown() bool {
+	switch r {
+	case CommandResultFillEffectNone, CommandResultFillEffectApplied, CommandResultFillEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultFill) implementsCommandResult() {}
+
+// Result of a press command.
+type CommandResultPress struct {
+	Command CommandResultPressCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultPressEffect `json:"effect" api:"required"`
+	Ok     bool                     `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                   `json:"loading"`
+	JSON    commandResultPressJSON `json:"-"`
+}
+
+// commandResultPressJSON contains the JSON metadata for the struct
+// [CommandResultPress]
+type commandResultPressJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultPress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultPressJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultPressCommand string
+
+const (
+	CommandResultPressCommandPress CommandResultPressCommand = "press"
+)
+
+func (r CommandResultPressCommand) IsKnown() bool {
+	switch r {
+	case CommandResultPressCommandPress:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultPressEffect string
+
+const (
+	CommandResultPressEffectNone    CommandResultPressEffect = "none"
+	CommandResultPressEffectApplied CommandResultPressEffect = "applied"
+	CommandResultPressEffectUnknown CommandResultPressEffect = "unknown"
+)
+
+func (r CommandResultPressEffect) IsKnown() bool {
+	switch r {
+	case CommandResultPressEffectNone, CommandResultPressEffectApplied, CommandResultPressEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultPress) implementsCommandResult() {}
+
+// Result of a keydown command.
+type CommandResultKeydown struct {
+	Command CommandResultKeydownCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultKeydownEffect `json:"effect" api:"required"`
+	Ok     bool                       `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                     `json:"loading"`
+	JSON    commandResultKeydownJSON `json:"-"`
+}
+
+// commandResultKeydownJSON contains the JSON metadata for the struct
+// [CommandResultKeydown]
+type commandResultKeydownJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultKeydown) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultKeydownJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultKeydownCommand string
+
+const (
+	CommandResultKeydownCommandKeydown CommandResultKeydownCommand = "keydown"
+)
+
+func (r CommandResultKeydownCommand) IsKnown() bool {
+	switch r {
+	case CommandResultKeydownCommandKeydown:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultKeydownEffect string
+
+const (
+	CommandResultKeydownEffectNone    CommandResultKeydownEffect = "none"
+	CommandResultKeydownEffectApplied CommandResultKeydownEffect = "applied"
+	CommandResultKeydownEffectUnknown CommandResultKeydownEffect = "unknown"
+)
+
+func (r CommandResultKeydownEffect) IsKnown() bool {
+	switch r {
+	case CommandResultKeydownEffectNone, CommandResultKeydownEffectApplied, CommandResultKeydownEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultKeydown) implementsCommandResult() {}
+
+// Result of a keyup command.
+type CommandResultKeyup struct {
+	Command CommandResultKeyupCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultKeyupEffect `json:"effect" api:"required"`
+	Ok     bool                     `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                   `json:"loading"`
+	JSON    commandResultKeyupJSON `json:"-"`
+}
+
+// commandResultKeyupJSON contains the JSON metadata for the struct
+// [CommandResultKeyup]
+type commandResultKeyupJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultKeyup) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultKeyupJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultKeyupCommand string
+
+const (
+	CommandResultKeyupCommandKeyup CommandResultKeyupCommand = "keyup"
+)
+
+func (r CommandResultKeyupCommand) IsKnown() bool {
+	switch r {
+	case CommandResultKeyupCommandKeyup:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultKeyupEffect string
+
+const (
+	CommandResultKeyupEffectNone    CommandResultKeyupEffect = "none"
+	CommandResultKeyupEffectApplied CommandResultKeyupEffect = "applied"
+	CommandResultKeyupEffectUnknown CommandResultKeyupEffect = "unknown"
+)
+
+func (r CommandResultKeyupEffect) IsKnown() bool {
+	switch r {
+	case CommandResultKeyupEffectNone, CommandResultKeyupEffectApplied, CommandResultKeyupEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultKeyup) implementsCommandResult() {}
+
+// Result of a mouse command.
+type CommandResultMouse struct {
+	Command CommandResultMouseCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultMouseEffect `json:"effect" api:"required"`
+	Ok     bool                     `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                   `json:"loading"`
+	JSON    commandResultMouseJSON `json:"-"`
+}
+
+// commandResultMouseJSON contains the JSON metadata for the struct
+// [CommandResultMouse]
+type commandResultMouseJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultMouse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultMouseJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultMouseCommand string
+
+const (
+	CommandResultMouseCommandMouse CommandResultMouseCommand = "mouse"
+)
+
+func (r CommandResultMouseCommand) IsKnown() bool {
+	switch r {
+	case CommandResultMouseCommandMouse:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultMouseEffect string
+
+const (
+	CommandResultMouseEffectNone    CommandResultMouseEffect = "none"
+	CommandResultMouseEffectApplied CommandResultMouseEffect = "applied"
+	CommandResultMouseEffectUnknown CommandResultMouseEffect = "unknown"
+)
+
+func (r CommandResultMouseEffect) IsKnown() bool {
+	switch r {
+	case CommandResultMouseEffectNone, CommandResultMouseEffectApplied, CommandResultMouseEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultMouse) implementsCommandResult() {}
+
+// Result of a select command.
+type CommandResultSelect struct {
+	Command CommandResultSelectCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultSelectEffect `json:"effect" api:"required"`
+	Ok     bool                      `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool `json:"loading"`
+	// The values of the selected options.
+	Selected []string                `json:"selected"`
+	JSON     commandResultSelectJSON `json:"-"`
+}
+
+// commandResultSelectJSON contains the JSON metadata for the struct
+// [CommandResultSelect]
+type commandResultSelectJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	Selected    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultSelect) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultSelectJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultSelectCommand string
+
+const (
+	CommandResultSelectCommandSelect CommandResultSelectCommand = "select"
+)
+
+func (r CommandResultSelectCommand) IsKnown() bool {
+	switch r {
+	case CommandResultSelectCommandSelect:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultSelectEffect string
+
+const (
+	CommandResultSelectEffectNone    CommandResultSelectEffect = "none"
+	CommandResultSelectEffectApplied CommandResultSelectEffect = "applied"
+	CommandResultSelectEffectUnknown CommandResultSelectEffect = "unknown"
+)
+
+func (r CommandResultSelectEffect) IsKnown() bool {
+	switch r {
+	case CommandResultSelectEffectNone, CommandResultSelectEffectApplied, CommandResultSelectEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultSelect) implementsCommandResult() {}
+
+// Result of a check command.
+type CommandResultCheck struct {
+	Command CommandResultCheckCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect  CommandResultCheckEffect `json:"effect" api:"required"`
+	Ok      bool                     `json:"ok" api:"required"`
+	Checked bool                     `json:"checked"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                   `json:"loading"`
+	JSON    commandResultCheckJSON `json:"-"`
+}
+
+// commandResultCheckJSON contains the JSON metadata for the struct
+// [CommandResultCheck]
+type commandResultCheckJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Checked     apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultCheck) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultCheckJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultCheckCommand string
+
+const (
+	CommandResultCheckCommandCheck CommandResultCheckCommand = "check"
+)
+
+func (r CommandResultCheckCommand) IsKnown() bool {
+	switch r {
+	case CommandResultCheckCommandCheck:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultCheckEffect string
+
+const (
+	CommandResultCheckEffectNone    CommandResultCheckEffect = "none"
+	CommandResultCheckEffectApplied CommandResultCheckEffect = "applied"
+	CommandResultCheckEffectUnknown CommandResultCheckEffect = "unknown"
+)
+
+func (r CommandResultCheckEffect) IsKnown() bool {
+	switch r {
+	case CommandResultCheckEffectNone, CommandResultCheckEffectApplied, CommandResultCheckEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultCheck) implementsCommandResult() {}
+
+// Result of a uncheck command.
+type CommandResultUncheck struct {
+	Command CommandResultUncheckCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect  CommandResultUncheckEffect `json:"effect" api:"required"`
+	Ok      bool                       `json:"ok" api:"required"`
+	Checked bool                       `json:"checked"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                     `json:"loading"`
+	JSON    commandResultUncheckJSON `json:"-"`
+}
+
+// commandResultUncheckJSON contains the JSON metadata for the struct
+// [CommandResultUncheck]
+type commandResultUncheckJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Checked     apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultUncheck) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultUncheckJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultUncheckCommand string
+
+const (
+	CommandResultUncheckCommandUncheck CommandResultUncheckCommand = "uncheck"
+)
+
+func (r CommandResultUncheckCommand) IsKnown() bool {
+	switch r {
+	case CommandResultUncheckCommandUncheck:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultUncheckEffect string
+
+const (
+	CommandResultUncheckEffectNone    CommandResultUncheckEffect = "none"
+	CommandResultUncheckEffectApplied CommandResultUncheckEffect = "applied"
+	CommandResultUncheckEffectUnknown CommandResultUncheckEffect = "unknown"
+)
+
+func (r CommandResultUncheckEffect) IsKnown() bool {
+	switch r {
+	case CommandResultUncheckEffectNone, CommandResultUncheckEffectApplied, CommandResultUncheckEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultUncheck) implementsCommandResult() {}
+
+// Result of a upload command.
+type CommandResultUpload struct {
+	Command CommandResultUploadCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultUploadEffect `json:"effect" api:"required"`
+	Ok     bool                      `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	Files  []string         `json:"files"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                    `json:"loading"`
+	JSON    commandResultUploadJSON `json:"-"`
+}
+
+// commandResultUploadJSON contains the JSON metadata for the struct
+// [CommandResultUpload]
+type commandResultUploadJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Files       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultUpload) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultUploadJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultUploadCommand string
+
+const (
+	CommandResultUploadCommandUpload CommandResultUploadCommand = "upload"
+)
+
+func (r CommandResultUploadCommand) IsKnown() bool {
+	switch r {
+	case CommandResultUploadCommandUpload:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultUploadEffect string
+
+const (
+	CommandResultUploadEffectNone    CommandResultUploadEffect = "none"
+	CommandResultUploadEffectApplied CommandResultUploadEffect = "applied"
+	CommandResultUploadEffectUnknown CommandResultUploadEffect = "unknown"
+)
+
+func (r CommandResultUploadEffect) IsKnown() bool {
+	switch r {
+	case CommandResultUploadEffectNone, CommandResultUploadEffectApplied, CommandResultUploadEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultUpload) implementsCommandResult() {}
+
+// Result of a drag command.
+type CommandResultDrag struct {
+	Command CommandResultDragCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultDragEffect `json:"effect" api:"required"`
+	Ok     bool                    `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool                  `json:"loading"`
+	JSON    commandResultDragJSON `json:"-"`
+}
+
+// commandResultDragJSON contains the JSON metadata for the struct
+// [CommandResultDrag]
+type commandResultDragJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultDrag) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultDragJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultDragCommand string
+
+const (
+	CommandResultDragCommandDrag CommandResultDragCommand = "drag"
+)
+
+func (r CommandResultDragCommand) IsKnown() bool {
+	switch r {
+	case CommandResultDragCommandDrag:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultDragEffect string
+
+const (
+	CommandResultDragEffectNone    CommandResultDragEffect = "none"
+	CommandResultDragEffectApplied CommandResultDragEffect = "applied"
+	CommandResultDragEffectUnknown CommandResultDragEffect = "unknown"
+)
+
+func (r CommandResultDragEffect) IsKnown() bool {
+	switch r {
+	case CommandResultDragEffectNone, CommandResultDragEffectApplied, CommandResultDragEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultDrag) implementsCommandResult() {}
+
+// Result of a get command.
+type CommandResultGet struct {
+	Command CommandResultGetCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultGetEffect `json:"effect" api:"required"`
+	Ok     bool                   `json:"ok" api:"required"`
+	Error  CommandErrorInfo       `json:"error"`
+	// The value is a secret, so it is left out.
+	Masked bool `json:"masked"`
+	// A string for text, html, markdown, value, attr, title, and url. A number for
+	// count. { x, y, width, height } or null for box. A list of locators for
+	// locator.
+	Value interface{}          `json:"value"`
+	JSON  commandResultGetJSON `json:"-"`
+}
+
+// commandResultGetJSON contains the JSON metadata for the struct
+// [CommandResultGet]
+type commandResultGetJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Masked      apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultGet) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultGetJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultGetCommand string
+
+const (
+	CommandResultGetCommandGet CommandResultGetCommand = "get"
+)
+
+func (r CommandResultGetCommand) IsKnown() bool {
+	switch r {
+	case CommandResultGetCommandGet:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultGetEffect string
+
+const (
+	CommandResultGetEffectNone    CommandResultGetEffect = "none"
+	CommandResultGetEffectApplied CommandResultGetEffect = "applied"
+	CommandResultGetEffectUnknown CommandResultGetEffect = "unknown"
+)
+
+func (r CommandResultGetEffect) IsKnown() bool {
+	switch r {
+	case CommandResultGetEffectNone, CommandResultGetEffectApplied, CommandResultGetEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultGet) implementsCommandResult() {}
+
+// Result of a is command.
+type CommandResultIs struct {
+	Command CommandResultIsCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultIsEffect `json:"effect" api:"required"`
+	Ok     bool                  `json:"ok" api:"required"`
+	Error  CommandErrorInfo      `json:"error"`
+	Value  bool                  `json:"value"`
+	JSON   commandResultIsJSON   `json:"-"`
+}
+
+// commandResultIsJSON contains the JSON metadata for the struct
+// [CommandResultIs]
+type commandResultIsJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultIs) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultIsJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultIsCommand string
+
+const (
+	CommandResultIsCommandIs CommandResultIsCommand = "is"
+)
+
+func (r CommandResultIsCommand) IsKnown() bool {
+	switch r {
+	case CommandResultIsCommandIs:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultIsEffect string
+
+const (
+	CommandResultIsEffectNone    CommandResultIsEffect = "none"
+	CommandResultIsEffectApplied CommandResultIsEffect = "applied"
+	CommandResultIsEffectUnknown CommandResultIsEffect = "unknown"
+)
+
+func (r CommandResultIsEffect) IsKnown() bool {
+	switch r {
+	case CommandResultIsEffectNone, CommandResultIsEffectApplied, CommandResultIsEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultIs) implementsCommandResult() {}
+
+// Result of a wait command.
+type CommandResultWait struct {
+	Command CommandResultWaitCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultWaitEffect `json:"effect" api:"required"`
+	Ok     bool                    `json:"ok" api:"required"`
+	Bytes  int64                   `json:"bytes"`
+	Error  CommandErrorInfo        `json:"error"`
+	// The downloaded file, for download.
+	File   string                  `json:"file"`
+	Waited CommandResultWaitWaited `json:"waited"`
+	JSON   commandResultWaitJSON   `json:"-"`
+}
+
+// commandResultWaitJSON contains the JSON metadata for the struct
+// [CommandResultWait]
+type commandResultWaitJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Bytes       apijson.Field
+	Error       apijson.Field
+	File        apijson.Field
+	Waited      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultWait) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultWaitJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultWaitCommand string
+
+const (
+	CommandResultWaitCommandWait CommandResultWaitCommand = "wait"
+)
+
+func (r CommandResultWaitCommand) IsKnown() bool {
+	switch r {
+	case CommandResultWaitCommandWait:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultWaitEffect string
+
+const (
+	CommandResultWaitEffectNone    CommandResultWaitEffect = "none"
+	CommandResultWaitEffectApplied CommandResultWaitEffect = "applied"
+	CommandResultWaitEffectUnknown CommandResultWaitEffect = "unknown"
+)
+
+func (r CommandResultWaitEffect) IsKnown() bool {
+	switch r {
+	case CommandResultWaitEffectNone, CommandResultWaitEffectApplied, CommandResultWaitEffectUnknown:
+		return true
+	}
+	return false
+}
+
+type CommandResultWaitWaited string
+
+const (
+	CommandResultWaitWaitedMs       CommandResultWaitWaited = "ms"
+	CommandResultWaitWaitedTarget   CommandResultWaitWaited = "target"
+	CommandResultWaitWaitedText     CommandResultWaitWaited = "text"
+	CommandResultWaitWaitedURL      CommandResultWaitWaited = "url"
+	CommandResultWaitWaitedLoad     CommandResultWaitWaited = "load"
+	CommandResultWaitWaitedDownload CommandResultWaitWaited = "download"
+)
+
+func (r CommandResultWaitWaited) IsKnown() bool {
+	switch r {
+	case CommandResultWaitWaitedMs, CommandResultWaitWaitedTarget, CommandResultWaitWaitedText, CommandResultWaitWaitedURL, CommandResultWaitWaitedLoad, CommandResultWaitWaitedDownload:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultWait) implementsCommandResult() {}
+
+// Result of a screenshot command.
+type CommandResultScreenshot struct {
+	Command CommandResultScreenshotCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultScreenshotEffect `json:"effect" api:"required"`
+	Ok     bool                          `json:"ok" api:"required"`
+	Data   string                        `json:"data"`
+	Error  CommandErrorInfo              `json:"error"`
+	Format CommandResultScreenshotFormat `json:"format"`
+	JSON   commandResultScreenshotJSON   `json:"-"`
+}
+
+// commandResultScreenshotJSON contains the JSON metadata for the struct
+// [CommandResultScreenshot]
+type commandResultScreenshotJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Data        apijson.Field
+	Error       apijson.Field
+	Format      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultScreenshot) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultScreenshotJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultScreenshotCommand string
+
+const (
+	CommandResultScreenshotCommandScreenshot CommandResultScreenshotCommand = "screenshot"
+)
+
+func (r CommandResultScreenshotCommand) IsKnown() bool {
+	switch r {
+	case CommandResultScreenshotCommandScreenshot:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultScreenshotEffect string
+
+const (
+	CommandResultScreenshotEffectNone    CommandResultScreenshotEffect = "none"
+	CommandResultScreenshotEffectApplied CommandResultScreenshotEffect = "applied"
+	CommandResultScreenshotEffectUnknown CommandResultScreenshotEffect = "unknown"
+)
+
+func (r CommandResultScreenshotEffect) IsKnown() bool {
+	switch r {
+	case CommandResultScreenshotEffectNone, CommandResultScreenshotEffectApplied, CommandResultScreenshotEffectUnknown:
+		return true
+	}
+	return false
+}
+
+type CommandResultScreenshotFormat string
+
+const (
+	CommandResultScreenshotFormatPng  CommandResultScreenshotFormat = "png"
+	CommandResultScreenshotFormatJpeg CommandResultScreenshotFormat = "jpeg"
+	CommandResultScreenshotFormatWebp CommandResultScreenshotFormat = "webp"
+)
+
+func (r CommandResultScreenshotFormat) IsKnown() bool {
+	switch r {
+	case CommandResultScreenshotFormatPng, CommandResultScreenshotFormatJpeg, CommandResultScreenshotFormatWebp:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultScreenshot) implementsCommandResult() {}
+
+// Result of a eval command.
+type CommandResultEval struct {
+	Command CommandResultEvalCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultEvalEffect `json:"effect" api:"required"`
+	Ok     bool                    `json:"ok" api:"required"`
+	// A dialog that the command opened. It blocks the tab until it closes.
+	Dialog CommandDialog    `json:"dialog"`
+	Error  CommandErrorInfo `json:"error"`
+	// The command started a navigation that was still loading when it returned.
+	Loading bool `json:"loading"`
+	// The result of the script as JSON.
+	Value interface{}           `json:"value"`
+	JSON  commandResultEvalJSON `json:"-"`
+}
+
+// commandResultEvalJSON contains the JSON metadata for the struct
+// [CommandResultEval]
+type commandResultEvalJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Dialog      apijson.Field
+	Error       apijson.Field
+	Loading     apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultEval) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultEvalJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultEvalCommand string
+
+const (
+	CommandResultEvalCommandEval CommandResultEvalCommand = "eval"
+)
+
+func (r CommandResultEvalCommand) IsKnown() bool {
+	switch r {
+	case CommandResultEvalCommandEval:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultEvalEffect string
+
+const (
+	CommandResultEvalEffectNone    CommandResultEvalEffect = "none"
+	CommandResultEvalEffectApplied CommandResultEvalEffect = "applied"
+	CommandResultEvalEffectUnknown CommandResultEvalEffect = "unknown"
+)
+
+func (r CommandResultEvalEffect) IsKnown() bool {
+	switch r {
+	case CommandResultEvalEffectNone, CommandResultEvalEffectApplied, CommandResultEvalEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultEval) implementsCommandResult() {}
+
+// Result of a pdf command.
+type CommandResultPdf struct {
+	Command CommandResultPdfCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultPdfEffect `json:"effect" api:"required"`
+	Ok     bool                   `json:"ok" api:"required"`
+	Data   string                 `json:"data"`
+	Error  CommandErrorInfo       `json:"error"`
+	Format CommandResultPdfFormat `json:"format"`
+	JSON   commandResultPdfJSON   `json:"-"`
+}
+
+// commandResultPdfJSON contains the JSON metadata for the struct
+// [CommandResultPdf]
+type commandResultPdfJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Data        apijson.Field
+	Error       apijson.Field
+	Format      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultPdf) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultPdfJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultPdfCommand string
+
+const (
+	CommandResultPdfCommandPdf CommandResultPdfCommand = "pdf"
+)
+
+func (r CommandResultPdfCommand) IsKnown() bool {
+	switch r {
+	case CommandResultPdfCommandPdf:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultPdfEffect string
+
+const (
+	CommandResultPdfEffectNone    CommandResultPdfEffect = "none"
+	CommandResultPdfEffectApplied CommandResultPdfEffect = "applied"
+	CommandResultPdfEffectUnknown CommandResultPdfEffect = "unknown"
+)
+
+func (r CommandResultPdfEffect) IsKnown() bool {
+	switch r {
+	case CommandResultPdfEffectNone, CommandResultPdfEffectApplied, CommandResultPdfEffectUnknown:
+		return true
+	}
+	return false
+}
+
+type CommandResultPdfFormat string
+
+const (
+	CommandResultPdfFormatPdf CommandResultPdfFormat = "pdf"
+)
+
+func (r CommandResultPdfFormat) IsKnown() bool {
+	switch r {
+	case CommandResultPdfFormatPdf:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultPdf) implementsCommandResult() {}
+
+// Result of a scroll command.
+type CommandResultScroll struct {
+	Command CommandResultScrollCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultScrollEffect `json:"effect" api:"required"`
+	Ok     bool                      `json:"ok" api:"required"`
+	Error  CommandErrorInfo          `json:"error"`
+	Moved  bool                      `json:"moved"`
+	X      float64                   `json:"x"`
+	Y      float64                   `json:"y"`
+	JSON   commandResultScrollJSON   `json:"-"`
+}
+
+// commandResultScrollJSON contains the JSON metadata for the struct
+// [CommandResultScroll]
+type commandResultScrollJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Moved       apijson.Field
+	X           apijson.Field
+	Y           apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultScroll) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultScrollJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultScrollCommand string
+
+const (
+	CommandResultScrollCommandScroll CommandResultScrollCommand = "scroll"
+)
+
+func (r CommandResultScrollCommand) IsKnown() bool {
+	switch r {
+	case CommandResultScrollCommandScroll:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultScrollEffect string
+
+const (
+	CommandResultScrollEffectNone    CommandResultScrollEffect = "none"
+	CommandResultScrollEffectApplied CommandResultScrollEffect = "applied"
+	CommandResultScrollEffectUnknown CommandResultScrollEffect = "unknown"
+)
+
+func (r CommandResultScrollEffect) IsKnown() bool {
+	switch r {
+	case CommandResultScrollEffectNone, CommandResultScrollEffectApplied, CommandResultScrollEffectUnknown:
+		return true
+	}
+	return false
+}
+
+func (r CommandResultScroll) implementsCommandResult() {}
+
+// Result of a find command.
+type CommandResultFind struct {
+	Command CommandResultFindCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect  CommandResultFindEffect  `json:"effect" api:"required"`
+	Ok      bool                     `json:"ok" api:"required"`
+	Count   int64                    `json:"count"`
+	Error   CommandErrorInfo         `json:"error"`
+	Matches []CommandResultFindMatch `json:"matches"`
+	JSON    commandResultFindJSON    `json:"-"`
+}
+
+// commandResultFindJSON contains the JSON metadata for the struct
+// [CommandResultFind]
+type commandResultFindJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Count       apijson.Field
+	Error       apijson.Field
+	Matches     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultFind) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultFindJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultFindCommand string
+
+const (
+	CommandResultFindCommandFind CommandResultFindCommand = "find"
+)
+
+func (r CommandResultFindCommand) IsKnown() bool {
+	switch r {
+	case CommandResultFindCommandFind:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultFindEffect string
+
+const (
+	CommandResultFindEffectNone    CommandResultFindEffect = "none"
+	CommandResultFindEffectApplied CommandResultFindEffect = "applied"
+	CommandResultFindEffectUnknown CommandResultFindEffect = "unknown"
+)
+
+func (r CommandResultFindEffect) IsKnown() bool {
+	switch r {
+	case CommandResultFindEffectNone, CommandResultFindEffectApplied, CommandResultFindEffectUnknown:
+		return true
+	}
+	return false
+}
+
+type CommandResultFindMatch struct {
+	Name string                     `json:"name" api:"required"`
+	Ref  string                     `json:"ref" api:"required"`
+	Role string                     `json:"role" api:"required"`
+	JSON commandResultFindMatchJSON `json:"-"`
+}
+
+// commandResultFindMatchJSON contains the JSON metadata for the struct
+// [CommandResultFindMatch]
+type commandResultFindMatchJSON struct {
+	Name        apijson.Field
+	Ref         apijson.Field
+	Role        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultFindMatch) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultFindMatchJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CommandResultFind) implementsCommandResult() {}
+
+// Result of a tab command.
+type CommandResultTab struct {
+	Command CommandResultTabCommand `json:"command" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect CommandResultTabEffect `json:"effect" api:"required"`
+	Ok     bool                   `json:"ok" api:"required"`
+	Error  CommandErrorInfo       `json:"error"`
+	Tab    string                 `json:"tab"`
+	Tabs   []CommandResultTabTab  `json:"tabs"`
+	JSON   commandResultTabJSON   `json:"-"`
+}
+
+// commandResultTabJSON contains the JSON metadata for the struct
+// [CommandResultTab]
+type commandResultTabJSON struct {
+	Command     apijson.Field
+	Effect      apijson.Field
+	Ok          apijson.Field
+	Error       apijson.Field
+	Tab         apijson.Field
+	Tabs        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultTab) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultTabJSON) RawJSON() string {
+	return r.raw
+}
+
+type CommandResultTabCommand string
+
+const (
+	CommandResultTabCommandTab CommandResultTabCommand = "tab"
+)
+
+func (r CommandResultTabCommand) IsKnown() bool {
+	switch r {
+	case CommandResultTabCommandTab:
+		return true
+	}
+	return false
+}
+
+// What happened to the page: nothing, a change, or a possible change.
+type CommandResultTabEffect string
+
+const (
+	CommandResultTabEffectNone    CommandResultTabEffect = "none"
+	CommandResultTabEffectApplied CommandResultTabEffect = "applied"
+	CommandResultTabEffectUnknown CommandResultTabEffect = "unknown"
+)
+
+func (r CommandResultTabEffect) IsKnown() bool {
+	switch r {
+	case CommandResultTabEffectNone, CommandResultTabEffectApplied, CommandResultTabEffectUnknown:
+		return true
+	}
+	return false
+}
+
+type CommandResultTabTab struct {
+	Tab   string                  `json:"tab" api:"required"`
+	Title string                  `json:"title" api:"required"`
+	URL   string                  `json:"url" api:"required"`
+	JSON  commandResultTabTabJSON `json:"-"`
+}
+
+// commandResultTabTabJSON contains the JSON metadata for the struct
+// [CommandResultTabTab]
+type commandResultTabTabJSON struct {
+	Tab         apijson.Field
+	Title       apijson.Field
+	URL         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CommandResultTabTab) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r commandResultTabTabJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CommandResultTab) implementsCommandResult() {}
 
 // A ref from a snapshot such as e12, a CSS selector, or a locator.
 // Satisfied by [shared.UnionString], [CommandLocatorParam].

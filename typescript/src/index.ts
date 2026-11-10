@@ -56,10 +56,10 @@ import {
   Command,
   CommandDialog,
   CommandErrorInfo,
-  CommandEvents,
   CommandExpectation,
   CommandFrame,
   CommandLocator,
+  CommandResult,
   CommandTarget,
   Session,
   SessionAgentTracesParams,
@@ -208,6 +208,7 @@ export class Steel extends Core.APIClient {
     }
 
     this._options = options;
+    this.idempotencyHeader = 'Idempotency-Key';
 
     this.steelAPIKey = steelAPIKey;
   }
@@ -378,10 +379,10 @@ export declare namespace Steel {
     type Command as Command,
     type CommandDialog as CommandDialog,
     type CommandErrorInfo as CommandErrorInfo,
-    type CommandEvents as CommandEvents,
     type CommandExpectation as CommandExpectation,
     type CommandFrame as CommandFrame,
     type CommandLocator as CommandLocator,
+    type CommandResult as CommandResult,
     type CommandTarget as CommandTarget,
     type Session as Session,
     type SessionContext as SessionContext,

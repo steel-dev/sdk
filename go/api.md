@@ -158,6 +158,18 @@ Methods:
 - <code title="post /v1/sessions/{sessionId}/captchas/solve-image">client.Sessions.Captchas.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCaptchaService.SolveImage">SolveImage</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, sessionID <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCaptchaSolveImageParams">SessionCaptchaSolveImageParams</a>) (\*<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCaptchaSolveImageResponse">SessionCaptchaSolveImageResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="get /v1/sessions/{sessionId}/captchas/status">client.Sessions.Captchas.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCaptchaService.Status">Status</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, sessionID <a href="https://pkg.go.dev/builtin#string">string</a>) (\*[]<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCaptchaStatusResponse">SessionCaptchaStatusResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+## CommandExecutions
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCommandExecutionGetResponse">SessionCommandExecutionGetResponse</a>
+- <a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCommandExecutionCancelResponse">SessionCommandExecutionCancelResponse</a>
+
+Methods:
+
+- <code title="get /v1/sessions/{sessionId}/commands/executions/{executionId}">client.Sessions.CommandExecutions.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCommandExecutionService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, sessionID <a href="https://pkg.go.dev/builtin#string">string</a>, executionID <a href="https://pkg.go.dev/builtin#string">string</a>) (\*<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCommandExecutionGetResponse">SessionCommandExecutionGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /v1/sessions/{sessionId}/commands/executions/{executionId}/cancel">client.Sessions.CommandExecutions.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCommandExecutionService.Cancel">Cancel</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, sessionID <a href="https://pkg.go.dev/builtin#string">string</a>, executionID <a href="https://pkg.go.dev/builtin#string">string</a>) (\*<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go">steel</a>.<a href="https://pkg.go.dev/github.com/steel-dev/sdk/go#SessionCommandExecutionCancelResponse">SessionCommandExecutionCancelResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 ## Files
 
 Response Types:

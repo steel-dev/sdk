@@ -5,6 +5,7 @@ package requestconfig
 import (
 	"bytes"
 	"context"
+	cryptorand "crypto/rand"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -221,11 +222,12 @@ type RequestConfig struct {
 	BaseURL        *url.URL
 	// DefaultBaseURL will be used if BaseURL is not explicitly overridden using
 	// WithBaseURL.
-	DefaultBaseURL *url.URL
-	CustomHTTPDoer HTTPDoer
-	HTTPClient     *http.Client
-	Middlewares    []middleware
-	SteelAPIKey    string
+	DefaultBaseURL    *url.URL
+	CustomHTTPDoer    HTTPDoer
+	HTTPClient        *http.Client
+	Middlewares       []middleware
+	SteelAPIKey       string
+	IdempotencyHeader string
 	// If ResponseBodyInto not nil, then we will attempt to deserialize into
 	// ResponseBodyInto. If Destination is a []byte, then it will return the body as
 	// is.
@@ -421,6 +423,10 @@ func (cfg *RequestConfig) Execute() (err error) {
 		}
 	}
 
+	if cfg.IdempotencyHeader != "" && cfg.Request.Method != http.MethodGet && len(cfg.Request.Header.Values(cfg.IdempotencyHeader)) == 0 {
+		cfg.Request.Header.Set(cfg.IdempotencyHeader, idempotencyKey())
+	}
+
 	handler := cfg.HTTPClient.Do
 	if cfg.CustomHTTPDoer != nil {
 		handler = cfg.CustomHTTPDoer.Do
@@ -592,17 +598,26 @@ func (cfg *RequestConfig) Clone(ctx context.Context) *RequestConfig {
 		return nil
 	}
 	new := &RequestConfig{
-		MaxRetries:     cfg.MaxRetries,
-		RequestTimeout: cfg.RequestTimeout,
-		Context:        ctx,
-		Request:        req,
-		BaseURL:        cfg.BaseURL,
-		HTTPClient:     cfg.HTTPClient,
-		Middlewares:    cfg.Middlewares,
-		SteelAPIKey:    cfg.SteelAPIKey,
+		MaxRetries:        cfg.MaxRetries,
+		RequestTimeout:    cfg.RequestTimeout,
+		Context:           ctx,
+		Request:           req,
+		BaseURL:           cfg.BaseURL,
+		HTTPClient:        cfg.HTTPClient,
+		Middlewares:       cfg.Middlewares,
+		SteelAPIKey:       cfg.SteelAPIKey,
+		IdempotencyHeader: cfg.IdempotencyHeader,
 	}
 
 	return new
+}
+
+func idempotencyKey() string {
+	var b [16]byte
+	_, _ = cryptorand.Read(b[:])
+	b[6] = b[6]&0x0f | 0x40
+	b[8] = b[8]&0x3f | 0x80
+	return fmt.Sprintf("steel-go-retry-%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 }
 
 func (cfg *RequestConfig) Apply(opts ...RequestOption) error {
@@ -632,6 +647,13 @@ func PreRequestOptions(opts ...RequestOption) (RequestConfig, error) {
 		}
 	}
 	return cfg, nil
+}
+
+func WithIdempotencyHeader(header string) RequestOption {
+	return RequestOptionFunc(func(r *RequestConfig) error {
+		r.IdempotencyHeader = header
+		return nil
+	})
 }
 
 // WithDefaultBaseURL returns a RequestOption that sets the client's default Base URL.

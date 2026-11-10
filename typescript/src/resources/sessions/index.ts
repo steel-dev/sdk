@@ -8,6 +8,11 @@ export {
   type CaptchaSolveParams,
   type CaptchaSolveImageParams,
 } from './captchas';
+export {
+  CommandExecutions,
+  type CommandExecutionRetrieveResponse,
+  type CommandExecutionCancelResponse,
+} from './command-executions';
 export { Files, type FileUploadParams } from './files';
 export {
   SessionslistSessionsSessionsCursor,
@@ -15,10 +20,10 @@ export {
   type Command,
   type CommandDialog,
   type CommandErrorInfo,
-  type CommandEvents,
   type CommandExpectation,
   type CommandFrame,
   type CommandLocator,
+  type CommandResult,
   type CommandTarget,
   type Session,
   type SessionContext,

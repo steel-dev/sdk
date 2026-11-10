@@ -1,5 +1,7 @@
 pub mod captchas;
 pub use captchas::*;
+pub mod command_executions;
+pub use command_executions::*;
 pub mod files;
 pub use files::*;
 
@@ -13,6 +15,12 @@ pub struct Sessions<'a> {
 impl<'a> Sessions<'a> {
     pub fn captchas(&self) -> crate::SessionsCaptchas<'a> {
         crate::SessionsCaptchas {
+            client: self.client,
+        }
+    }
+
+    pub fn command_executions(&self) -> crate::SessionsCommandExecutions<'a> {
+        crate::SessionsCommandExecutions {
             client: self.client,
         }
     }
@@ -291,9 +299,6 @@ impl<'a> Sessions<'a> {
         );
         if let Some(value) = &params.after {
             body.insert("after".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.events_after {
-            body.insert("eventsAfter".to_owned(), serde_json::to_value(value)?);
         }
         if let Some(value) = &params.observe {
             body.insert("observe".to_owned(), serde_json::to_value(value)?);
@@ -1356,8 +1361,6 @@ pub struct SessionCommandsParams {
     pub commands: SessionCommandsParamsCommands,
     /// The next value from your last response. A retry with the same after and commands runs only once.
     pub after: Option<String>,
-    /// c-0 the first time, then the last events.cursor.
-    pub events_after: Option<String>,
     /// Returns a snapshot, or a diff against the last one, after the commands.
     pub observe: Option<SessionCommandsParamsObserve>,
     /// A random value. A retry with the same key returns the stored result.
@@ -1369,7 +1372,6 @@ impl SessionCommandsParams {
         SessionCommandsParams {
             commands,
             after: None,
-            events_after: None,
             observe: None,
             idempotency_key: None,
         }
@@ -1408,9 +1410,6 @@ pub enum SessionCommandsParamsCommands {
     ScrollCommand(SessionCommandsParamsCommandsScrollCommand),
     FindCommand(SessionCommandsParamsCommandsFindCommand),
     TabCommand(SessionCommandsParamsCommandsTabCommand),
-    StatusCommand(SessionCommandsParamsCommandsStatusCommand),
-    CancelCommand(SessionCommandsParamsCommandsCancelCommand),
-    DialogCommand(SessionCommandsParamsCommandsDialogCommand),
     Array(Vec<crate::Command>),
 }
 
@@ -2418,56 +2417,26 @@ pub enum SessionCommandsParamsCommandsScrollCommandDirection {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsFindCommand {
-    pub by: SessionCommandsParamsCommandsFindCommandBy,
     pub command: SessionCommandsParamsCommandsFindCommandCommand,
-    pub value: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub exact: Option<bool>,
+    /// A CSS selector or a locator, not a ref.
+    pub target: crate::CommandTarget,
     /// The iframe to look in. List nested iframes from the outside in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<crate::CommandFrame>,
-    /// The accessible name. Works only with by role.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
 }
 
 impl SessionCommandsParamsCommandsFindCommand {
-    pub fn new(by: SessionCommandsParamsCommandsFindCommandBy, value: String) -> Self {
+    pub fn new(target: crate::CommandTarget) -> Self {
         SessionCommandsParamsCommandsFindCommand {
-            by,
-            value,
+            target,
             command: Default::default(),
-            exact: None,
             frame: None,
-            name: None,
             tab: None,
         }
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsFindCommandBy {
-    #[serde(rename = "role")]
-    Role,
-    #[serde(rename = "text")]
-    Text,
-    #[serde(rename = "label")]
-    Label,
-    #[serde(rename = "placeholder")]
-    Placeholder,
-    #[serde(rename = "alt")]
-    Alt,
-    #[serde(rename = "title")]
-    Title,
-    #[serde(rename = "testid")]
-    Testid,
-    #[serde(rename = "css")]
-    Css,
-    #[serde(other)]
-    Unknown,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -2519,88 +2488,6 @@ pub enum SessionCommandsParamsCommandsTabCommandCommand {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsParamsCommandsStatusCommand {
-    pub command: SessionCommandsParamsCommandsStatusCommandCommand,
-    pub execution: String,
-}
-
-impl SessionCommandsParamsCommandsStatusCommand {
-    pub fn new(execution: String) -> Self {
-        SessionCommandsParamsCommandsStatusCommand {
-            execution,
-            command: Default::default(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsStatusCommandCommand {
-    #[default]
-    #[serde(rename = "status")]
-    Status,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsParamsCommandsCancelCommand {
-    pub command: SessionCommandsParamsCommandsCancelCommandCommand,
-    pub execution: String,
-}
-
-impl SessionCommandsParamsCommandsCancelCommand {
-    pub fn new(execution: String) -> Self {
-        SessionCommandsParamsCommandsCancelCommand {
-            execution,
-            command: Default::default(),
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsCancelCommandCommand {
-    #[default]
-    #[serde(rename = "cancel")]
-    Cancel,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsParamsCommandsDialogCommand {
-    pub action: SessionCommandsParamsCommandsDialogCommandAction,
-    pub command: SessionCommandsParamsCommandsDialogCommandCommand,
-    pub dialog: String,
-    /// The answer to a prompt.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text: Option<String>,
-}
-
-impl SessionCommandsParamsCommandsDialogCommand {
-    pub fn new(action: SessionCommandsParamsCommandsDialogCommandAction, dialog: String) -> Self {
-        SessionCommandsParamsCommandsDialogCommand {
-            action,
-            dialog,
-            command: Default::default(),
-            text: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsDialogCommandAction {
-    #[serde(rename = "accept")]
-    Accept,
-    #[serde(rename = "dismiss")]
-    Dismiss,
-    #[serde(other)]
-    Unknown,
-}
-
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsDialogCommandCommand {
-    #[default]
-    #[serde(rename = "dialog")]
-    Dialog,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsObserve {
     pub mode: SessionCommandsParamsObserveMode,
     /// A snapshot id to diff against.
@@ -2646,63 +2533,52 @@ pub enum SessionCommandsParamsObserveMode {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum SessionCommandsResponse {
-    CommandsExecution(SessionCommandsResponseCommandsExecution),
-    CommandsDialogAnswer(SessionCommandsResponseCommandsDialogAnswer),
-    Unknown(serde_json::Value),
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseCommandsExecution {
-    /// Goes up when commands or a dialog answer change the page, and when the browser restarts.
-    pub epoch: i64,
-    pub execution: SessionCommandsResponseCommandsExecutionExecution,
+pub struct SessionCommandsResponse {
+    /// The id of this execution, the same as execution.id. Use it to get or cancel the execution.
+    pub id: String,
+    pub execution: SessionCommandsResponseExecution,
     /// The tab the execution used.
     #[serde(default)]
-    pub page: Option<SessionCommandsResponseCommandsExecutionPage>,
-    pub results: Vec<SessionCommandsResponseCommandsExecutionResult>,
+    pub page: Option<SessionCommandsResponsePage>,
+    pub results: Vec<crate::CommandResult>,
     #[serde(
         rename = "bodyExpired",
         default,
         skip_serializing_if = "Option::is_none"
     )]
     pub body_expired: Option<bool>,
-    /// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
+    /// A dialog that is open on the tab and blocks it until it closes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dialog: Option<crate::CommandDialog>,
-    /// Whether another Commands API client changed the session since after.
+    /// Set when the execution ran with after. Whether another execution, a quick action, or a browser restart changed the session since then. Input from CDP clients or the live view does not count.
     #[serde(
         rename = "epochChanged",
         default,
         skip_serializing_if = "Option::is_none"
     )]
     pub epoch_changed: Option<bool>,
-    /// Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub events: Option<crate::CommandEvents>,
     /// Send it as after in the next request.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub next: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub observe: Option<SessionCommandsResponseCommandsExecutionObserve>,
+    pub observe: Option<SessionCommandsResponseObserve>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseCommandsExecutionExecution {
+pub struct SessionCommandsResponseExecution {
     pub id: String,
     /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: SessionCommandsResponseCommandsExecutionExecutionEffect,
+    pub effect: SessionCommandsResponseExecutionEffect,
     /// Commands started.
     pub ran: i64,
     pub replayed: bool,
-    pub state: SessionCommandsResponseCommandsExecutionExecutionState,
+    pub state: SessionCommandsResponseExecutionState,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsResponseCommandsExecutionExecutionEffect {
+pub enum SessionCommandsResponseExecutionEffect {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "applied")]
@@ -2714,7 +2590,7 @@ pub enum SessionCommandsResponseCommandsExecutionExecutionEffect {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsResponseCommandsExecutionExecutionState {
+pub enum SessionCommandsResponseExecutionState {
     #[serde(rename = "queued")]
     Queued,
     #[serde(rename = "running")]
@@ -2734,35 +2610,14 @@ pub enum SessionCommandsResponseCommandsExecutionExecutionState {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseCommandsExecutionPage {
+pub struct SessionCommandsResponsePage {
     pub tab: String,
     pub title: String,
     pub url: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseCommandsExecutionResult {
-    /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: SessionCommandsResponseCommandsExecutionResultEffect,
-    pub ok: bool,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error: Option<crate::CommandErrorInfo>,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsResponseCommandsExecutionResultEffect {
-    #[serde(rename = "none")]
-    None,
-    #[serde(rename = "applied")]
-    Applied,
-    #[serde(rename = "unknown")]
-    Unknown,
-    #[serde(other)]
-    Other,
-}
-
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseCommandsExecutionObserve {
+pub struct SessionCommandsResponseObserve {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub additions: Option<i64>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2783,16 +2638,6 @@ pub struct SessionCommandsResponseCommandsExecutionObserve {
         skip_serializing_if = "Option::is_none"
     )]
     pub snapshot_id: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseCommandsDialogAnswer {
-    /// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
-    pub answered: crate::CommandDialog,
-    pub epoch: i64,
-    /// Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub events: Option<crate::CommandEvents>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3338,12 +3183,6 @@ pub enum Command {
     Find(CommandFind),
     #[serde(rename = "tab")]
     Tab(CommandTab),
-    #[serde(rename = "status")]
-    Status(CommandStatus),
-    #[serde(rename = "cancel")]
-    Cancel(CommandCancel),
-    #[serde(rename = "dialog")]
-    Dialog(CommandDialogInline),
 }
 
 /// Opens a URL in the tab. Only http, https, and about:blank. A URL without a scheme gets https://.
@@ -4122,57 +3961,27 @@ pub enum CommandScrollDirection {
     Unknown,
 }
 
-/// Finds elements and returns refs for up to 50 matches.
+/// Finds elements and returns refs for up to 50 matches. With nth, it returns that one match.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandFind {
-    pub by: CommandFindBy,
-    pub value: String,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub exact: Option<bool>,
+    /// A CSS selector or a locator, not a ref.
+    pub target: crate::CommandTarget,
     /// The iframe to look in. List nested iframes from the outside in.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub frame: Option<crate::CommandFrame>,
-    /// The accessible name. Works only with by role.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
 }
 
 impl CommandFind {
-    pub fn new(by: CommandFindBy, value: String) -> Self {
+    pub fn new(target: crate::CommandTarget) -> Self {
         CommandFind {
-            by,
-            value,
-            exact: None,
+            target,
             frame: None,
-            name: None,
             tab: None,
         }
     }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandFindBy {
-    #[serde(rename = "role")]
-    Role,
-    #[serde(rename = "text")]
-    Text,
-    #[serde(rename = "label")]
-    Label,
-    #[serde(rename = "placeholder")]
-    Placeholder,
-    #[serde(rename = "alt")]
-    Alt,
-    #[serde(rename = "title")]
-    Title,
-    #[serde(rename = "testid")]
-    Testid,
-    #[serde(rename = "css")]
-    Css,
-    #[serde(other)]
-    Unknown,
 }
 
 /// Lists, opens, or closes tabs. The last tab cannot be closed.
@@ -4208,60 +4017,6 @@ pub enum CommandTabAction {
     Unknown,
 }
 
-/// Waits for an execution and returns it. Send it alone.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandStatus {
-    pub execution: String,
-}
-
-impl CommandStatus {
-    pub fn new(execution: String) -> Self {
-        CommandStatus { execution }
-    }
-}
-
-/// Stops an execution. Send it alone.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandCancel {
-    pub execution: String,
-}
-
-impl CommandCancel {
-    pub fn new(execution: String) -> Self {
-        CommandCancel { execution }
-    }
-}
-
-/// Answers an open dialog. Send it alone.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandDialogInline {
-    pub action: CommandDialogInlineAction,
-    pub dialog: String,
-    /// The answer to a prompt.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text: Option<String>,
-}
-
-impl CommandDialogInline {
-    pub fn new(action: CommandDialogInlineAction, dialog: String) -> Self {
-        CommandDialogInline {
-            action,
-            dialog,
-            text: None,
-        }
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandDialogInlineAction {
-    #[serde(rename = "accept")]
-    Accept,
-    #[serde(rename = "dismiss")]
-    Dismiss,
-    #[serde(other)]
-    Unknown,
-}
-
 /// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandDialog {
@@ -4269,18 +4024,12 @@ pub struct CommandDialog {
     pub message: String,
     pub tab: String,
     pub r#type: CommandDialogType,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub accepted: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub by: Option<CommandDialogBy>,
     #[serde(
         rename = "defaultPrompt",
         default,
         skip_serializing_if = "Option::is_none"
     )]
     pub default_prompt: Option<String>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub text: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4297,18 +4046,6 @@ pub enum CommandDialogType {
     Unknown,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandDialogBy {
-    #[serde(rename = "command")]
-    Command,
-    #[serde(rename = "client")]
-    Client,
-    #[serde(rename = "closed")]
-    Closed,
-    #[serde(other)]
-    Unknown,
-}
-
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandErrorInfo {
     /// Error code, such as stale_ref or not_actionable.
@@ -4317,25 +4054,6 @@ pub struct CommandErrorInfo {
     /// More detail, such as covered or detached.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub reason: Option<String>,
-}
-
-/// Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandEvents {
-    pub cursor: String,
-    pub items: Vec<CommandEventsItem>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub more: Option<bool>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub truncated: Option<bool>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandEventsItem {
-    pub id: String,
-    pub at: String,
-    pub tab: String,
-    pub r#type: String,
 }
 
 /// Fails the command when the element does not have this role or name.
@@ -4384,6 +4102,1122 @@ pub struct CommandLocator {
     pub text: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub title: Option<String>,
+}
+
+/// Result of one command, with the fields of that command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CommandResult {
+    Navigate(CommandResultNavigate),
+    Back(CommandResultBack),
+    Forward(CommandResultForward),
+    Reload(CommandResultReload),
+    Snapshot(CommandResultSnapshot),
+    Click(CommandResultClick),
+    Dblclick(CommandResultDblclick),
+    Hover(CommandResultHover),
+    Focus(CommandResultFocus),
+    Type(CommandResultType),
+    Fill(CommandResultFill),
+    Press(CommandResultPress),
+    Keydown(CommandResultKeydown),
+    Keyup(CommandResultKeyup),
+    Mouse(CommandResultMouse),
+    Select(CommandResultSelect),
+    Check(CommandResultCheck),
+    Uncheck(CommandResultUncheck),
+    Upload(CommandResultUpload),
+    Drag(CommandResultDrag),
+    Get(CommandResultGet),
+    Is(CommandResultIs),
+    Wait(CommandResultWait),
+    Screenshot(CommandResultScreenshot),
+    Eval(CommandResultEval),
+    Pdf(CommandResultPdf),
+    Scroll(CommandResultScroll),
+    Find(CommandResultFind),
+    Tab(CommandResultTab),
+    Unknown(serde_json::Value),
+}
+
+/// Result of a navigate command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultNavigate {
+    pub command: CommandResultNavigateCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultNavigateEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultNavigateCommand {
+    #[default]
+    #[serde(rename = "navigate")]
+    Navigate,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultNavigateEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a back command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultBack {
+    pub command: CommandResultBackCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultBackEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// False when there was no history entry.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub navigated: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultBackCommand {
+    #[default]
+    #[serde(rename = "back")]
+    Back,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultBackEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a forward command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultForward {
+    pub command: CommandResultForwardCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultForwardEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// False when there was no history entry.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub navigated: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultForwardCommand {
+    #[default]
+    #[serde(rename = "forward")]
+    Forward,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultForwardEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a reload command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultReload {
+    pub command: CommandResultReloadCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultReloadEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultReloadCommand {
+    #[default]
+    #[serde(rename = "reload")]
+    Reload,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultReloadEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a snapshot command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultSnapshot {
+    pub command: CommandResultSnapshotCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultSnapshotEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub snapshot: Option<String>,
+    #[serde(
+        rename = "snapshotId",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub snapshot_id: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultSnapshotCommand {
+    #[default]
+    #[serde(rename = "snapshot")]
+    Snapshot,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultSnapshotEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a click command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultClick {
+    pub command: CommandResultClickCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultClickEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultClickCommand {
+    #[default]
+    #[serde(rename = "click")]
+    Click,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultClickEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a dblclick command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultDblclick {
+    pub command: CommandResultDblclickCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultDblclickEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultDblclickCommand {
+    #[default]
+    #[serde(rename = "dblclick")]
+    Dblclick,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultDblclickEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a hover command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultHover {
+    pub command: CommandResultHoverCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultHoverEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultHoverCommand {
+    #[default]
+    #[serde(rename = "hover")]
+    Hover,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultHoverEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a focus command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultFocus {
+    pub command: CommandResultFocusCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultFocusEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultFocusCommand {
+    #[default]
+    #[serde(rename = "focus")]
+    Focus,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultFocusEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a type command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultType {
+    pub command: CommandResultTypeCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultTypeEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultTypeCommand {
+    #[default]
+    #[serde(rename = "type")]
+    Type,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultTypeEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a fill command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultFill {
+    pub command: CommandResultFillCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultFillEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultFillCommand {
+    #[default]
+    #[serde(rename = "fill")]
+    Fill,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultFillEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a press command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultPress {
+    pub command: CommandResultPressCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultPressEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultPressCommand {
+    #[default]
+    #[serde(rename = "press")]
+    Press,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultPressEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a keydown command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultKeydown {
+    pub command: CommandResultKeydownCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultKeydownEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultKeydownCommand {
+    #[default]
+    #[serde(rename = "keydown")]
+    Keydown,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultKeydownEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a keyup command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultKeyup {
+    pub command: CommandResultKeyupCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultKeyupEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultKeyupCommand {
+    #[default]
+    #[serde(rename = "keyup")]
+    Keyup,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultKeyupEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a mouse command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultMouse {
+    pub command: CommandResultMouseCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultMouseEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultMouseCommand {
+    #[default]
+    #[serde(rename = "mouse")]
+    Mouse,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultMouseEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a select command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultSelect {
+    pub command: CommandResultSelectCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultSelectEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+    /// The values of the selected options.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selected: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultSelectCommand {
+    #[default]
+    #[serde(rename = "select")]
+    Select,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultSelectEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a check command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultCheck {
+    pub command: CommandResultCheckCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultCheckEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub checked: Option<bool>,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultCheckCommand {
+    #[default]
+    #[serde(rename = "check")]
+    Check,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultCheckEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a uncheck command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultUncheck {
+    pub command: CommandResultUncheckCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultUncheckEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub checked: Option<bool>,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultUncheckCommand {
+    #[default]
+    #[serde(rename = "uncheck")]
+    Uncheck,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultUncheckEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a upload command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultUpload {
+    pub command: CommandResultUploadCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultUploadEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub files: Option<Vec<String>>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultUploadCommand {
+    #[default]
+    #[serde(rename = "upload")]
+    Upload,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultUploadEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a drag command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultDrag {
+    pub command: CommandResultDragCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultDragEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultDragCommand {
+    #[default]
+    #[serde(rename = "drag")]
+    Drag,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultDragEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a get command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultGet {
+    pub command: CommandResultGetCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultGetEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The value is a secret, so it is left out.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub masked: Option<bool>,
+    /// A string for text, html, markdown, value, attr, title, and url. A number for count. { x, y, width, height } or null for box. A list of locators for locator.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultGetCommand {
+    #[default]
+    #[serde(rename = "get")]
+    Get,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultGetEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a is command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultIs {
+    pub command: CommandResultIsCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultIsEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<bool>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultIsCommand {
+    #[default]
+    #[serde(rename = "is")]
+    Is,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultIsEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a wait command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultWait {
+    pub command: CommandResultWaitCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultWaitEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bytes: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The downloaded file, for download.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub file: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub waited: Option<CommandResultWaitWaited>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultWaitCommand {
+    #[default]
+    #[serde(rename = "wait")]
+    Wait,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultWaitEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultWaitWaited {
+    #[serde(rename = "ms")]
+    Ms,
+    #[serde(rename = "target")]
+    Target,
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "url")]
+    Url,
+    #[serde(rename = "load")]
+    Load,
+    #[serde(rename = "download")]
+    Download,
+    #[serde(other)]
+    Unknown,
+}
+
+/// Result of a screenshot command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultScreenshot {
+    pub command: CommandResultScreenshotCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultScreenshotEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub data: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format: Option<CommandResultScreenshotFormat>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultScreenshotCommand {
+    #[default]
+    #[serde(rename = "screenshot")]
+    Screenshot,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultScreenshotEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultScreenshotFormat {
+    #[serde(rename = "png")]
+    Png,
+    #[serde(rename = "jpeg")]
+    Jpeg,
+    #[serde(rename = "webp")]
+    Webp,
+    #[serde(other)]
+    Unknown,
+}
+
+/// Result of a eval command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultEval {
+    pub command: CommandResultEvalCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultEvalEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The command started a navigation that was still loading when it returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+    /// The result of the script as JSON.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub value: Option<serde_json::Value>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultEvalCommand {
+    #[default]
+    #[serde(rename = "eval")]
+    Eval,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultEvalEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a pdf command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultPdf {
+    pub command: CommandResultPdfCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultPdfEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub data: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub format: Option<CommandResultPdfFormat>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultPdfCommand {
+    #[default]
+    #[serde(rename = "pdf")]
+    Pdf,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultPdfEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultPdfFormat {
+    #[serde(rename = "pdf")]
+    Pdf,
+    #[serde(other)]
+    Unknown,
+}
+
+/// Result of a scroll command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultScroll {
+    pub command: CommandResultScrollCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultScrollEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub moved: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub x: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub y: Option<f64>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultScrollCommand {
+    #[default]
+    #[serde(rename = "scroll")]
+    Scroll,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultScrollEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+/// Result of a find command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultFind {
+    pub command: CommandResultFindCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultFindEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub count: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub matches: Option<Vec<CommandResultFindMatch>>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultFindCommand {
+    #[default]
+    #[serde(rename = "find")]
+    Find,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultFindEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultFindMatch {
+    pub name: String,
+    pub r#ref: String,
+    pub role: String,
+}
+
+/// Result of a tab command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultTab {
+    pub command: CommandResultTabCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultTabEffect,
+    pub ok: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tab: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tabs: Option<Vec<CommandResultTabTab>>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultTabCommand {
+    #[default]
+    #[serde(rename = "tab")]
+    Tab,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultTabEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultTabTab {
+    pub tab: String,
+    pub title: String,
+    pub url: String,
 }
 
 /// A ref from a snapshot such as e12, a CSS selector, or a locator.

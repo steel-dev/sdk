@@ -315,7 +315,6 @@ internal class SessionServiceTest {
                             .build()
                     )
                     .after("x")
-                    .eventsAfter("c-321669910225")
                     .observe(
                         SessionCommandsParams.Observe.builder()
                             .mode(SessionCommandsParams.Observe.Mode.NONE)

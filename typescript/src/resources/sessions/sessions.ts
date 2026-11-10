@@ -13,6 +13,12 @@ import {
   CaptchaStatusResponse,
   Captchas,
 } from './captchas';
+import * as CommandExecutionsAPI from './command-executions';
+import {
+  CommandExecutionCancelResponse,
+  CommandExecutionRetrieveResponse,
+  CommandExecutions,
+} from './command-executions';
 import * as FilesAPI from './files';
 import { FileUploadParams, Files } from './files';
 import { type Response } from '../../_shims/index';
@@ -20,6 +26,9 @@ import { SessionsCursor, type SessionsCursorParams } from '../../pagination';
 
 export class Sessions extends APIResource {
   captchas: CaptchasAPI.Captchas = new CaptchasAPI.Captchas(this._client);
+  commandExecutions: CommandExecutionsAPI.CommandExecutions = new CommandExecutionsAPI.CommandExecutions(
+    this._client,
+  );
   files: FilesAPI.Files = new FilesAPI.Files(this._client);
 
   /**
@@ -285,10 +294,7 @@ export type Command =
   | Command.PdfCommand
   | Command.ScrollCommand
   | Command.FindCommand
-  | Command.TabCommand
-  | Command.StatusCommand
-  | Command.CancelCommand
-  | Command.DialogCommand;
+  | Command.TabCommand;
 
 export namespace Command {
   /**
@@ -986,26 +992,21 @@ export namespace Command {
   }
 
   /**
-   * Finds elements and returns refs for up to 50 matches.
+   * Finds elements and returns refs for up to 50 matches. With nth, it returns that
+   * one match.
    */
   export interface FindCommand {
-    by: 'role' | 'text' | 'label' | 'placeholder' | 'alt' | 'title' | 'testid' | 'css';
-
     command: 'find';
 
-    value: string;
-
-    exact?: boolean;
+    /**
+     * A CSS selector or a locator, not a ref.
+     */
+    target: SessionsAPI.CommandTarget;
 
     /**
      * The iframe to look in. List nested iframes from the outside in.
      */
     frame?: SessionsAPI.CommandFrame;
-
-    /**
-     * The accessible name. Works only with by role.
-     */
-    name?: string;
 
     /**
      * A tab id such as t2. A command on a ref does not need it.
@@ -1028,40 +1029,6 @@ export namespace Command {
 
     url?: string;
   }
-
-  /**
-   * Waits for an execution and returns it. Send it alone.
-   */
-  export interface StatusCommand {
-    command: 'status';
-
-    execution: string;
-  }
-
-  /**
-   * Stops an execution. Send it alone.
-   */
-  export interface CancelCommand {
-    command: 'cancel';
-
-    execution: string;
-  }
-
-  /**
-   * Answers an open dialog. Send it alone.
-   */
-  export interface DialogCommand {
-    action: 'accept' | 'dismiss';
-
-    command: 'dialog';
-
-    dialog: string;
-
-    /**
-     * The answer to a prompt.
-     */
-    text?: string;
-  }
 }
 
 /**
@@ -1076,13 +1043,7 @@ export interface CommandDialog {
 
   type: 'alert' | 'confirm' | 'prompt' | 'beforeunload';
 
-  accepted?: boolean;
-
-  by?: 'command' | 'client' | 'closed';
-
   defaultPrompt?: string;
-
-  text?: string;
 }
 
 export interface CommandErrorInfo {
@@ -1097,33 +1058,6 @@ export interface CommandErrorInfo {
    * More detail, such as covered or detached.
    */
   reason?: string;
-}
-
-/**
- * Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.
- */
-export interface CommandEvents {
-  cursor: string;
-
-  items: Array<CommandEvents.Item>;
-
-  more?: boolean;
-
-  truncated?: boolean;
-}
-
-export namespace CommandEvents {
-  export interface Item {
-    id: string;
-
-    at: string;
-
-    tab: string;
-
-    type: string;
-
-    [k: string]: unknown;
-  }
 }
 
 /**
@@ -1175,6 +1109,753 @@ export interface CommandLocator {
   text?: string;
 
   title?: string;
+}
+
+/**
+ * Result of one command, with the fields of that command.
+ */
+export type CommandResult =
+  | CommandResult.NavigateResult
+  | CommandResult.BackResult
+  | CommandResult.ForwardResult
+  | CommandResult.ReloadResult
+  | CommandResult.SnapshotResult
+  | CommandResult.ClickResult
+  | CommandResult.DblclickResult
+  | CommandResult.HoverResult
+  | CommandResult.FocusResult
+  | CommandResult.TypeResult
+  | CommandResult.FillResult
+  | CommandResult.PressResult
+  | CommandResult.KeydownResult
+  | CommandResult.KeyupResult
+  | CommandResult.MouseResult
+  | CommandResult.SelectResult
+  | CommandResult.CheckResult
+  | CommandResult.UncheckResult
+  | CommandResult.UploadResult
+  | CommandResult.DragResult
+  | CommandResult.GetResult
+  | CommandResult.IsResult
+  | CommandResult.WaitResult
+  | CommandResult.ScreenshotResult
+  | CommandResult.EvalResult
+  | CommandResult.PdfResult
+  | CommandResult.ScrollResult
+  | CommandResult.FindResult
+  | CommandResult.TabResult;
+
+export namespace CommandResult {
+  /**
+   * Result of a navigate command.
+   */
+  export interface NavigateResult {
+    command: 'navigate';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    url?: string;
+  }
+
+  /**
+   * Result of a back command.
+   */
+  export interface BackResult {
+    command: 'back';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * False when there was no history entry.
+     */
+    navigated?: boolean;
+
+    url?: string;
+  }
+
+  /**
+   * Result of a forward command.
+   */
+  export interface ForwardResult {
+    command: 'forward';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * False when there was no history entry.
+     */
+    navigated?: boolean;
+
+    url?: string;
+  }
+
+  /**
+   * Result of a reload command.
+   */
+  export interface ReloadResult {
+    command: 'reload';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    url?: string;
+  }
+
+  /**
+   * Result of a snapshot command.
+   */
+  export interface SnapshotResult {
+    command: 'snapshot';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    snapshot?: string;
+
+    snapshotId?: string;
+  }
+
+  /**
+   * Result of a click command.
+   */
+  export interface ClickResult {
+    command: 'click';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a dblclick command.
+   */
+  export interface DblclickResult {
+    command: 'dblclick';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a hover command.
+   */
+  export interface HoverResult {
+    command: 'hover';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+  }
+
+  /**
+   * Result of a focus command.
+   */
+  export interface FocusResult {
+    command: 'focus';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+  }
+
+  /**
+   * Result of a type command.
+   */
+  export interface TypeResult {
+    command: 'type';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a fill command.
+   */
+  export interface FillResult {
+    command: 'fill';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a press command.
+   */
+  export interface PressResult {
+    command: 'press';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a keydown command.
+   */
+  export interface KeydownResult {
+    command: 'keydown';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a keyup command.
+   */
+  export interface KeyupResult {
+    command: 'keyup';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a mouse command.
+   */
+  export interface MouseResult {
+    command: 'mouse';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a select command.
+   */
+  export interface SelectResult {
+    command: 'select';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+
+    /**
+     * The values of the selected options.
+     */
+    selected?: Array<string>;
+  }
+
+  /**
+   * Result of a check command.
+   */
+  export interface CheckResult {
+    command: 'check';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    checked?: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a uncheck command.
+   */
+  export interface UncheckResult {
+    command: 'uncheck';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    checked?: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a upload command.
+   */
+  export interface UploadResult {
+    command: 'upload';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    files?: Array<string>;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a drag command.
+   */
+  export interface DragResult {
+    command: 'drag';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+  }
+
+  /**
+   * Result of a get command.
+   */
+  export interface GetResult {
+    command: 'get';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The value is a secret, so it is left out.
+     */
+    masked?: boolean;
+
+    /**
+     * A string for text, html, markdown, value, attr, title, and url. A number for
+     * count. { x, y, width, height } or null for box. A list of locators for locator.
+     */
+    value?: unknown;
+  }
+
+  /**
+   * Result of a is command.
+   */
+  export interface IsResult {
+    command: 'is';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    value?: boolean;
+  }
+
+  /**
+   * Result of a wait command.
+   */
+  export interface WaitResult {
+    command: 'wait';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    bytes?: number;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The downloaded file, for download.
+     */
+    file?: string;
+
+    waited?: 'ms' | 'target' | 'text' | 'url' | 'load' | 'download';
+  }
+
+  /**
+   * Result of a screenshot command.
+   */
+  export interface ScreenshotResult {
+    command: 'screenshot';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    data?: string;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    format?: 'png' | 'jpeg' | 'webp';
+  }
+
+  /**
+   * Result of a eval command.
+   */
+  export interface EvalResult {
+    command: 'eval';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The command started a navigation that was still loading when it returned.
+     */
+    loading?: boolean;
+
+    /**
+     * The result of the script as JSON.
+     */
+    value?: unknown;
+  }
+
+  /**
+   * Result of a pdf command.
+   */
+  export interface PdfResult {
+    command: 'pdf';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    data?: string;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    format?: 'pdf';
+  }
+
+  /**
+   * Result of a scroll command.
+   */
+  export interface ScrollResult {
+    command: 'scroll';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    moved?: boolean;
+
+    x?: number;
+
+    y?: number;
+  }
+
+  /**
+   * Result of a find command.
+   */
+  export interface FindResult {
+    command: 'find';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    count?: number;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    matches?: Array<FindResult.Match>;
+  }
+
+  export namespace FindResult {
+    export interface Match {
+      name: string;
+
+      ref: string;
+
+      role: string;
+    }
+  }
+
+  /**
+   * Result of a tab command.
+   */
+  export interface TabResult {
+    command: 'tab';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    tab?: string;
+
+    tabs?: Array<TabResult.Tab>;
+  }
+
+  export namespace TabResult {
+    export interface Tab {
+      tab: string;
+
+      title: string;
+
+      url: string;
+    }
+  }
 }
 
 /**
@@ -1917,138 +2598,92 @@ export interface SessionAgentTracesResponse {
   total: number;
 }
 
-/**
- * Response to the dialog command.
- */
-export type SessionCommandsResponse =
-  | SessionCommandsResponse.CommandsExecution
-  | SessionCommandsResponse.CommandsDialogAnswer;
+export interface SessionCommandsResponse {
+  /**
+   * The id of this execution, the same as execution.id. Use it to get or cancel the
+   * execution.
+   */
+  id: string;
+
+  execution: SessionCommandsResponse.Execution;
+
+  /**
+   * The tab the execution used.
+   */
+  page: SessionCommandsResponse.Page | null;
+
+  results: Array<CommandResult>;
+
+  bodyExpired?: boolean;
+
+  /**
+   * A dialog that is open on the tab and blocks it until it closes.
+   */
+  dialog?: CommandDialog;
+
+  /**
+   * Set when the execution ran with after. Whether another execution, a quick
+   * action, or a browser restart changed the session since then. Input from CDP
+   * clients or the live view does not count.
+   */
+  epochChanged?: boolean;
+
+  /**
+   * Send it as after in the next request.
+   */
+  next?: string;
+
+  observe?: SessionCommandsResponse.Observe;
+}
 
 export namespace SessionCommandsResponse {
-  export interface CommandsExecution {
-    /**
-     * Goes up when commands or a dialog answer change the page, and when the browser
-     * restarts.
-     */
-    epoch: number;
-
-    execution: CommandsExecution.Execution;
+  export interface Execution {
+    id: string;
 
     /**
-     * The tab the execution used.
+     * What happened to the page: nothing, a change, or a possible change.
      */
-    page: CommandsExecution.Page | null;
-
-    results: Array<CommandsExecution.Result>;
-
-    bodyExpired?: boolean;
+    effect: 'none' | 'applied' | 'unknown';
 
     /**
-     * A JavaScript dialog: alert, confirm, prompt, or beforeunload.
+     * Commands started.
      */
-    dialog?: SessionsAPI.CommandDialog;
+    ran: number;
 
-    /**
-     * Whether another Commands API client changed the session since after.
-     */
-    epochChanged?: boolean;
+    replayed: boolean;
 
-    /**
-     * Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.
-     */
-    events?: SessionsAPI.CommandEvents;
+    state: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout' | 'expired';
 
-    /**
-     * Send it as after in the next request.
-     */
-    next?: string;
-
-    observe?: CommandsExecution.Observe;
-  }
-
-  export namespace CommandsExecution {
-    export interface Execution {
-      id: string;
-
-      /**
-       * What happened to the page: nothing, a change, or a possible change.
-       */
-      effect: 'none' | 'applied' | 'unknown';
-
-      /**
-       * Commands started.
-       */
-      ran: number;
-
-      replayed: boolean;
-
-      state: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout' | 'expired';
-
-      error?: SessionsAPI.CommandErrorInfo;
-    }
-
-    /**
-     * The tab the execution used.
-     */
-    export interface Page {
-      tab: string;
-
-      title: string;
-
-      url: string;
-    }
-
-    /**
-     * Result of one command. Commands add their own fields, such as snapshot, value,
-     * url, or loading.
-     */
-    export interface Result {
-      /**
-       * What happened to the page: nothing, a change, or a possible change.
-       */
-      effect: 'none' | 'applied' | 'unknown';
-
-      ok: boolean;
-
-      error?: SessionsAPI.CommandErrorInfo;
-
-      [k: string]: unknown;
-    }
-
-    export interface Observe {
-      additions?: number;
-
-      base?: string;
-
-      diff?: string;
-
-      error?: SessionsAPI.CommandErrorInfo;
-
-      full?: boolean;
-
-      removals?: number;
-
-      snapshot?: string;
-
-      snapshotId?: string;
-    }
+    error?: SessionsAPI.CommandErrorInfo;
   }
 
   /**
-   * Response to the dialog command.
+   * The tab the execution used.
    */
-  export interface CommandsDialogAnswer {
-    /**
-     * A JavaScript dialog: alert, confirm, prompt, or beforeunload.
-     */
-    answered: SessionsAPI.CommandDialog;
+  export interface Page {
+    tab: string;
 
-    epoch: number;
+    title: string;
 
-    /**
-     * Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.
-     */
-    events?: SessionsAPI.CommandEvents;
+    url: string;
+  }
+
+  export interface Observe {
+    additions?: number;
+
+    base?: string;
+
+    diff?: string;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    full?: boolean;
+
+    removals?: number;
+
+    snapshot?: string;
+
+    snapshotId?: string;
   }
 }
 
@@ -4203,9 +4838,6 @@ export interface SessionCommandsParams {
     | SessionCommandsParams.ScrollCommand
     | SessionCommandsParams.FindCommand
     | SessionCommandsParams.TabCommand
-    | SessionCommandsParams.StatusCommand
-    | SessionCommandsParams.CancelCommand
-    | SessionCommandsParams.DialogCommand
     | Array<Command>;
 
   /**
@@ -4213,11 +4845,6 @@ export interface SessionCommandsParams {
    * and commands runs only once.
    */
   after?: string;
-
-  /**
-   * Body param: c-0 the first time, then the last events.cursor.
-   */
-  eventsAfter?: string;
 
   /**
    * Body param: Returns a snapshot, or a diff against the last one, after the
@@ -4928,26 +5555,21 @@ export namespace SessionCommandsParams {
   }
 
   /**
-   * Finds elements and returns refs for up to 50 matches.
+   * Finds elements and returns refs for up to 50 matches. With nth, it returns that
+   * one match.
    */
   export interface FindCommand {
-    by: 'role' | 'text' | 'label' | 'placeholder' | 'alt' | 'title' | 'testid' | 'css';
-
     command: 'find';
 
-    value: string;
-
-    exact?: boolean;
+    /**
+     * A CSS selector or a locator, not a ref.
+     */
+    target: SessionsAPI.CommandTarget;
 
     /**
      * The iframe to look in. List nested iframes from the outside in.
      */
     frame?: SessionsAPI.CommandFrame;
-
-    /**
-     * The accessible name. Works only with by role.
-     */
-    name?: string;
 
     /**
      * A tab id such as t2. A command on a ref does not need it.
@@ -4969,40 +5591,6 @@ export namespace SessionCommandsParams {
     tab?: string;
 
     url?: string;
-  }
-
-  /**
-   * Waits for an execution and returns it. Send it alone.
-   */
-  export interface StatusCommand {
-    command: 'status';
-
-    execution: string;
-  }
-
-  /**
-   * Stops an execution. Send it alone.
-   */
-  export interface CancelCommand {
-    command: 'cancel';
-
-    execution: string;
-  }
-
-  /**
-   * Answers an open dialog. Send it alone.
-   */
-  export interface DialogCommand {
-    action: 'accept' | 'dismiss';
-
-    command: 'dialog';
-
-    dialog: string;
-
-    /**
-     * The answer to a prompt.
-     */
-    text?: string;
   }
 
   /**
@@ -5273,6 +5861,7 @@ export interface SessionUpdateMetadataParams {
 
 Sessions.SessionslistSessionsSessionsCursor = SessionslistSessionsSessionsCursor;
 Sessions.Captchas = Captchas;
+Sessions.CommandExecutions = CommandExecutions;
 Sessions.Files = Files;
 
 export declare namespace Sessions {
@@ -5280,10 +5869,10 @@ export declare namespace Sessions {
     type Command as Command,
     type CommandDialog as CommandDialog,
     type CommandErrorInfo as CommandErrorInfo,
-    type CommandEvents as CommandEvents,
     type CommandExpectation as CommandExpectation,
     type CommandFrame as CommandFrame,
     type CommandLocator as CommandLocator,
+    type CommandResult as CommandResult,
     type CommandTarget as CommandTarget,
     type Session as Session,
     type SessionContext as SessionContext,
@@ -5320,6 +5909,12 @@ export declare namespace Sessions {
     type CaptchaStatusResponse as CaptchaStatusResponse,
     type CaptchaSolveParams as CaptchaSolveParams,
     type CaptchaSolveImageParams as CaptchaSolveImageParams,
+  };
+
+  export {
+    CommandExecutions as CommandExecutions,
+    type CommandExecutionRetrieveResponse as CommandExecutionRetrieveResponse,
+    type CommandExecutionCancelResponse as CommandExecutionCancelResponse,
   };
 
   export { Files as Files, type FileUploadParams as FileUploadParams };

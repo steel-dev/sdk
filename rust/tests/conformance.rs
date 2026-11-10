@@ -1621,7 +1621,7 @@ async fn sessions_agent_traces_escaped() {
 #[tokio::test]
 async fn sessions_commands_full() {
     harness::conform("sessions.commands/full", |client| async move {
-        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: Some("t321669910225".to_owned()) }), after: Some("x".to_owned()), events_after: Some("c-321669910225".to_owned()), observe: Some(steel_rs::SessionCommandsParamsObserve { mode: steel_rs::SessionCommandsParamsObserveMode::None, base: Some("x".to_owned()), compact: Some(true), depth: Some(0), interactive: Some(true), tab: Some("t321669910225".to_owned()) }), idempotency_key: Some("idempotency-key".to_owned()) }).await.expect("request");
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: Some("t321669910225".to_owned()) }), after: Some("x".to_owned()), observe: Some(steel_rs::SessionCommandsParamsObserve { mode: steel_rs::SessionCommandsParamsObserveMode::None, base: Some("x".to_owned()), compact: Some(true), depth: Some(0), interactive: Some(true), tab: Some("t321669910225".to_owned()) }), idempotency_key: Some("idempotency-key".to_owned()) }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -1630,7 +1630,7 @@ async fn sessions_commands_full() {
 #[tokio::test]
 async fn sessions_commands_required() {
     harness::conform("sessions.commands/required", |client| async move {
-        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, events_after: None, observe: None, idempotency_key: None }).await.expect("request");
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -1639,7 +1639,7 @@ async fn sessions_commands_required() {
 #[tokio::test]
 async fn sessions_commands_nulls() {
     harness::conform("sessions.commands/nulls", |client| async move {
-        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, events_after: None, observe: None, idempotency_key: None }).await.expect("request");
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -1648,7 +1648,7 @@ async fn sessions_commands_nulls() {
 #[tokio::test]
 async fn sessions_commands_unknown() {
     harness::conform("sessions.commands/unknown", |client| async move {
-        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, events_after: None, observe: None, idempotency_key: None }).await.expect("request");
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -1657,7 +1657,250 @@ async fn sessions_commands_unknown() {
 #[tokio::test]
 async fn sessions_commands_variant_0_1() {
     harness::conform("sessions.commands/variant-0-1", |client| async move {
-        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, events_after: None, observe: None, idempotency_key: None }).await.expect("request");
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_2() {
+    harness::conform("sessions.commands/variant-0-2", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_3() {
+    harness::conform("sessions.commands/variant-0-3", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_4() {
+    harness::conform("sessions.commands/variant-0-4", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_5() {
+    harness::conform("sessions.commands/variant-0-5", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_6() {
+    harness::conform("sessions.commands/variant-0-6", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_7() {
+    harness::conform("sessions.commands/variant-0-7", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_8() {
+    harness::conform("sessions.commands/variant-0-8", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_9() {
+    harness::conform("sessions.commands/variant-0-9", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_10() {
+    harness::conform("sessions.commands/variant-0-10", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_11() {
+    harness::conform("sessions.commands/variant-0-11", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_12() {
+    harness::conform("sessions.commands/variant-0-12", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_13() {
+    harness::conform("sessions.commands/variant-0-13", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_14() {
+    harness::conform("sessions.commands/variant-0-14", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_15() {
+    harness::conform("sessions.commands/variant-0-15", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_16() {
+    harness::conform("sessions.commands/variant-0-16", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_17() {
+    harness::conform("sessions.commands/variant-0-17", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_18() {
+    harness::conform("sessions.commands/variant-0-18", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_19() {
+    harness::conform("sessions.commands/variant-0-19", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_20() {
+    harness::conform("sessions.commands/variant-0-20", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_21() {
+    harness::conform("sessions.commands/variant-0-21", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_22() {
+    harness::conform("sessions.commands/variant-0-22", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_23() {
+    harness::conform("sessions.commands/variant-0-23", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_24() {
+    harness::conform("sessions.commands/variant-0-24", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_25() {
+    harness::conform("sessions.commands/variant-0-25", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_26() {
+    harness::conform("sessions.commands/variant-0-26", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_27() {
+    harness::conform("sessions.commands/variant-0-27", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_commands_variant_0_28() {
+    harness::conform("sessions.commands/variant-0-28", |client| async move {
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -1666,7 +1909,7 @@ async fn sessions_commands_variant_0_1() {
 #[tokio::test]
 async fn sessions_commands_escaped() {
     harness::conform("sessions.commands/escaped", |client| async move {
-        let value = client.sessions().commands("a b/c?d#e%f+g&h=i é", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, events_after: None, observe: None, idempotency_key: None }).await.expect("request");
+        let value = client.sessions().commands("a b/c?d#e%f+g&h=i é", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: None }), after: None, observe: None, idempotency_key: None }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -2674,6 +2917,1128 @@ async fn sessions_captchas_status_escaped() {
             .expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_full() {
+    harness::conform(
+        "sessions.command_executions.retrieve/full",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_required() {
+    harness::conform(
+        "sessions.command_executions.retrieve/required",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_nulls() {
+    harness::conform(
+        "sessions.command_executions.retrieve/nulls",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_unknown() {
+    harness::conform(
+        "sessions.command_executions.retrieve/unknown",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_1() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_2() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-2",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_3() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-3",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_4() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-4",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_5() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-5",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_6() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-6",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_7() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-7",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_8() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-8",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_9() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-9",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_10() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-10",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_11() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-11",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_12() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-12",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_13() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-13",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_14() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-14",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_15() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-15",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_16() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-16",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_17() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-17",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_18() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-18",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_19() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-19",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_20() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-20",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_21() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-21",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_22() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-22",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_23() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-23",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_24() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-24",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_25() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-25",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_26() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-26",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_27() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-27",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_variant_0_28() {
+    harness::conform(
+        "sessions.command_executions.retrieve/variant-0-28",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_retrieve_escaped() {
+    harness::conform(
+        "sessions.command_executions.retrieve/escaped",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .retrieve("a b/c?d#e%f+g&h=i é", "a b/c?d#e%f+g&h=i é")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_full() {
+    harness::conform(
+        "sessions.command_executions.cancel/full",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_required() {
+    harness::conform(
+        "sessions.command_executions.cancel/required",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_nulls() {
+    harness::conform(
+        "sessions.command_executions.cancel/nulls",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_unknown() {
+    harness::conform(
+        "sessions.command_executions.cancel/unknown",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_1() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_2() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-2",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_3() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-3",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_4() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-4",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_5() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-5",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_6() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-6",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_7() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-7",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_8() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-8",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_9() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-9",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_10() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-10",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_11() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-11",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_12() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-12",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_13() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-13",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_14() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-14",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_15() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-15",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_16() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-16",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_17() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-17",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_18() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-18",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_19() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-19",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_20() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-20",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_21() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-21",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_22() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-22",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_23() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-23",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_24() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-24",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_25() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-25",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_26() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-26",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_27() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-27",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_variant_0_28() {
+    harness::conform(
+        "sessions.command_executions.cancel/variant-0-28",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("sessionId", "executionId")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_command_executions_cancel_escaped() {
+    harness::conform(
+        "sessions.command_executions.cancel/escaped",
+        |client| async move {
+            let value = client
+                .sessions()
+                .command_executions()
+                .cancel("a b/c?d#e%f+g&h=i é", "a b/c?d#e%f+g&h=i é")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
     .await;
 }
 

@@ -49,6 +49,8 @@ import dev.steel.api.models.sessions.SessionUpdateMetadataResponse
 import dev.steel.api.models.sessions.Sessionslist
 import dev.steel.api.services.blocking.sessions.CaptchaService
 import dev.steel.api.services.blocking.sessions.CaptchaServiceImpl
+import dev.steel.api.services.blocking.sessions.CommandExecutionService
+import dev.steel.api.services.blocking.sessions.CommandExecutionServiceImpl
 import dev.steel.api.services.blocking.sessions.FileService
 import dev.steel.api.services.blocking.sessions.FileServiceImpl
 import java.util.function.Consumer
@@ -63,6 +65,10 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
     private val captchas: CaptchaService by lazy { CaptchaServiceImpl(clientOptions) }
 
+    private val commandExecutions: CommandExecutionService by lazy {
+        CommandExecutionServiceImpl(clientOptions)
+    }
+
     private val files: FileService by lazy { FileServiceImpl(clientOptions) }
 
     override fun withRawResponse(): SessionService.WithRawResponse = withRawResponse
@@ -71,6 +77,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
         SessionServiceImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun captchas(): CaptchaService = captchas
+
+    override fun commandExecutions(): CommandExecutionService = commandExecutions
 
     override fun files(): FileService = files
 
@@ -164,6 +172,10 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
             CaptchaServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val commandExecutions: CommandExecutionService.WithRawResponse by lazy {
+            CommandExecutionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val files: FileService.WithRawResponse by lazy {
             FileServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -176,6 +188,9 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
             )
 
         override fun captchas(): CaptchaService.WithRawResponse = captchas
+
+        override fun commandExecutions(): CommandExecutionService.WithRawResponse =
+            commandExecutions
 
         override fun files(): FileService.WithRawResponse = files
 

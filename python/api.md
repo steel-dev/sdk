@@ -124,10 +124,10 @@ from steel.types import (
     Command,
     CommandDialog,
     CommandErrorInfo,
-    CommandEvents,
     CommandExpectation,
     CommandFrame,
     CommandLocator,
+    CommandResult,
     CommandTarget,
     Session,
     SessionContext,
@@ -184,6 +184,19 @@ Methods:
 - <code title="post /v1/sessions/{sessionId}/captchas/solve">client.sessions.captchas.<a href="./src/steel/resources/sessions/captchas.py">solve</a>(session_id, \*\*<a href="src/steel/types/sessions/captcha_solve_params.py">params</a>) -> <a href="./src/steel/types/sessions/captcha_solve_response.py">CaptchaSolveResponse</a></code>
 - <code title="post /v1/sessions/{sessionId}/captchas/solve-image">client.sessions.captchas.<a href="./src/steel/resources/sessions/captchas.py">solve_image</a>(session_id, \*\*<a href="src/steel/types/sessions/captcha_solve_image_params.py">params</a>) -> <a href="./src/steel/types/sessions/captcha_solve_image_response.py">CaptchaSolveImageResponse</a></code>
 - <code title="get /v1/sessions/{sessionId}/captchas/status">client.sessions.captchas.<a href="./src/steel/resources/sessions/captchas.py">status</a>(session_id) -> <a href="./src/steel/types/sessions/captcha_status_response.py">CaptchaStatusResponse</a></code>
+
+## CommandExecutions
+
+Types:
+
+```python
+from steel.types.sessions import CommandExecutionRetrieveResponse, CommandExecutionCancelResponse
+```
+
+Methods:
+
+- <code title="get /v1/sessions/{sessionId}/commands/executions/{executionId}">client.sessions.command_executions.<a href="./src/steel/resources/sessions/command_executions.py">retrieve</a>(execution_id, \*, session_id) -> <a href="./src/steel/types/sessions/command_execution_retrieve_response.py">CommandExecutionRetrieveResponse</a></code>
+- <code title="post /v1/sessions/{sessionId}/commands/executions/{executionId}/cancel">client.sessions.command_executions.<a href="./src/steel/resources/sessions/command_executions.py">cancel</a>(execution_id, \*, session_id) -> <a href="./src/steel/types/sessions/command_execution_cancel_response.py">CommandExecutionCancelResponse</a></code>
 
 ## Files
 

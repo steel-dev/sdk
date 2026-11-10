@@ -1272,29 +1272,13 @@
           },
           {
             "additionalProperties": false,
-            "description": "Finds elements and returns refs for up to 50 matches.",
+            "description": "Finds elements and returns refs for up to 50 matches. With nth, it returns that one match.",
             "properties": {
-              "by": {
-                "enum": [
-                  "role",
-                  "text",
-                  "label",
-                  "placeholder",
-                  "alt",
-                  "title",
-                  "testid",
-                  "css"
-                ],
-                "type": "string"
-              },
               "command": {
                 "enum": [
                   "find"
                 ],
                 "type": "string"
-              },
-              "exact": {
-                "type": "boolean"
               },
               "frame": {
                 "allOf": [
@@ -1303,25 +1287,23 @@
                   }
                 ]
               },
-              "name": {
-                "description": "The accessible name. Works only with by role.",
-                "pattern": "\\S",
-                "type": "string"
-              },
               "tab": {
                 "description": "A tab id such as t2. A command on a ref does not need it.",
                 "pattern": "^t\\d+$",
                 "type": "string"
               },
-              "value": {
-                "pattern": "\\S",
-                "type": "string"
+              "target": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandTarget"
+                  }
+                ],
+                "description": "A CSS selector or a locator, not a ref."
               }
             },
             "required": [
               "command",
-              "by",
-              "value"
+              "target"
             ],
             "title": "FindCommand",
             "type": "object"
@@ -1360,84 +1342,6 @@
             ],
             "title": "TabCommand",
             "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Waits for an execution and returns it. Send it alone.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "status"
-                ],
-                "type": "string"
-              },
-              "execution": {
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": [
-              "command",
-              "execution"
-            ],
-            "title": "StatusCommand",
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Stops an execution. Send it alone.",
-            "properties": {
-              "command": {
-                "enum": [
-                  "cancel"
-                ],
-                "type": "string"
-              },
-              "execution": {
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": [
-              "command",
-              "execution"
-            ],
-            "title": "CancelCommand",
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Answers an open dialog. Send it alone.",
-            "properties": {
-              "action": {
-                "enum": [
-                  "accept",
-                  "dismiss"
-                ],
-                "type": "string"
-              },
-              "command": {
-                "enum": [
-                  "dialog"
-                ],
-                "type": "string"
-              },
-              "dialog": {
-                "minLength": 1,
-                "type": "string"
-              },
-              "text": {
-                "description": "The answer to a prompt.",
-                "type": "string"
-              }
-            },
-            "required": [
-              "command",
-              "dialog",
-              "action"
-            ],
-            "title": "DialogCommand",
-            "type": "object"
           }
         ],
         "title": "command",
@@ -1449,17 +1353,6 @@
         "additionalProperties": false,
         "description": "A JavaScript dialog: alert, confirm, prompt, or beforeunload.",
         "properties": {
-          "accepted": {
-            "type": "boolean"
-          },
-          "by": {
-            "enum": [
-              "command",
-              "client",
-              "closed"
-            ],
-            "type": "string"
-          },
           "defaultPrompt": {
             "type": "string"
           },
@@ -1470,9 +1363,6 @@
             "type": "string"
           },
           "tab": {
-            "type": "string"
-          },
-          "text": {
             "type": "string"
           },
           "type": {
@@ -1520,57 +1410,6 @@
         "type": "object",
         "x-steel-sdk": {
           "model": "sessions.command_error_info"
-        }
-      },
-      "CommandEvents": {
-        "additionalProperties": false,
-        "description": "Navigations, opened and closed tabs, dialogs, and downloads since eventsAfter.",
-        "properties": {
-          "cursor": {
-            "type": "string"
-          },
-          "items": {
-            "items": {
-              "additionalProperties": {},
-              "properties": {
-                "at": {
-                  "type": "string"
-                },
-                "id": {
-                  "type": "string"
-                },
-                "tab": {
-                  "type": "string"
-                },
-                "type": {
-                  "type": "string"
-                }
-              },
-              "required": [
-                "id",
-                "type",
-                "tab",
-                "at"
-              ],
-              "type": "object"
-            },
-            "type": "array"
-          },
-          "more": {
-            "type": "boolean"
-          },
-          "truncated": {
-            "type": "boolean"
-          }
-        },
-        "required": [
-          "cursor",
-          "items"
-        ],
-        "title": "commandEvents",
-        "type": "object",
-        "x-steel-sdk": {
-          "model": "sessions.command_events"
         }
       },
       "CommandExpectation": {
@@ -1667,6 +1506,1454 @@
         "type": "object",
         "x-steel-sdk": {
           "model": "sessions.command_locator"
+        }
+      },
+      "CommandResult": {
+        "description": "Result of one command, with the fields of that command.",
+        "oneOf": [
+          {
+            "additionalProperties": false,
+            "description": "Result of a navigate command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "navigate"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "NavigateResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a back command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "back"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "navigated": {
+                "description": "False when there was no history entry.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "BackResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a forward command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "forward"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "navigated": {
+                "description": "False when there was no history entry.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "ForwardResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a reload command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "reload"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "ReloadResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a snapshot command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "snapshot"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "snapshot": {
+                "type": "string"
+              },
+              "snapshotId": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "SnapshotResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a click command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "click"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "ClickResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a dblclick command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "dblclick"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "DblclickResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a hover command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "hover"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "HoverResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a focus command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "focus"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "FocusResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a type command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "type"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "TypeResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a fill command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "fill"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "FillResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a press command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "press"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "PressResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a keydown command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "keydown"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "KeydownResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a keyup command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "keyup"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "KeyupResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a mouse command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "mouse"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "MouseResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a select command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "select"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "selected": {
+                "description": "The values of the selected options.",
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "SelectResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a check command.",
+            "properties": {
+              "checked": {
+                "type": "boolean"
+              },
+              "command": {
+                "enum": [
+                  "check"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "CheckResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a uncheck command.",
+            "properties": {
+              "checked": {
+                "type": "boolean"
+              },
+              "command": {
+                "enum": [
+                  "uncheck"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "UncheckResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a upload command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "upload"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "files": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "UploadResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a drag command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "drag"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "DragResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a get command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "get"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "masked": {
+                "description": "The value is a secret, so it is left out.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "value": {
+                "description": "A string for text, html, markdown, value, attr, title, and url. A number for count. { x, y, width, height } or null for box. A list of locators for locator."
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "GetResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a is command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "is"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "value": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "IsResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a wait command.",
+            "properties": {
+              "bytes": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "command": {
+                "enum": [
+                  "wait"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "file": {
+                "description": "The downloaded file, for download.",
+                "type": "string"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "waited": {
+                "enum": [
+                  "ms",
+                  "target",
+                  "text",
+                  "url",
+                  "load",
+                  "download"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "WaitResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a screenshot command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "screenshot"
+                ],
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "format": {
+                "enum": [
+                  "png",
+                  "jpeg",
+                  "webp"
+                ],
+                "type": "string"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "ScreenshotResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a eval command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "eval"
+                ],
+                "type": "string"
+              },
+              "dialog": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandDialog"
+                  }
+                ],
+                "description": "A dialog that the command opened. It blocks the tab until it closes."
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "loading": {
+                "description": "The command started a navigation that was still loading when it returned.",
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "value": {
+                "description": "The result of the script as JSON."
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "EvalResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a pdf command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "pdf"
+                ],
+                "type": "string"
+              },
+              "data": {
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "format": {
+                "enum": [
+                  "pdf"
+                ],
+                "type": "string"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "PdfResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a scroll command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "scroll"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "moved": {
+                "type": "boolean"
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "ScrollResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a find command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "find"
+                ],
+                "type": "string"
+              },
+              "count": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "matches": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "ref": {
+                      "type": "string"
+                    },
+                    "role": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "ref",
+                    "role",
+                    "name"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "FindResult",
+            "type": "object"
+          },
+          {
+            "additionalProperties": false,
+            "description": "Result of a tab command.",
+            "properties": {
+              "command": {
+                "enum": [
+                  "tab"
+                ],
+                "type": "string"
+              },
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
+                ],
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "ok": {
+                "type": "boolean"
+              },
+              "tab": {
+                "type": "string"
+              },
+              "tabs": {
+                "items": {
+                  "additionalProperties": false,
+                  "properties": {
+                    "tab": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "url": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "tab",
+                    "url",
+                    "title"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              }
+            },
+            "required": [
+              "command",
+              "ok",
+              "effect"
+            ],
+            "title": "TabResult",
+            "type": "object"
+          }
+        ],
+        "title": "commandResult",
+        "x-steel-sdk": {
+          "model": "sessions.command_result"
         }
       },
       "CommandTarget": {
@@ -6276,11 +7563,6 @@
             ],
             "description": "One command, or an array of up to 50. They run in order and stop at the first failure. Commands that already ran are not undone."
           },
-          "eventsAfter": {
-            "description": "c-0 the first time, then the last events.cursor.",
-            "pattern": "^c-\\d+$",
-            "type": "string"
-          },
           "observe": {
             "additionalProperties": false,
             "description": "Returns a snapshot, or a diff against the last one, after the commands.",
@@ -6331,226 +7613,159 @@
         "type": "object"
       },
       "RunCommandsResponse": {
-        "anyOf": [
-          {
+        "additionalProperties": false,
+        "properties": {
+          "bodyExpired": {
+            "type": "boolean"
+          },
+          "dialog": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CommandDialog"
+              }
+            ],
+            "description": "A dialog that is open on the tab and blocks it until it closes."
+          },
+          "epochChanged": {
+            "description": "Set when the execution ran with after. Whether another execution, a quick action, or a browser restart changed the session since then. Input from CDP clients or the live view does not count.",
+            "type": "boolean"
+          },
+          "execution": {
             "additionalProperties": false,
             "properties": {
-              "bodyExpired": {
-                "type": "boolean"
-              },
-              "dialog": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandDialog"
-                  }
-                ]
-              },
-              "epoch": {
-                "description": "Goes up when commands or a dialog answer change the page, and when the browser restarts.",
-                "maximum": 9007199254740991,
-                "minimum": -9007199254740991,
-                "type": "integer"
-              },
-              "epochChanged": {
-                "description": "Whether another Commands API client changed the session since after.",
-                "type": "boolean"
-              },
-              "events": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandEvents"
-                  }
-                ]
-              },
-              "execution": {
-                "additionalProperties": false,
-                "properties": {
-                  "effect": {
-                    "description": "What happened to the page: nothing, a change, or a possible change.",
-                    "enum": [
-                      "none",
-                      "applied",
-                      "unknown"
-                    ],
-                    "type": "string"
-                  },
-                  "error": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/CommandErrorInfo"
-                      }
-                    ]
-                  },
-                  "id": {
-                    "type": "string"
-                  },
-                  "ran": {
-                    "description": "Commands started.",
-                    "maximum": 9007199254740991,
-                    "minimum": -9007199254740991,
-                    "type": "integer"
-                  },
-                  "replayed": {
-                    "type": "boolean"
-                  },
-                  "state": {
-                    "enum": [
-                      "queued",
-                      "running",
-                      "completed",
-                      "failed",
-                      "cancelled",
-                      "timeout",
-                      "expired"
-                    ],
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "id",
-                  "state",
-                  "effect",
-                  "replayed",
-                  "ran"
+              "effect": {
+                "description": "What happened to the page: nothing, a change, or a possible change.",
+                "enum": [
+                  "none",
+                  "applied",
+                  "unknown"
                 ],
-                "type": "object"
-              },
-              "next": {
-                "description": "Send it as after in the next request.",
                 "type": "string"
               },
-              "observe": {
-                "additionalProperties": false,
-                "properties": {
-                  "additions": {
-                    "maximum": 9007199254740991,
-                    "minimum": -9007199254740991,
-                    "type": "integer"
-                  },
-                  "base": {
-                    "type": "string"
-                  },
-                  "diff": {
-                    "type": "string"
-                  },
-                  "error": {
-                    "allOf": [
-                      {
-                        "$ref": "#/components/schemas/CommandErrorInfo"
-                      }
-                    ]
-                  },
-                  "full": {
-                    "type": "boolean"
-                  },
-                  "removals": {
-                    "maximum": 9007199254740991,
-                    "minimum": -9007199254740991,
-                    "type": "integer"
-                  },
-                  "snapshot": {
-                    "type": "string"
-                  },
-                  "snapshotId": {
-                    "type": "string"
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
                   }
-                },
-                "type": "object"
+                ]
               },
-              "page": {
-                "additionalProperties": false,
-                "description": "The tab the execution used.",
-                "nullable": true,
-                "properties": {
-                  "tab": {
-                    "type": "string"
-                  },
-                  "title": {
-                    "type": "string"
-                  },
-                  "url": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "tab",
-                  "url",
-                  "title"
-                ],
-                "type": "object"
+              "id": {
+                "type": "string"
               },
-              "results": {
-                "items": {
-                  "additionalProperties": {},
-                  "description": "Result of one command. Commands add their own fields, such as snapshot, value, url, or loading.",
-                  "properties": {
-                    "effect": {
-                      "description": "What happened to the page: nothing, a change, or a possible change.",
-                      "enum": [
-                        "none",
-                        "applied",
-                        "unknown"
-                      ],
-                      "type": "string"
-                    },
-                    "error": {
-                      "allOf": [
-                        {
-                          "$ref": "#/components/schemas/CommandErrorInfo"
-                        }
-                      ]
-                    },
-                    "ok": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "ok",
-                    "effect"
-                  ],
-                  "type": "object"
-                },
-                "type": "array"
-              }
-            },
-            "required": [
-              "epoch",
-              "page",
-              "execution",
-              "results"
-            ],
-            "title": "CommandsExecution",
-            "type": "object"
-          },
-          {
-            "additionalProperties": false,
-            "description": "Response to the dialog command.",
-            "properties": {
-              "answered": {
-                "$ref": "#/components/schemas/CommandDialog"
-              },
-              "epoch": {
+              "ran": {
+                "description": "Commands started.",
                 "maximum": 9007199254740991,
                 "minimum": -9007199254740991,
                 "type": "integer"
               },
-              "events": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/CommandEvents"
-                  }
-                ]
+              "replayed": {
+                "type": "boolean"
+              },
+              "state": {
+                "enum": [
+                  "queued",
+                  "running",
+                  "completed",
+                  "failed",
+                  "cancelled",
+                  "timeout",
+                  "expired"
+                ],
+                "type": "string"
               }
             },
             "required": [
-              "answered",
-              "epoch"
+              "id",
+              "state",
+              "effect",
+              "replayed",
+              "ran"
             ],
-            "title": "CommandsDialogAnswer",
             "type": "object"
+          },
+          "id": {
+            "description": "The id of this execution, the same as execution.id. Use it to get or cancel the execution.",
+            "type": "string"
+          },
+          "next": {
+            "description": "Send it as after in the next request.",
+            "type": "string"
+          },
+          "observe": {
+            "additionalProperties": false,
+            "properties": {
+              "additions": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "base": {
+                "type": "string"
+              },
+              "diff": {
+                "type": "string"
+              },
+              "error": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/CommandErrorInfo"
+                  }
+                ]
+              },
+              "full": {
+                "type": "boolean"
+              },
+              "removals": {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
+                "type": "integer"
+              },
+              "snapshot": {
+                "type": "string"
+              },
+              "snapshotId": {
+                "type": "string"
+              }
+            },
+            "type": "object"
+          },
+          "page": {
+            "additionalProperties": false,
+            "description": "The tab the execution used.",
+            "nullable": true,
+            "properties": {
+              "tab": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "url": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "tab",
+              "url",
+              "title"
+            ],
+            "type": "object"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CommandResult"
+            },
+            "type": "array"
           }
+        },
+        "required": [
+          "id",
+          "page",
+          "execution",
+          "results"
         ],
-        "title": "runCommandsResponse"
+        "title": "CommandsExecution",
+        "type": "object"
       },
       "ScrapeRequest": {
         "additionalProperties": false,
@@ -11360,7 +12575,7 @@
                 }
               }
             },
-            "description": "The execution, or the answered dialog for the dialog command. Failed commands also return 200, with the error in results."
+            "description": "The execution. Failed commands also return 200, with the error in results."
           },
           "400": {
             "content": {
@@ -11370,7 +12585,7 @@
                 }
               }
             },
-            "description": "invalid_request: the body is not valid."
+            "description": "invalid_request: the body is not valid, or arguments do not fit together. Nothing ran."
           },
           "401": {
             "content": {
@@ -11420,7 +12635,7 @@
                 }
               }
             },
-            "description": "key_conflict, invalid_operation_token, unknown_execution, dialog_not_pending, or missing_capability."
+            "description": "key_conflict, invalid_operation_token, or missing_capability."
           },
           "429": {
             "content": {
@@ -11432,6 +12647,16 @@
             },
             "description": "queue_full, expired, or records_full. Wait for Retry-After when it is set."
           },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "internal_error: the engine failed unexpectedly. x-should-retry says whether sending the request again is safe."
+          },
           "503": {
             "content": {
               "application/json": {
@@ -11440,7 +12665,7 @@
                 }
               }
             },
-            "description": "delivery_failed: the commands may or may not have run. Retry with the same Idempotency-Key."
+            "description": "delivery_failed: the request did not reach the browser, or its answer was lost. The message says whether the commands may have run, and x-should-retry says whether sending the request again is safe."
           }
         },
         "summary": "Run commands",
@@ -11449,6 +12674,236 @@
         ],
         "x-steel-sdk": {
           "method": "sessions.commands"
+        }
+      }
+    },
+    "/v1/sessions/{sessionId}/commands/executions/{executionId}": {
+      "get": {
+        "description": "Waits up to 20 seconds for an execution to finish and returns it. Use it when a run answered with state running.",
+        "operationId": "get_command_execution",
+        "parameters": [
+          {
+            "description": "Session ID",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Execution ID, such as x-1, from the id of a run",
+            "in": "path",
+            "name": "executionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsResponse"
+                }
+              }
+            },
+            "description": "The execution."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "session_not_found: the session does not exist."
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "session_ended: the session has ended. Create a new session."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "unknown_execution or missing_capability."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "internal_error: the engine failed unexpectedly. x-should-retry says whether sending the request again is safe."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "delivery_failed: the request did not reach the browser, or its answer was lost. The message says whether the commands may have run, and x-should-retry says whether sending the request again is safe."
+          }
+        },
+        "summary": "Get a command execution",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.command_executions.retrieve"
+        }
+      }
+    },
+    "/v1/sessions/{sessionId}/commands/executions/{executionId}/cancel": {
+      "post": {
+        "description": "Stops an execution. The running command stops before its next input, and commands that already ran are not undone.",
+        "operationId": "cancel_command_execution",
+        "parameters": [
+          {
+            "description": "Session ID",
+            "in": "path",
+            "name": "sessionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Execution ID, such as x-1, from the id of a run",
+            "in": "path",
+            "name": "executionId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsResponse"
+                }
+              }
+            },
+            "description": "The execution."
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "An error response from the API"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "session_not_found: the session does not exist."
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "session_ended: the session has ended. Create a new session."
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "unknown_execution or missing_capability."
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "internal_error: the engine failed unexpectedly. x-should-retry says whether sending the request again is safe."
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunCommandsErrorResponse"
+                }
+              }
+            },
+            "description": "delivery_failed: the request did not reach the browser, or its answer was lost. The message says whether the commands may have run, and x-should-retry says whether sending the request again is safe."
+          }
+        },
+        "summary": "Cancel a command execution",
+        "tags": [
+          "Sessions"
+        ],
+        "x-steel-sdk": {
+          "method": "sessions.command_executions.cancel"
         }
       }
     },

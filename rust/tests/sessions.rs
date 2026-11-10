@@ -102,7 +102,6 @@ async fn commands() {
                     },
                 ),
                 after: Some("x".to_owned()),
-                events_after: Some("c-321669910225".to_owned()),
                 observe: Some(steel_rs::SessionCommandsParamsObserve {
                     mode: steel_rs::SessionCommandsParamsObserveMode::None,
                     base: Some("x".to_owned()),

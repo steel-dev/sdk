@@ -1,5 +1,8 @@
+use std::collections::hash_map::RandomState;
 use std::collections::VecDeque;
 use std::future::Future;
+use std::hash::{BuildHasher, Hasher};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
@@ -151,8 +154,15 @@ pub(crate) struct Cursor {
     pub(crate) from: &'static str,
 }
 
-fn retryable(status: StatusCode) -> bool {
-    matches!(status.as_u16(), 408 | 409 | 429) || status.is_server_error()
+fn retryable(status: StatusCode, headers: &HeaderMap) -> bool {
+    match headers
+        .get("x-should-retry")
+        .and_then(|value| value.to_str().ok())
+    {
+        Some("true") => true,
+        Some("false") => false,
+        Some(_) | None => matches!(status.as_u16(), 408 | 409 | 429) || status.is_server_error(),
+    }
 }
 
 fn backoff(attempt: u32, headers: &HeaderMap) -> Duration {
@@ -190,7 +200,27 @@ impl Client {
         &self.inner.base_url
     }
 
-    async fn attempt(&self, request: &Request) -> Result<reqwest::Response, reqwest::Error> {
+    fn idempotency_key(&self, request: &Request) -> Option<String> {
+        if request.method == Method::GET {
+            return None;
+        }
+        let given = self
+            .inner
+            .headers
+            .iter()
+            .chain(&request.headers)
+            .any(|(name, _)| name.eq_ignore_ascii_case(crate::IDEMPOTENCY_HEADER));
+        if given {
+            return None;
+        }
+        Some(new_idempotency_key())
+    }
+
+    async fn attempt(
+        &self,
+        request: &Request,
+        idempotency_key: Option<&str>,
+    ) -> Result<reqwest::Response, reqwest::Error> {
         let url = format!(
             "{}{}",
             self.inner.base_url.trim_end_matches('/'),
@@ -218,6 +248,9 @@ impl Client {
         for (name, value) in self.inner.headers.iter().chain(&request.headers) {
             builder = builder.header(name, value);
         }
+        if let Some(key) = idempotency_key {
+            builder = builder.header(crate::IDEMPOTENCY_HEADER, key);
+        }
         if let Some(accept) = request.accept {
             builder = builder.header("accept", accept);
         }
@@ -239,15 +272,16 @@ impl Client {
     }
 
     pub(crate) async fn send(&self, request: &Request) -> Result<reqwest::Response, Error> {
+        let idempotency_key = self.idempotency_key(request);
         let mut attempt = 0;
         loop {
-            match self.attempt(request).await {
+            match self.attempt(request, idempotency_key.as_deref()).await {
                 Ok(response) => {
                     let status = response.status();
                     if status.is_success() {
                         return Ok(response);
                     }
-                    if attempt < self.inner.max_retries && retryable(status) {
+                    if attempt < self.inner.max_retries && retryable(status, response.headers()) {
                         tokio::time::sleep(backoff(attempt, response.headers())).await;
                         attempt += 1;
                         continue;
@@ -400,6 +434,34 @@ where
     })
 }
 
+fn new_idempotency_key() -> String {
+    static COUNTER: AtomicU64 = AtomicU64::new(0);
+    let count = COUNTER.fetch_add(1, Ordering::Relaxed);
+    let nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|elapsed| elapsed.as_nanos())
+        .unwrap_or_default();
+    let mut bits = 0u128;
+    for round in 0..2u8 {
+        let mut hasher = RandomState::new().build_hasher();
+        hasher.write_u64(count);
+        hasher.write_u128(nanos);
+        hasher.write_u8(round);
+        bits = (bits << 64) | u128::from(hasher.finish());
+    }
+    bits = (bits & !(0xf << 76)) | (0x4 << 76);
+    bits = (bits & !(0x3 << 62)) | (0x2 << 62);
+    let hex = format!("{bits:032x}");
+    format!(
+        "steel-rust-retry-{}-{}-{}-{}-{}",
+        &hex[0..8],
+        &hex[8..12],
+        &hex[12..16],
+        &hex[16..20],
+        &hex[20..32]
+    )
+}
+
 fn os() -> String {
     match std::env::consts::OS {
         "ios" => "iOS".to_owned(),
@@ -420,5 +482,165 @@ fn arch() -> String {
         "arm" => "arm".to_owned(),
         "aarch64" => "arm64".to_owned(),
         other => format!("other:{other}"),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use wiremock::matchers::method;
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    use super::{Client, Method, Request};
+
+    async fn server(failures: u64) -> MockServer {
+        let server = MockServer::start().await;
+        if failures > 0 {
+            Mock::given(method("POST"))
+                .respond_with(ResponseTemplate::new(503).insert_header("retry-after-ms", "10"))
+                .up_to_n_times(failures)
+                .with_priority(1)
+                .mount(&server)
+                .await;
+        }
+        Mock::given(wiremock::matchers::any())
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+        server
+    }
+
+    fn client(server: &MockServer) -> Client {
+        Client::builder()
+            .base_url(server.uri())
+            .api_key("My API Key")
+            .build()
+    }
+
+    async fn keys(server: &MockServer) -> Vec<Vec<String>> {
+        server
+            .received_requests()
+            .await
+            .unwrap_or_default()
+            .iter()
+            .map(|request| {
+                request
+                    .headers
+                    .get_all(crate::IDEMPOTENCY_HEADER)
+                    .iter()
+                    .filter_map(|value| value.to_str().ok())
+                    .map(str::to_owned)
+                    .collect()
+            })
+            .collect()
+    }
+
+    #[tokio::test]
+    async fn a_post_sends_one_key_and_reuses_it_on_retry() {
+        let server = server(1).await;
+        let client = client(&server);
+        let request = Request::new(Method::POST, "/foo".to_owned());
+
+        client.send(&request).await.expect("the first call");
+        client.send(&request).await.expect("the second call");
+
+        let keys = keys(&server).await;
+        assert_eq!(keys.len(), 3);
+        assert_eq!(keys[0].len(), 1);
+        assert!(keys[0][0].starts_with("steel-rust-retry-"));
+        assert_eq!(keys[1], keys[0]);
+        assert_eq!(keys[2].len(), 1);
+        assert_ne!(keys[2], keys[0]);
+    }
+
+    #[tokio::test]
+    async fn a_get_sends_no_key() {
+        let server = server(0).await;
+        let client = client(&server);
+
+        client
+            .send(&Request::new(Method::GET, "/foo".to_owned()))
+            .await
+            .expect("the call");
+
+        assert_eq!(keys(&server).await, vec![Vec::<String>::new()]);
+    }
+
+    #[tokio::test]
+    async fn a_should_retry_false_answer_is_not_retried() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .respond_with(ResponseTemplate::new(503).insert_header("x-should-retry", "false"))
+            .mount(&server)
+            .await;
+        let client = client(&server);
+
+        let result = client
+            .send(&Request::new(Method::POST, "/foo".to_owned()))
+            .await;
+
+        assert!(result.is_err());
+        assert_eq!(keys(&server).await.len(), 1);
+    }
+
+    #[tokio::test]
+    async fn a_should_retry_true_answer_is_retried() {
+        let server = MockServer::start().await;
+        Mock::given(method("POST"))
+            .respond_with(
+                ResponseTemplate::new(400)
+                    .insert_header("x-should-retry", "true")
+                    .insert_header("retry-after-ms", "10"),
+            )
+            .up_to_n_times(1)
+            .with_priority(1)
+            .mount(&server)
+            .await;
+        Mock::given(wiremock::matchers::any())
+            .respond_with(ResponseTemplate::new(200))
+            .mount(&server)
+            .await;
+        let client = client(&server);
+
+        client
+            .send(&Request::new(Method::POST, "/foo".to_owned()))
+            .await
+            .expect("the retried call");
+
+        assert_eq!(keys(&server).await.len(), 2);
+    }
+
+    #[tokio::test]
+    async fn a_key_in_the_headers_wins() {
+        let server = server(1).await;
+        let client = client(&server);
+        let mut request = Request::new(Method::POST, "/foo".to_owned());
+        request
+            .headers
+            .push(("idempotency-key".to_owned(), "mine".to_owned()));
+
+        client.send(&request).await.expect("the call");
+
+        assert_eq!(
+            keys(&server).await,
+            vec![vec!["mine".to_owned()], vec!["mine".to_owned()]]
+        );
+    }
+
+    #[test]
+    fn keys_are_unique_version_four_uuids() {
+        let first = super::new_idempotency_key();
+        let second = super::new_idempotency_key();
+        assert_ne!(first, second);
+        let uuid = first.trim_start_matches("steel-rust-retry-");
+        let groups: Vec<&str> = uuid.split('-').collect();
+        assert_eq!(
+            groups.iter().map(|group| group.len()).collect::<Vec<_>>(),
+            vec![8, 4, 4, 4, 12]
+        );
+        assert!(groups[2].starts_with('4'));
+        assert!(matches!(
+            groups[3].chars().next(),
+            Some('8' | '9' | 'a' | 'b')
+        ));
     }
 }

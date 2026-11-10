@@ -229,7 +229,6 @@ describe('resource sessions', () => {
         tab: 't321669910225',
       },
       after: 'x',
-      eventsAfter: 'c-321669910225',
       observe: {
         mode: 'none',
         base: 'x',

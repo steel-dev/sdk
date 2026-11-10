@@ -106,10 +106,10 @@ Types:
 - <code><a href="./src/resources/sessions/sessions.ts">Command</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandDialog</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandErrorInfo</a></code>
-- <code><a href="./src/resources/sessions/sessions.ts">CommandEvents</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandExpectation</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandFrame</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandLocator</a></code>
+- <code><a href="./src/resources/sessions/sessions.ts">CommandResult</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandTarget</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">Session</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">SessionContext</a></code>
@@ -160,6 +160,18 @@ Methods:
 - <code title="post /v1/sessions/{sessionId}/captchas/solve">client.sessions.captchas.<a href="./src/resources/sessions/captchas.ts">solve</a>(sessionId, { ...params }) -> CaptchaSolveResponse</code>
 - <code title="post /v1/sessions/{sessionId}/captchas/solve-image">client.sessions.captchas.<a href="./src/resources/sessions/captchas.ts">solveImage</a>(sessionId, { ...params }) -> CaptchaSolveImageResponse</code>
 - <code title="get /v1/sessions/{sessionId}/captchas/status">client.sessions.captchas.<a href="./src/resources/sessions/captchas.ts">status</a>(sessionId) -> CaptchaStatusResponse</code>
+
+## CommandExecutions
+
+Types:
+
+- <code><a href="./src/resources/sessions/command-executions.ts">CommandExecutionRetrieveResponse</a></code>
+- <code><a href="./src/resources/sessions/command-executions.ts">CommandExecutionCancelResponse</a></code>
+
+Methods:
+
+- <code title="get /v1/sessions/{sessionId}/commands/executions/{executionId}">client.sessions.commandExecutions.<a href="./src/resources/sessions/command-executions.ts">retrieve</a>(sessionId, executionId) -> CommandExecutionRetrieveResponse</code>
+- <code title="post /v1/sessions/{sessionId}/commands/executions/{executionId}/cancel">client.sessions.commandExecutions.<a href="./src/resources/sessions/command-executions.ts">cancel</a>(sessionId, executionId) -> CommandExecutionCancelResponse</code>
 
 ## Files
 

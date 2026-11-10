@@ -49,6 +49,8 @@ import dev.steel.api.models.sessions.SessionUpdateMetadataResponse
 import dev.steel.api.models.sessions.Sessionslist
 import dev.steel.api.services.async.sessions.CaptchaServiceAsync
 import dev.steel.api.services.async.sessions.CaptchaServiceAsyncImpl
+import dev.steel.api.services.async.sessions.CommandExecutionServiceAsync
+import dev.steel.api.services.async.sessions.CommandExecutionServiceAsyncImpl
 import dev.steel.api.services.async.sessions.FileServiceAsync
 import dev.steel.api.services.async.sessions.FileServiceAsyncImpl
 import java.util.function.Consumer
@@ -62,6 +64,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
     private val captchas: CaptchaServiceAsync by lazy { CaptchaServiceAsyncImpl(clientOptions) }
 
+    private val commandExecutions: CommandExecutionServiceAsync by lazy {
+        CommandExecutionServiceAsyncImpl(clientOptions)
+    }
+
     private val files: FileServiceAsync by lazy { FileServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): SessionServiceAsync.WithRawResponse = withRawResponse
@@ -70,6 +76,8 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         SessionServiceAsyncImpl(clientOptions.toBuilder().apply(modifier::accept).build())
 
     override fun captchas(): CaptchaServiceAsync = captchas
+
+    override fun commandExecutions(): CommandExecutionServiceAsync = commandExecutions
 
     override fun files(): FileServiceAsync = files
 
@@ -171,6 +179,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             CaptchaServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val commandExecutions: CommandExecutionServiceAsync.WithRawResponse by lazy {
+            CommandExecutionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val files: FileServiceAsync.WithRawResponse by lazy {
             FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -183,6 +195,9 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             )
 
         override fun captchas(): CaptchaServiceAsync.WithRawResponse = captchas
+
+        override fun commandExecutions(): CommandExecutionServiceAsync.WithRawResponse =
+            commandExecutions
 
         override fun files(): FileServiceAsync.WithRawResponse = files
 

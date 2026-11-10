@@ -1,6 +1,9 @@
 package dev.steel.api.core.http
 
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.findAll
+import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.ok
 import com.github.tomakehurst.wiremock.client.WireMock.post
@@ -148,6 +151,111 @@ internal class RetryingHttpClientTest {
         assertThat(response.statusCode()).isEqualTo(200)
         verify(1, postRequestedFor(urlPathEqualTo("/something")))
         assertThat(sleeper.durations).isEmpty()
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withIdempotencyHeader_reusesTheKeyOnRetry(async: Boolean) {
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("foo")
+                .whenScenarioStateIs(Scenario.STARTED)
+                .willReturn(serviceUnavailable())
+                .willSetStateTo("RETRIED")
+        )
+        stubFor(
+            post(urlPathEqualTo("/something"))
+                .inScenario("foo")
+                .whenScenarioStateIs("RETRIED")
+                .willReturn(ok())
+        )
+        val sleeper = RecordingSleeper()
+        val retryingClient =
+            retryingHttpClientBuilder(sleeper)
+                .maxRetries(2)
+                .idempotencyHeader("X-Some-Header")
+                .build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        val keys =
+            findAll(postRequestedFor(urlPathEqualTo("/something"))).map {
+                it.getHeader("X-Some-Header")
+            }
+        assertThat(keys).hasSize(2)
+        assertThat(keys.toSet()).hasSize(1)
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withIdempotencyHeader_keepsTheCallerKey(async: Boolean) {
+        stubFor(post(urlPathEqualTo("/something")).willReturn(ok()))
+        val sleeper = RecordingSleeper()
+        val retryingClient =
+            retryingHttpClientBuilder(sleeper)
+                .maxRetries(2)
+                .idempotencyHeader("X-Some-Header")
+                .build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.POST)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .putHeader("x-some-header", "mine")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        verify(
+            1,
+            postRequestedFor(urlPathEqualTo("/something"))
+                .withHeader("X-Some-Header", equalTo("mine")),
+        )
+        val keys =
+            findAll(postRequestedFor(urlPathEqualTo("/something"))).map {
+                it.header("X-Some-Header").values()
+            }
+        assertThat(keys).containsExactly(listOf("mine"))
+        assertNoResponseLeaks()
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = [false, true])
+    fun execute_withIdempotencyHeader_skipsGet(async: Boolean) {
+        stubFor(get(urlPathEqualTo("/something")).willReturn(ok()))
+        val sleeper = RecordingSleeper()
+        val retryingClient =
+            retryingHttpClientBuilder(sleeper)
+                .maxRetries(2)
+                .idempotencyHeader("X-Some-Header")
+                .build()
+
+        val response =
+            retryingClient.execute(
+                HttpRequest.builder()
+                    .method(HttpMethod.GET)
+                    .baseUrl(baseUrl)
+                    .addPathSegment("something")
+                    .build(),
+                async,
+            )
+
+        assertThat(response.statusCode()).isEqualTo(200)
+        verify(1, getRequestedFor(urlPathEqualTo("/something")).withoutHeader("X-Some-Header"))
         assertNoResponseLeaks()
     }
 

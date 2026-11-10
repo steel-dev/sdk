@@ -1153,8 +1153,7 @@ func TestConformanceSessionsCommandsFull(t *testing.T) {
 				URL:     steel.F("x"),
 				Tab:     steel.F("t321669910225"),
 			}),
-			After:       steel.F("x"),
-			EventsAfter: steel.F("c-321669910225"),
+			After: steel.F("x"),
 			Observe: steel.F(steel.SessionCommandsParamsObserve{
 				Mode:        steel.F(steel.SessionCommandsParamsObserveModeNone),
 				Base:        steel.F("x"),
@@ -1210,6 +1209,357 @@ func TestConformanceSessionsCommandsUnknown(t *testing.T) {
 
 func TestConformanceSessionsCommandsVariant0_1(t *testing.T) {
 	conformance.Conform(t, "sessions.commands/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_2(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-2", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_3(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-3", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_4(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-4", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_5(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-5", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_6(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-6", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_7(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-7", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_8(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-8", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_9(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-9", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_10(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-10", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_11(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-11", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_12(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-12", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_13(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-13", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_14(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-14", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_15(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-15", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_16(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-16", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_17(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-17", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_18(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-18", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_19(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-19", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_20(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-20", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_21(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-21", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_22(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-22", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_23(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-23", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_24(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-24", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_25(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-25", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_26(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-26", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_27(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-27", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
+			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
+				Command: steel.F(steel.SessionCommandsParamsCommandsNavigateCommandCommandNavigate),
+				URL:     steel.F("x"),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandsVariant0_28(t *testing.T) {
+	conformance.Conform(t, "sessions.commands/variant-0-28", func(baseURL string, apiKey string) (conformance.Result, error) {
 		client := conformanceClient(baseURL, apiKey)
 		res, err := client.Sessions.Commands(context.TODO(), "sessionId", steel.SessionCommandsParams{
 			Commands: steel.F[steel.SessionCommandsParamsCommandsUnion](steel.SessionCommandsParamsCommandsNavigateCommand{
@@ -1823,6 +2173,534 @@ func TestConformanceSessionsCaptchasStatusEscaped(t *testing.T) {
 	conformance.Conform(t, "sessions.captchas.status/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
 		client := conformanceClient(baseURL, apiKey)
 		res, err := client.Sessions.Captchas.Status(context.TODO(), "a b/c?d#e%f+g&h=i é")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveFull(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_2(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-2", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_3(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-3", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_4(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-4", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_5(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-5", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_6(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-6", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_7(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-7", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_8(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-8", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_9(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-9", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_10(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-10", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_11(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-11", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_12(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-12", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_13(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-13", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_14(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-14", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_15(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-15", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_16(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-16", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_17(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-17", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_18(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-18", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_19(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-19", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_20(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-20", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_21(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-21", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_22(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-22", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_23(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-23", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_24(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-24", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_25(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-25", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_26(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-26", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_27(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-27", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveVariant0_28(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/variant-0-28", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsRetrieveEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.retrieve/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Get(context.TODO(), "a b/c?d#e%f+g&h=i é", "a b/c?d#e%f+g&h=i é")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelFull(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_2(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-2", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_3(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-3", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_4(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-4", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_5(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-5", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_6(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-6", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_7(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-7", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_8(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-8", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_9(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-9", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_10(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-10", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_11(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-11", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_12(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-12", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_13(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-13", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_14(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-14", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_15(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-15", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_16(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-16", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_17(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-17", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_18(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-18", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_19(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-19", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_20(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-20", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_21(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-21", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_22(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-22", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_23(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-23", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_24(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-24", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_25(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-25", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_26(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-26", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_27(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-27", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelVariant0_28(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/variant-0-28", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "sessionId", "executionId")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCommandExecutionsCancelEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.command_executions.cancel/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.CommandExecutions.Cancel(context.TODO(), "a b/c?d#e%f+g&h=i é", "a b/c?d#e%f+g&h=i é")
 		return conformance.JSON(res), err
 	})
 }

@@ -645,7 +645,6 @@ describe('conformance', () => {
           tab: 't321669910225',
         },
         after: 'x',
-        eventsAfter: 'c-321669910225',
         observe: {
           mode: 'none',
           base: 'x',
@@ -674,6 +673,141 @@ describe('conformance', () => {
 
   test('sessions.commands/variant-0-1', () =>
     conform('sessions.commands/variant-0-1', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-2', () =>
+    conform('sessions.commands/variant-0-2', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-3', () =>
+    conform('sessions.commands/variant-0-3', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-4', () =>
+    conform('sessions.commands/variant-0-4', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-5', () =>
+    conform('sessions.commands/variant-0-5', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-6', () =>
+    conform('sessions.commands/variant-0-6', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-7', () =>
+    conform('sessions.commands/variant-0-7', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-8', () =>
+    conform('sessions.commands/variant-0-8', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-9', () =>
+    conform('sessions.commands/variant-0-9', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-10', () =>
+    conform('sessions.commands/variant-0-10', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-11', () =>
+    conform('sessions.commands/variant-0-11', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-12', () =>
+    conform('sessions.commands/variant-0-12', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-13', () =>
+    conform('sessions.commands/variant-0-13', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-14', () =>
+    conform('sessions.commands/variant-0-14', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-15', () =>
+    conform('sessions.commands/variant-0-15', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-16', () =>
+    conform('sessions.commands/variant-0-16', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-17', () =>
+    conform('sessions.commands/variant-0-17', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-18', () =>
+    conform('sessions.commands/variant-0-18', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-19', () =>
+    conform('sessions.commands/variant-0-19', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-20', () =>
+    conform('sessions.commands/variant-0-20', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-21', () =>
+    conform('sessions.commands/variant-0-21', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-22', () =>
+    conform('sessions.commands/variant-0-22', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-23', () =>
+    conform('sessions.commands/variant-0-23', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-24', () =>
+    conform('sessions.commands/variant-0-24', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-25', () =>
+    conform('sessions.commands/variant-0-25', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-26', () =>
+    conform('sessions.commands/variant-0-26', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-27', () =>
+    conform('sessions.commands/variant-0-27', make, async (client) =>
+      client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
+    ));
+
+  test('sessions.commands/variant-0-28', () =>
+    conform('sessions.commands/variant-0-28', make, async (client) =>
       client.sessions.commands('sessionId', { commands: { command: 'navigate', url: 'x' } }),
     ));
 
@@ -1010,6 +1144,336 @@ describe('conformance', () => {
   test('sessions.captchas.status/escaped', () =>
     conform('sessions.captchas.status/escaped', make, async (client) =>
       client.sessions.captchas.status('a b/c?d#e%f+g&h=i é'),
+    ));
+
+  test('sessions.command_executions.retrieve/full', () =>
+    conform('sessions.command_executions.retrieve/full', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/required', () =>
+    conform('sessions.command_executions.retrieve/required', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/nulls', () =>
+    conform('sessions.command_executions.retrieve/nulls', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/unknown', () =>
+    conform('sessions.command_executions.retrieve/unknown', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-1', () =>
+    conform('sessions.command_executions.retrieve/variant-0-1', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-2', () =>
+    conform('sessions.command_executions.retrieve/variant-0-2', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-3', () =>
+    conform('sessions.command_executions.retrieve/variant-0-3', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-4', () =>
+    conform('sessions.command_executions.retrieve/variant-0-4', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-5', () =>
+    conform('sessions.command_executions.retrieve/variant-0-5', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-6', () =>
+    conform('sessions.command_executions.retrieve/variant-0-6', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-7', () =>
+    conform('sessions.command_executions.retrieve/variant-0-7', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-8', () =>
+    conform('sessions.command_executions.retrieve/variant-0-8', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-9', () =>
+    conform('sessions.command_executions.retrieve/variant-0-9', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-10', () =>
+    conform('sessions.command_executions.retrieve/variant-0-10', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-11', () =>
+    conform('sessions.command_executions.retrieve/variant-0-11', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-12', () =>
+    conform('sessions.command_executions.retrieve/variant-0-12', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-13', () =>
+    conform('sessions.command_executions.retrieve/variant-0-13', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-14', () =>
+    conform('sessions.command_executions.retrieve/variant-0-14', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-15', () =>
+    conform('sessions.command_executions.retrieve/variant-0-15', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-16', () =>
+    conform('sessions.command_executions.retrieve/variant-0-16', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-17', () =>
+    conform('sessions.command_executions.retrieve/variant-0-17', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-18', () =>
+    conform('sessions.command_executions.retrieve/variant-0-18', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-19', () =>
+    conform('sessions.command_executions.retrieve/variant-0-19', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-20', () =>
+    conform('sessions.command_executions.retrieve/variant-0-20', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-21', () =>
+    conform('sessions.command_executions.retrieve/variant-0-21', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-22', () =>
+    conform('sessions.command_executions.retrieve/variant-0-22', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-23', () =>
+    conform('sessions.command_executions.retrieve/variant-0-23', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-24', () =>
+    conform('sessions.command_executions.retrieve/variant-0-24', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-25', () =>
+    conform('sessions.command_executions.retrieve/variant-0-25', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-26', () =>
+    conform('sessions.command_executions.retrieve/variant-0-26', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-27', () =>
+    conform('sessions.command_executions.retrieve/variant-0-27', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/variant-0-28', () =>
+    conform('sessions.command_executions.retrieve/variant-0-28', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.retrieve/escaped', () =>
+    conform('sessions.command_executions.retrieve/escaped', make, async (client) =>
+      client.sessions.commandExecutions.retrieve('a b/c?d#e%f+g&h=i é', 'a b/c?d#e%f+g&h=i é'),
+    ));
+
+  test('sessions.command_executions.cancel/full', () =>
+    conform('sessions.command_executions.cancel/full', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/required', () =>
+    conform('sessions.command_executions.cancel/required', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/nulls', () =>
+    conform('sessions.command_executions.cancel/nulls', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/unknown', () =>
+    conform('sessions.command_executions.cancel/unknown', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-1', () =>
+    conform('sessions.command_executions.cancel/variant-0-1', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-2', () =>
+    conform('sessions.command_executions.cancel/variant-0-2', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-3', () =>
+    conform('sessions.command_executions.cancel/variant-0-3', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-4', () =>
+    conform('sessions.command_executions.cancel/variant-0-4', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-5', () =>
+    conform('sessions.command_executions.cancel/variant-0-5', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-6', () =>
+    conform('sessions.command_executions.cancel/variant-0-6', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-7', () =>
+    conform('sessions.command_executions.cancel/variant-0-7', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-8', () =>
+    conform('sessions.command_executions.cancel/variant-0-8', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-9', () =>
+    conform('sessions.command_executions.cancel/variant-0-9', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-10', () =>
+    conform('sessions.command_executions.cancel/variant-0-10', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-11', () =>
+    conform('sessions.command_executions.cancel/variant-0-11', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-12', () =>
+    conform('sessions.command_executions.cancel/variant-0-12', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-13', () =>
+    conform('sessions.command_executions.cancel/variant-0-13', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-14', () =>
+    conform('sessions.command_executions.cancel/variant-0-14', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-15', () =>
+    conform('sessions.command_executions.cancel/variant-0-15', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-16', () =>
+    conform('sessions.command_executions.cancel/variant-0-16', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-17', () =>
+    conform('sessions.command_executions.cancel/variant-0-17', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-18', () =>
+    conform('sessions.command_executions.cancel/variant-0-18', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-19', () =>
+    conform('sessions.command_executions.cancel/variant-0-19', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-20', () =>
+    conform('sessions.command_executions.cancel/variant-0-20', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-21', () =>
+    conform('sessions.command_executions.cancel/variant-0-21', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-22', () =>
+    conform('sessions.command_executions.cancel/variant-0-22', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-23', () =>
+    conform('sessions.command_executions.cancel/variant-0-23', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-24', () =>
+    conform('sessions.command_executions.cancel/variant-0-24', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-25', () =>
+    conform('sessions.command_executions.cancel/variant-0-25', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-26', () =>
+    conform('sessions.command_executions.cancel/variant-0-26', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-27', () =>
+    conform('sessions.command_executions.cancel/variant-0-27', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/variant-0-28', () =>
+    conform('sessions.command_executions.cancel/variant-0-28', make, async (client) =>
+      client.sessions.commandExecutions.cancel('sessionId', 'executionId'),
+    ));
+
+  test('sessions.command_executions.cancel/escaped', () =>
+    conform('sessions.command_executions.cancel/escaped', make, async (client) =>
+      client.sessions.commandExecutions.cancel('a b/c?d#e%f+g&h=i é', 'a b/c?d#e%f+g&h=i é'),
     ));
 
   test('sessions.files.list/full', () =>

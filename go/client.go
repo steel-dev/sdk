@@ -31,7 +31,7 @@ type Client struct {
 // DefaultClientOptions read from the environment (STEEL_API_KEY,
 // STEEL_BASE_URL). This should be used to initialize new clients.
 func DefaultClientOptions() []option.RequestOption {
-	defaults := []option.RequestOption{option.WithHTTPClient(defaultHTTPClient()), option.WithEnvironmentProduction()}
+	defaults := []option.RequestOption{option.WithHTTPClient(defaultHTTPClient()), option.WithEnvironmentProduction(), requestconfig.WithIdempotencyHeader("Idempotency-Key")}
 	if o, ok := os.LookupEnv("STEEL_BASE_URL"); ok {
 		defaults = append(defaults, option.WithBaseURL(o))
 	}

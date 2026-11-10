@@ -144,7 +144,11 @@ private constructor(
     private fun idempotencyKey(): String = "steel-java-retry-${UUID.randomUUID()}"
 
     private fun maybeAddIdempotencyHeader(request: HttpRequest): HttpRequest {
-        if (idempotencyHeader == null || request.headers.names().contains(idempotencyHeader)) {
+        if (
+            idempotencyHeader == null ||
+                request.method == HttpMethod.GET ||
+                request.headers.names().contains(idempotencyHeader)
+        ) {
             return request
         }
 

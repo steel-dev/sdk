@@ -5,8 +5,10 @@ package steel_test
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 
@@ -21,6 +23,86 @@ type closureTransport struct {
 
 func (t *closureTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.fn(req)
+}
+
+func recordIdempotencyKeys(failures int) (*steel.Client, *[][]string) {
+	keys := make([][]string, 0)
+	client := steel.NewClient(
+		option.WithSteelAPIKey("My Steel API Key"),
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					keys = append(keys, req.Header.Values("Idempotency-Key"))
+					status := http.StatusOK
+					if len(keys) <= failures {
+						status = http.StatusServiceUnavailable
+					}
+					return &http.Response{
+						StatusCode: status,
+						Header: http.Header{
+							http.CanonicalHeaderKey("Retry-After-Ms"): []string{"10"},
+						},
+						Body: io.NopCloser(strings.NewReader("{}")),
+					}, nil
+				},
+			},
+		}),
+	)
+	return client, &keys
+}
+
+func TestIdempotencyKey(t *testing.T) {
+	client, keys := recordIdempotencyKeys(1)
+	for range 2 {
+		if err := client.Post(context.Background(), "/foo", nil, nil); err != nil {
+			t.Fatalf("Expected the request to succeed, got %v", err)
+		}
+	}
+	if len(*keys) != 3 {
+		t.Fatalf("Expected 3 attempts, got %d", len(*keys))
+	}
+	first, retry, second := (*keys)[0], (*keys)[1], (*keys)[2]
+	if len(first) != 1 || !strings.HasPrefix(first[0], "steel-go-retry-") {
+		t.Errorf("Expected one generated key, got %v", first)
+	}
+	if !reflect.DeepEqual(retry, first) {
+		t.Errorf("Expected the retry to reuse %v, got %v", first, retry)
+	}
+	if len(second) != 1 || second[0] == first[0] {
+		t.Errorf("Expected a new key for the second call, got %v", second)
+	}
+}
+
+func TestIdempotencyKeySkipsGet(t *testing.T) {
+	client, keys := recordIdempotencyKeys(0)
+	if err := client.Get(context.Background(), "/foo", nil, nil); err != nil {
+		t.Fatalf("Expected the request to succeed, got %v", err)
+	}
+	if len((*keys)[0]) != 0 {
+		t.Errorf("Expected no key on GET, got %v", (*keys)[0])
+	}
+}
+
+func TestIdempotencyKeyFromHeader(t *testing.T) {
+	client, keys := recordIdempotencyKeys(1)
+	if err := client.Post(context.Background(), "/foo", nil, nil, option.WithHeader("idempotency-key", "mine")); err != nil {
+		t.Fatalf("Expected the request to succeed, got %v", err)
+	}
+	expected := [][]string{{"mine"}, {"mine"}}
+	if !reflect.DeepEqual(*keys, expected) {
+		t.Errorf("Expected %v, got %v", expected, *keys)
+	}
+}
+
+func TestIdempotencyKeyKeepsAnEmptyHeader(t *testing.T) {
+	client, keys := recordIdempotencyKeys(0)
+	if err := client.Post(context.Background(), "/foo", nil, nil, option.WithHeader("idempotency-key", "")); err != nil {
+		t.Fatalf("Expected the request to succeed, got %v", err)
+	}
+	expected := [][]string{{""}}
+	if !reflect.DeepEqual(*keys, expected) {
+		t.Errorf("Expected %v, got %v", expected, *keys)
+	}
 }
 
 func TestUserAgentHeader(t *testing.T) {
