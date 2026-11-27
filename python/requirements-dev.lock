@@ -12,14 +12,14 @@
 -e file:.
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.13.3
+aiohttp==3.14.5
     # via httpx-aiohttp
     # via steel-sdk
 aiosignal==1.4.0
     # via aiohttp
 annotated-types==0.7.0
     # via pydantic
-anyio==4.12.1
+anyio==4.14.2
     # via httpx
     # via steel-sdk
 argcomplete==3.6.3
@@ -48,7 +48,7 @@ exceptiongroup==1.3.1
     # via pytest
 execnet==2.1.2
     # via pytest-xdist
-filelock==3.19.1
+filelock==3.32.7
     # via virtualenv
 frozenlist==1.8.0
     # via aiohttp
@@ -78,7 +78,7 @@ markdown-it-py==3.0.0
     # via rich
 mdurl==0.1.2
     # via markdown-it-py
-multidict==6.7.0
+multidict==7.1.0
     # via aiohttp
     # via yarl
 mypy==1.17.0
@@ -132,6 +132,7 @@ tomli==2.4.0
     # via nox
     # via pytest
 typing-extensions==4.15.0
+    # via aiohttp
     # via aiosignal
     # via anyio
     # via exceptiongroup
@@ -149,7 +150,7 @@ typing-inspection==0.4.2
     # via pydantic
 virtualenv==20.36.1
     # via nox
-yarl==1.22.0
+yarl==1.25.1
     # via aiohttp
 zipp==3.23.0
     # via importlib-metadata

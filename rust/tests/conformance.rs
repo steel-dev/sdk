@@ -246,6 +246,7 @@ async fn credentials_create_full() {
             .credentials()
             .create(steel_rs::CredentialCreateParams {
                 value: std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]),
+                additional_origins: Some(vec!["x".to_owned()]),
                 label: Some("label".to_owned()),
                 namespace: Some("namespace".to_owned()),
                 origin: Some("origin".to_owned()),
@@ -265,6 +266,7 @@ async fn credentials_create_required() {
             .credentials()
             .create(steel_rs::CredentialCreateParams {
                 value: std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]),
+                additional_origins: None,
                 label: None,
                 namespace: None,
                 origin: None,
@@ -284,6 +286,7 @@ async fn credentials_create_nulls() {
             .credentials()
             .create(steel_rs::CredentialCreateParams {
                 value: std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]),
+                additional_origins: None,
                 label: None,
                 namespace: None,
                 origin: None,
@@ -302,6 +305,7 @@ async fn credentials_update_full() {
         let value = client
             .credentials()
             .update(steel_rs::CredentialUpdateParams {
+                additional_origins: Some(vec!["x".to_owned()]),
                 label: Some("label".to_owned()),
                 namespace: Some("namespace".to_owned()),
                 origin: Some("origin".to_owned()),
@@ -1146,6 +1150,96 @@ async fn profiles_list_escaped() {
 }
 
 #[tokio::test]
+async fn profiles_delete_full() {
+    harness::conform("profiles.delete/full", |client| async move {
+        let value = client
+            .profiles()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::ProfileDeleteParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn profiles_delete_required() {
+    harness::conform("profiles.delete/required", |client| async move {
+        let value = client
+            .profiles()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::ProfileDeleteParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn profiles_delete_nulls() {
+    harness::conform("profiles.delete/nulls", |client| async move {
+        let value = client
+            .profiles()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::ProfileDeleteParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn profiles_delete_unknown() {
+    harness::conform("profiles.delete/unknown", |client| async move {
+        let value = client
+            .profiles()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::ProfileDeleteParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn profiles_delete_escaped() {
+    harness::conform("profiles.delete/escaped", |client| async move {
+        let value = client
+            .profiles()
+            .delete(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::ProfileDeleteParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
 async fn profiles_get_full() {
     harness::conform("profiles.get/full", |client| async move {
         let value = client
@@ -1315,9 +1409,495 @@ async fn projects_list_nulls() {
 }
 
 #[tokio::test]
+async fn secret_connections_create_full() {
+    harness::conform("secret_connections.create/full", |client| async move {
+        let value = client
+            .secret_connections()
+            .create(steel_rs::SecretConnectionCreateParams {
+                auth: steel_rs::SecretConnectionCreateParamsAuth {
+                    token: Some("x".to_owned()),
+                    mount: Some("x".to_owned()),
+                    role_id: Some("x".to_owned()),
+                    secret_id: Some("x".to_owned()),
+                    service_account_token: Some("x".to_owned()),
+                    r#type: Some(steel_rs::SecretConnectionCreateParamsAuthType::Token),
+                },
+                name: "x".to_owned(),
+                provider: steel_rs::SecretConnectionCreateParamsProvider::V1password,
+                config: Some(steel_rs::SecretConnectionCreateParamsConfig {
+                    address: "x".to_owned(),
+                    ca_pem: Some("x".to_owned()),
+                    namespace: Some("x".to_owned()),
+                }),
+                project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                token_budget: Some(steel_rs::SecretConnectionCreateParamsTokenBudget {
+                    burst: 2,
+                    refill_per_second: 0.001,
+                }),
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_create_required() {
+    harness::conform("secret_connections.create/required", |client| async move {
+        let value = client
+            .secret_connections()
+            .create(steel_rs::SecretConnectionCreateParams {
+                auth: steel_rs::SecretConnectionCreateParamsAuth {
+                    ..Default::default()
+                },
+                name: "x".to_owned(),
+                provider: steel_rs::SecretConnectionCreateParamsProvider::V1password,
+                config: None,
+                project_id: None,
+                token_budget: None,
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_create_nulls() {
+    harness::conform("secret_connections.create/nulls", |client| async move {
+        let value = client
+            .secret_connections()
+            .create(steel_rs::SecretConnectionCreateParams {
+                auth: steel_rs::SecretConnectionCreateParamsAuth {
+                    ..Default::default()
+                },
+                name: "x".to_owned(),
+                provider: steel_rs::SecretConnectionCreateParamsProvider::V1password,
+                config: None,
+                project_id: None,
+                token_budget: None,
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_create_unknown() {
+    harness::conform("secret_connections.create/unknown", |client| async move {
+        let value = client
+            .secret_connections()
+            .create(steel_rs::SecretConnectionCreateParams {
+                auth: steel_rs::SecretConnectionCreateParamsAuth {
+                    ..Default::default()
+                },
+                name: "x".to_owned(),
+                provider: steel_rs::SecretConnectionCreateParamsProvider::V1password,
+                config: None,
+                project_id: None,
+                token_budget: None,
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_retrieve_full() {
+    harness::conform("secret_connections.retrieve/full", |client| async move {
+        let value = client
+            .secret_connections()
+            .retrieve(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionRetrieveParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_retrieve_required() {
+    harness::conform(
+        "secret_connections.retrieve/required",
+        |client| async move {
+            let value = client
+                .secret_connections()
+                .retrieve(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SecretConnectionRetrieveParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_retrieve_nulls() {
+    harness::conform("secret_connections.retrieve/nulls", |client| async move {
+        let value = client
+            .secret_connections()
+            .retrieve(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionRetrieveParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_retrieve_unknown() {
+    harness::conform("secret_connections.retrieve/unknown", |client| async move {
+        let value = client
+            .secret_connections()
+            .retrieve(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionRetrieveParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_retrieve_escaped() {
+    harness::conform("secret_connections.retrieve/escaped", |client| async move {
+        let value = client
+            .secret_connections()
+            .retrieve(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::SecretConnectionRetrieveParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_update_full() {
+    harness::conform("secret_connections.update/full", |client| async move {
+        let value = client
+            .secret_connections()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionUpdateParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                    auth: Some(steel_rs::SecretConnectionUpdateParamsAuth {
+                        token: Some("x".to_owned()),
+                        mount: Some("x".to_owned()),
+                        role_id: Some("x".to_owned()),
+                        secret_id: Some("x".to_owned()),
+                        service_account_token: Some("x".to_owned()),
+                        r#type: Some(steel_rs::SecretConnectionUpdateParamsAuthType::Token),
+                    }),
+                    config: Some(steel_rs::SecretConnectionUpdateParamsConfig {
+                        address: "x".to_owned(),
+                        ca_pem: Some("x".to_owned()),
+                        namespace: Some("x".to_owned()),
+                    }),
+                    enabled: Some(true),
+                    name: Some("x".to_owned()),
+                    token_budget: Some(steel_rs::SecretConnectionUpdateParamsTokenBudget {
+                        burst: 2,
+                        refill_per_second: 0.001,
+                    }),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_update_required() {
+    harness::conform("secret_connections.update/required", |client| async move {
+        let value = client
+            .secret_connections()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionUpdateParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_update_nulls() {
+    harness::conform("secret_connections.update/nulls", |client| async move {
+        let value = client
+            .secret_connections()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionUpdateParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_update_unknown() {
+    harness::conform("secret_connections.update/unknown", |client| async move {
+        let value = client
+            .secret_connections()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionUpdateParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_update_escaped() {
+    harness::conform("secret_connections.update/escaped", |client| async move {
+        let value = client
+            .secret_connections()
+            .update(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::SecretConnectionUpdateParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_list_full() {
+    harness::conform("secret_connections.list/full", |client| async move {
+        let value = client
+            .secret_connections()
+            .list(steel_rs::SecretConnectionListParams {
+                project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_list_required() {
+    harness::conform("secret_connections.list/required", |client| async move {
+        let value = client
+            .secret_connections()
+            .list(steel_rs::SecretConnectionListParams {
+                ..Default::default()
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_list_nulls() {
+    harness::conform("secret_connections.list/nulls", |client| async move {
+        let value = client
+            .secret_connections()
+            .list(steel_rs::SecretConnectionListParams {
+                ..Default::default()
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_list_unknown() {
+    harness::conform("secret_connections.list/unknown", |client| async move {
+        let value = client
+            .secret_connections()
+            .list(steel_rs::SecretConnectionListParams {
+                ..Default::default()
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_list_escaped() {
+    harness::conform("secret_connections.list/escaped", |client| async move {
+        let value = client
+            .secret_connections()
+            .list(steel_rs::SecretConnectionListParams {
+                project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_delete_full() {
+    harness::conform("secret_connections.delete/full", |client| async move {
+        client
+            .secret_connections()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionDeleteParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_delete_required() {
+    harness::conform("secret_connections.delete/required", |client| async move {
+        client
+            .secret_connections()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionDeleteParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_delete_escaped() {
+    harness::conform("secret_connections.delete/escaped", |client| async move {
+        client
+            .secret_connections()
+            .delete(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::SecretConnectionDeleteParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_test_full() {
+    harness::conform("secret_connections.test/full", |client| async move {
+        client
+            .secret_connections()
+            .test(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionTestParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_test_required() {
+    harness::conform("secret_connections.test/required", |client| async move {
+        client
+            .secret_connections()
+            .test(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SecretConnectionTestParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn secret_connections_test_escaped() {
+    harness::conform("secret_connections.test/escaped", |client| async move {
+        client
+            .secret_connections()
+            .test(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::SecretConnectionTestParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
 async fn sessions_create_full() {
     harness::conform("sessions.create/full", |client| async move {
-        let value = client.sessions().create(steel_rs::SessionCreateParams { block_ads: Some(true), ca_certificates: Some(vec!["string".to_owned()]), concurrency: Some(-9007199254740991), credentials: Some(steel_rs::SessionCreateParamsCredentials { auto_submit: Some(true), blur_fields: Some(true), credential_provider: Some("credentialProvider".to_owned()), exact_origin: Some(true), origins: Some(vec!["string".to_owned()]) }), debug_config: Some(steel_rs::SessionCreateParamsDebugConfig { interactive: Some(true), system_cursor: Some(true) }), device_config: Some(steel_rs::SessionCreateParamsDeviceConfig { device: Some(steel_rs::SessionCreateParamsDeviceConfigDevice::Desktop) }), dimensions: Some(steel_rs::SessionCreateParamsDimensions { height: -9007199254740991, width: -9007199254740991 }), experimental_features: Some(vec!["string".to_owned()]), extension_ids: Some(vec!["string".to_owned()]), fullscreen: Some(true), headless: Some(true), inactivity_timeout: Some(1), is_selenium: Some(true), metadata: Some(std::collections::HashMap::from([("foo".to_owned(), steel_rs::SessionCreateParamsMetadata::String("string".to_owned()))])), namespace: Some("namespace".to_owned()), optimize_bandwidth: Some(steel_rs::SessionCreateParamsOptimizeBandwidth::Bool(true)), persist_profile: Some(true), profile_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()), project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()), proxy_url: Some("https://example.com".to_owned()), recording: Some(true), region: Some(serde_json::json!({})), session_context: Some(steel_rs::SessionCreateParamsSessionContext { cookies: Some(vec![steel_rs::SessionCreateParamsSessionContextCookie { name: "name".to_owned(), value: "value".to_owned(), domain: Some("domain".to_owned()), expires: Some(0.0), http_only: Some(true), partition_key: Some(steel_rs::SessionCreateParamsSessionContextCookiePartitionKey { has_cross_site_ancestor: true, top_level_site: "topLevelSite".to_owned() }), path: Some("path".to_owned()), priority: Some(steel_rs::SessionCreateParamsSessionContextCookiePriority::Low), same_party: Some(true), same_site: Some(steel_rs::SessionCreateParamsSessionContextCookieSameSite::Strict), secure: Some(true), session: Some(true), size: Some(0.0), source_port: Some(0.0), source_scheme: Some(steel_rs::SessionCreateParamsSessionContextCookieSourceScheme::Unset), url: Some("url".to_owned()) }]), indexed_db: Some(std::collections::HashMap::from([("foo".to_owned(), vec![steel_rs::SessionCreateParamsSessionContextIndexedDb { id: 0.0, data: vec![steel_rs::SessionCreateParamsSessionContextIndexedDbData { id: 0.0, name: "name".to_owned(), records: vec![steel_rs::SessionCreateParamsSessionContextIndexedDbDataRecord { key: serde_json::json!({}), value: serde_json::json!({}), blob_files: Some(vec![steel_rs::SessionCreateParamsSessionContextIndexedDbDataRecordBlobFile { blob_number: 0.0, mime_type: "mimeType".to_owned(), size: 0.0, filename: Some("filename".to_owned()), last_modified: Some("2019-12-27T18:11:19.117Z".to_owned()), path: Some("path".to_owned()) }]) }] }], name: "name".to_owned() }])])), local_storage: Some(std::collections::HashMap::from([("foo".to_owned(), std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]))])), session_storage: Some(std::collections::HashMap::from([("foo".to_owned(), std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]))])) }), session_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()), solve_captcha: Some(true), stealth_config: Some(steel_rs::SessionCreateParamsStealthConfig { auto_captcha_solving: Some(true), humanize_interactions: Some(true), skip_fingerprint_injection: Some(true) }), timeout: Some(-9007199254740991), use_proxy: Some(serde_json::json!(true)), user_agent: Some("userAgent".to_owned()) }).await.expect("request");
+        let value = client.sessions().create(steel_rs::SessionCreateParams { block_ads: Some(true), ca_certificates: Some(vec!["string".to_owned()]), concurrency: Some(-9007199254740991), credentials: Some(steel_rs::SessionCreateParamsCredentials { auto_submit: Some(true), bindings: Some(vec![steel_rs::SessionCreateParamsCredentialsBinding::String("string".to_owned())]), blur_fields: Some(true), credential_ids: Some(vec!["182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()]), credential_provider: Some("credentialProvider".to_owned()), dom_trigger: Some(true), enabled: Some(true), exact_origin: Some(true), lookup: Some(steel_rs::SessionCreateParamsCredentialsLookup::Implicit), origins: Some(vec!["string".to_owned()]) }), debug_config: Some(steel_rs::SessionCreateParamsDebugConfig { interactive: Some(true), system_cursor: Some(true) }), device_config: Some(steel_rs::SessionCreateParamsDeviceConfig { device: Some(steel_rs::SessionCreateParamsDeviceConfigDevice::Desktop) }), dimensions: Some(steel_rs::SessionCreateParamsDimensions { height: -9007199254740991, width: -9007199254740991 }), experimental_features: Some(vec!["string".to_owned()]), extension_ids: Some(vec!["string".to_owned()]), fullscreen: Some(true), headless: Some(true), inactivity_timeout: Some(1), is_selenium: Some(true), metadata: Some(std::collections::HashMap::from([("foo".to_owned(), steel_rs::SessionCreateParamsMetadata::String("string".to_owned()))])), namespace: Some("namespace".to_owned()), optimize_bandwidth: Some(steel_rs::SessionCreateParamsOptimizeBandwidth::Bool(true)), persist_profile: Some(true), profile_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()), project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()), proxy_url: Some("https://example.com".to_owned()), recording: Some(true), region: Some(serde_json::json!({})), session_context: Some(steel_rs::SessionCreateParamsSessionContext { cookies: Some(vec![steel_rs::SessionCreateParamsSessionContextCookie { name: "name".to_owned(), value: "value".to_owned(), domain: Some("domain".to_owned()), expires: Some(0.0), http_only: Some(true), partition_key: Some(steel_rs::SessionCreateParamsSessionContextCookiePartitionKey { has_cross_site_ancestor: true, top_level_site: "topLevelSite".to_owned() }), path: Some("path".to_owned()), priority: Some(steel_rs::SessionCreateParamsSessionContextCookiePriority::Low), same_party: Some(true), same_site: Some(steel_rs::SessionCreateParamsSessionContextCookieSameSite::Strict), secure: Some(true), session: Some(true), size: Some(0.0), source_port: Some(0.0), source_scheme: Some(steel_rs::SessionCreateParamsSessionContextCookieSourceScheme::Unset), url: Some("url".to_owned()) }]), indexed_db: Some(std::collections::HashMap::from([("foo".to_owned(), vec![steel_rs::SessionCreateParamsSessionContextIndexedDb { id: 0.0, data: vec![steel_rs::SessionCreateParamsSessionContextIndexedDbData { id: 0.0, name: "name".to_owned(), records: vec![steel_rs::SessionCreateParamsSessionContextIndexedDbDataRecord { key: serde_json::json!({}), value: serde_json::json!({}), blob_files: Some(vec![steel_rs::SessionCreateParamsSessionContextIndexedDbDataRecordBlobFile { blob_number: 0.0, mime_type: "mimeType".to_owned(), size: 0.0, filename: Some("filename".to_owned()), last_modified: Some("2019-12-27T18:11:19.117Z".to_owned()), path: Some("path".to_owned()) }]) }] }], name: "name".to_owned() }])])), local_storage: Some(std::collections::HashMap::from([("foo".to_owned(), std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]))])), session_storage: Some(std::collections::HashMap::from([("foo".to_owned(), std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]))])) }), session_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()), solve_captcha: Some(true), stealth_config: Some(steel_rs::SessionCreateParamsStealthConfig { auto_captcha_solving: Some(true), humanize_interactions: Some(true), skip_fingerprint_injection: Some(true) }), timeout: Some(-9007199254740991), use_proxy: Some(serde_json::json!(true)), user_agent: Some("userAgent".to_owned()) }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -1621,7 +2201,7 @@ async fn sessions_agent_traces_escaped() {
 #[tokio::test]
 async fn sessions_commands_full() {
     harness::conform("sessions.commands/full", |client| async move {
-        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: Some("t321669910225".to_owned()) }), after: Some("x".to_owned()), observe: Some(steel_rs::SessionCommandsParamsObserve { mode: steel_rs::SessionCommandsParamsObserveMode::None, base: Some("x".to_owned()), compact: Some(true), depth: Some(0), interactive: Some(true), tab: Some("t321669910225".to_owned()) }), idempotency_key: Some("idempotency-key".to_owned()) }).await.expect("request");
+        let value = client.sessions().commands("sessionId", steel_rs::SessionCommandsParams { commands: steel_rs::SessionCommandsParamsCommands::NavigateCommand(steel_rs::SessionCommandsParamsCommandsNavigateCommand { command: steel_rs::SessionCommandsParamsCommandsNavigateCommandCommand::Navigate, url: "x".to_owned(), tab: Some("t321669910225".to_owned()) }), after: Some("x".to_owned()), observe: Some(steel_rs::SessionCommandsParamsObserve { mode: steel_rs::SessionCommandsParamsObserveMode::Snapshot, base: Some("x".to_owned()), compact: Some(true), depth: Some(0), interactive: Some(true), tab: Some("t321669910225".to_owned()) }), idempotency_key: Some("idempotency-key".to_owned()) }).await.expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
     })
     .await;
@@ -4043,6 +4623,584 @@ async fn sessions_command_executions_cancel_escaped() {
 }
 
 #[tokio::test]
+async fn sessions_credentials_list_full() {
+    harness::conform("sessions.credentials.list/full", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_list_required() {
+    harness::conform("sessions.credentials.list/required", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_list_nulls() {
+    harness::conform("sessions.credentials.list/nulls", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_list_unknown() {
+    harness::conform("sessions.credentials.list/unknown", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_list_variant_0_1() {
+    harness::conform(
+        "sessions.credentials.list/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .list("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_list_escaped() {
+    harness::conform("sessions.credentials.list/escaped", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .list("a b/c?d#e%f+g&h=i é")
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_attach_full() {
+    harness::conform("sessions.credentials.attach/full", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .attach(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SessionCredentialAttachParams {
+                    bindings: Some(vec![
+                        steel_rs::SessionCredentialAttachParamsBinding::String("string".to_owned()),
+                    ]),
+                    credential_ids: Some(vec!["182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()]),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_attach_required() {
+    harness::conform(
+        "sessions.credentials.attach/required",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .attach(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialAttachParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_attach_nulls() {
+    harness::conform("sessions.credentials.attach/nulls", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .attach(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SessionCredentialAttachParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_attach_unknown() {
+    harness::conform("sessions.credentials.attach/unknown", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .attach(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SessionCredentialAttachParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_attach_variant_0_1() {
+    harness::conform(
+        "sessions.credentials.attach/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .attach(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialAttachParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_attach_escaped() {
+    harness::conform("sessions.credentials.attach/escaped", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .attach(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::SessionCredentialAttachParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_full() {
+    harness::conform("sessions.credentials.detach/full", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .detach(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_required() {
+    harness::conform(
+        "sessions.credentials.detach/required",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_nulls() {
+    harness::conform("sessions.credentials.detach/nulls", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .detach(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_unknown() {
+    harness::conform("sessions.credentials.detach/unknown", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .detach(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_variant_0_1() {
+    harness::conform(
+        "sessions.credentials.detach/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_escaped() {
+    harness::conform("sessions.credentials.detach/escaped", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .detach("a b/c?d#e%f+g&h=i é", "a b/c?d#e%f+g&h=i é")
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_binding_full() {
+    harness::conform(
+        "sessions.credentials.detach_binding/full",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach_binding(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialDetachBindingParams {
+                        reference: "reference".to_owned(),
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_binding_required() {
+    harness::conform(
+        "sessions.credentials.detach_binding/required",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach_binding(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialDetachBindingParams {
+                        reference: "reference".to_owned(),
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_binding_nulls() {
+    harness::conform(
+        "sessions.credentials.detach_binding/nulls",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach_binding(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialDetachBindingParams {
+                        reference: "reference".to_owned(),
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_binding_unknown() {
+    harness::conform(
+        "sessions.credentials.detach_binding/unknown",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach_binding(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialDetachBindingParams {
+                        reference: "reference".to_owned(),
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_binding_variant_0_1() {
+    harness::conform(
+        "sessions.credentials.detach_binding/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach_binding(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialDetachBindingParams {
+                        reference: "reference".to_owned(),
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_detach_binding_escaped() {
+    harness::conform(
+        "sessions.credentials.detach_binding/escaped",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .detach_binding(
+                    "a b/c?d#e%f+g&h=i é",
+                    steel_rs::SessionCredentialDetachBindingParams {
+                        reference: "a b/c?d#e%f+g&h=i é".to_owned(),
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_replace_full() {
+    harness::conform("sessions.credentials.replace/full", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .replace(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SessionCredentialReplaceParams {
+                    bindings: Some(vec![
+                        steel_rs::SessionCredentialReplaceParamsBinding::String(
+                            "string".to_owned(),
+                        ),
+                    ]),
+                    credential_ids: Some(vec!["182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()]),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_replace_required() {
+    harness::conform(
+        "sessions.credentials.replace/required",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .replace(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialReplaceParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_replace_nulls() {
+    harness::conform("sessions.credentials.replace/nulls", |client| async move {
+        let value = client
+            .sessions()
+            .credentials()
+            .replace(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::SessionCredentialReplaceParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_replace_unknown() {
+    harness::conform(
+        "sessions.credentials.replace/unknown",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .replace(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialReplaceParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_replace_variant_0_1() {
+    harness::conform(
+        "sessions.credentials.replace/variant-0-1",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .replace(
+                    "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                    steel_rs::SessionCredentialReplaceParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn sessions_credentials_replace_escaped() {
+    harness::conform(
+        "sessions.credentials.replace/escaped",
+        |client| async move {
+            let value = client
+                .sessions()
+                .credentials()
+                .replace(
+                    "a b/c?d#e%f+g&h=i é",
+                    steel_rs::SessionCredentialReplaceParams {
+                        ..Default::default()
+                    },
+                )
+                .await
+                .expect("request");
+            harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
 async fn sessions_files_list_full() {
     harness::conform("sessions.files.list/full", |client| async move {
         let value = client
@@ -4351,6 +5509,318 @@ async fn sessions_files_upload_escaped() {
             .await
             .expect("request");
         harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_create_full() {
+    harness::conform("vaults.create/full", |client| async move {
+        let value = client
+            .vaults()
+            .create(steel_rs::VaultCreateParams {
+                name: "name".to_owned(),
+                description: Some("description".to_owned()),
+                project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_create_required() {
+    harness::conform("vaults.create/required", |client| async move {
+        let value = client
+            .vaults()
+            .create(steel_rs::VaultCreateParams {
+                name: "name".to_owned(),
+                description: None,
+                project_id: None,
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_create_nulls() {
+    harness::conform("vaults.create/nulls", |client| async move {
+        let value = client
+            .vaults()
+            .create(steel_rs::VaultCreateParams {
+                name: "name".to_owned(),
+                description: None,
+                project_id: None,
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_retrieve_full() {
+    harness::conform("vaults.retrieve/full", |client| async move {
+        let value = client
+            .vaults()
+            .retrieve(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultRetrieveParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_retrieve_required() {
+    harness::conform("vaults.retrieve/required", |client| async move {
+        let value = client
+            .vaults()
+            .retrieve(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultRetrieveParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_retrieve_nulls() {
+    harness::conform("vaults.retrieve/nulls", |client| async move {
+        let value = client
+            .vaults()
+            .retrieve(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultRetrieveParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_retrieve_escaped() {
+    harness::conform("vaults.retrieve/escaped", |client| async move {
+        let value = client
+            .vaults()
+            .retrieve(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::VaultRetrieveParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_update_full() {
+    harness::conform("vaults.update/full", |client| async move {
+        let value = client
+            .vaults()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultUpdateParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                    description: Some("description".to_owned()),
+                    name: Some("name".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_update_required() {
+    harness::conform("vaults.update/required", |client| async move {
+        let value = client
+            .vaults()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultUpdateParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_update_nulls() {
+    harness::conform("vaults.update/nulls", |client| async move {
+        let value = client
+            .vaults()
+            .update(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultUpdateParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_update_escaped() {
+    harness::conform("vaults.update/escaped", |client| async move {
+        let value = client
+            .vaults()
+            .update(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::VaultUpdateParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_list_full() {
+    harness::conform("vaults.list/full", |client| async move {
+        let value = client
+            .vaults()
+            .list(steel_rs::VaultListParams {
+                project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_list_required() {
+    harness::conform("vaults.list/required", |client| async move {
+        let value = client
+            .vaults()
+            .list(steel_rs::VaultListParams {
+                ..Default::default()
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_list_nulls() {
+    harness::conform("vaults.list/nulls", |client| async move {
+        let value = client
+            .vaults()
+            .list(steel_rs::VaultListParams {
+                ..Default::default()
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_list_escaped() {
+    harness::conform("vaults.list/escaped", |client| async move {
+        let value = client
+            .vaults()
+            .list(steel_rs::VaultListParams {
+                project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+            })
+            .await
+            .expect("request");
+        harness::Outcome::Json(serde_json::to_value(&value).expect("serialize"))
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_delete_full() {
+    harness::conform("vaults.delete/full", |client| async move {
+        client
+            .vaults()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultDeleteParams {
+                    project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_delete_required() {
+    harness::conform("vaults.delete/required", |client| async move {
+        client
+            .vaults()
+            .delete(
+                "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+                steel_rs::VaultDeleteParams {
+                    ..Default::default()
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
+    })
+    .await;
+}
+
+#[tokio::test]
+async fn vaults_delete_escaped() {
+    harness::conform("vaults.delete/escaped", |client| async move {
+        client
+            .vaults()
+            .delete(
+                "a b/c?d#e%f+g&h=i é",
+                steel_rs::VaultDeleteParams {
+                    project_id: Some("a b/c?d#e%f+g&h=i é".to_owned()),
+                },
+            )
+            .await
+            .expect("request");
+        harness::Outcome::Empty
     })
     .await;
 }

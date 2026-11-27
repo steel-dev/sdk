@@ -7,44 +7,52 @@ pub struct Files<'a> {
 
 impl<'a> Files<'a> {
     /// List all global files for the organization in descending order.
-    pub async fn list(&self) -> Result<crate::Fileslist, crate::Error> {
-        let request = crate::client::Request::new(reqwest::Method::GET, "/v1/files".to_owned());
-        self.client.json(request).await
+    pub fn list(&self) -> crate::Call<'a, crate::Fileslist> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, "/v1/files".to_owned());
+            client.json(request).await
+        })
     }
 
     /// Delete a file from global storage
-    pub async fn delete(&self, path: &str) -> Result<(), crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::DELETE,
-            format!("/v1/files/{}", crate::encoding::segment(path)),
-        );
-        self.client.empty(request).await
+    pub fn delete(&self, path: &str) -> crate::Call<'a, ()> {
+        let client = self.client;
+        let path = format!("/v1/files/{}", crate::encoding::segment(path));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::DELETE, path);
+            client.empty(request).await
+        })
     }
 
     /// Download a file from global storage
-    pub async fn download(&self, path: &str) -> Result<bytes::Bytes, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/files/{}", crate::encoding::segment(path)),
-        );
-        request.accept = Some("application/octet-stream");
-        self.client.bytes(request).await
+    pub fn download(&self, path: &str) -> crate::Call<'a, bytes::Bytes> {
+        let client = self.client;
+        let path = format!("/v1/files/{}", crate::encoding::segment(path));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            request.accept = Some("application/octet-stream");
+            client.bytes(request).await
+        })
     }
 
     /// Uploads a file to global storage via `multipart/form-data` with a `file` field that accepts either binary data or a URL string to download from, and an optional `path` field for the file storage path.
-    pub async fn upload(&self, params: FileUploadParams) -> Result<crate::File, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/files".to_owned());
-        let mut fields = Vec::new();
-        fields.push(crate::encoding::FormField::File(
-            "file".to_owned(),
-            params.file.clone(),
-        ));
-        if let Some(value) = &params.path {
-            fields.extend(crate::encoding::form("path", &serde_json::to_value(value)?));
-        }
-        request.body = crate::client::Body::Form(fields);
-        self.client.json(request).await
+    pub fn upload(&self, params: FileUploadParams) -> crate::Call<'a, crate::File> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/files".to_owned());
+            let mut fields = Vec::new();
+            fields.push(crate::encoding::FormField::File(
+                "file".to_owned(),
+                params.file.clone(),
+            ));
+            if let Some(value) = &params.path {
+                fields.extend(crate::encoding::form("path", &serde_json::to_value(value)?));
+            }
+            request.body = crate::client::Body::Form(fields);
+            client.json(request).await
+        })
     }
 }
 
@@ -70,7 +78,7 @@ pub struct File {
     /// Path to the file in the storage system
     pub path: String,
     /// Size of the file in bytes
-    pub size: f64,
+    pub size: i64,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -87,5 +95,5 @@ pub struct FileslistData {
     /// Path to the file in the storage system
     pub path: String,
     /// Size of the file in bytes
-    pub size: f64,
+    pub size: i64,
 }

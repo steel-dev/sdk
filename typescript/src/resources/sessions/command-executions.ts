@@ -40,19 +40,33 @@ export class CommandExecutions extends APIResource {
 
 export interface CommandExecutionRetrieveResponse {
   /**
-   * The id of this execution, the same as execution.id. Use it to get or cancel the
-   * execution.
+   * The id of this execution. Use it to get or cancel the execution.
    */
   id: string;
 
-  execution: CommandExecutionRetrieveResponse.Execution;
+  /**
+   * What happened to the page: nothing, a change, or a possible change.
+   */
+  effect: 'none' | 'applied' | 'unknown';
 
   /**
    * The tab the execution used.
    */
   page: CommandExecutionRetrieveResponse.Page | null;
 
+  /**
+   * Commands started.
+   */
+  ran: number;
+
+  /**
+   * This is the stored result of an earlier request. Nothing ran again.
+   */
+  replayed: boolean;
+
   results: Array<SessionsAPI.CommandResult>;
+
+  state: 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout';
 
   bodyExpired?: boolean;
 
@@ -69,34 +83,25 @@ export interface CommandExecutionRetrieveResponse {
   epochChanged?: boolean;
 
   /**
+   * Tabs with keys or a mouse button still held down. Left out when nothing is held.
+   */
+  held?: Array<SessionsAPI.CommandHeld>;
+
+  /**
    * Send it as after in the next request.
    */
   next?: string;
 
   observe?: CommandExecutionRetrieveResponse.Observe;
+
+  /**
+   * Why the execution stopped early, such as a cancel, a timeout, or a browser
+   * restart. A failed command has its error in results instead.
+   */
+  stopped?: SessionsAPI.CommandErrorInfo;
 }
 
 export namespace CommandExecutionRetrieveResponse {
-  export interface Execution {
-    id: string;
-
-    /**
-     * What happened to the page: nothing, a change, or a possible change.
-     */
-    effect: 'none' | 'applied' | 'unknown';
-
-    /**
-     * Commands started.
-     */
-    ran: number;
-
-    replayed: boolean;
-
-    state: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout' | 'expired';
-
-    error?: SessionsAPI.CommandErrorInfo;
-  }
-
   /**
    * The tab the execution used.
    */
@@ -129,19 +134,33 @@ export namespace CommandExecutionRetrieveResponse {
 
 export interface CommandExecutionCancelResponse {
   /**
-   * The id of this execution, the same as execution.id. Use it to get or cancel the
-   * execution.
+   * The id of this execution. Use it to get or cancel the execution.
    */
   id: string;
 
-  execution: CommandExecutionCancelResponse.Execution;
+  /**
+   * What happened to the page: nothing, a change, or a possible change.
+   */
+  effect: 'none' | 'applied' | 'unknown';
 
   /**
    * The tab the execution used.
    */
   page: CommandExecutionCancelResponse.Page | null;
 
+  /**
+   * Commands started.
+   */
+  ran: number;
+
+  /**
+   * This is the stored result of an earlier request. Nothing ran again.
+   */
+  replayed: boolean;
+
   results: Array<SessionsAPI.CommandResult>;
+
+  state: 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout';
 
   bodyExpired?: boolean;
 
@@ -158,34 +177,25 @@ export interface CommandExecutionCancelResponse {
   epochChanged?: boolean;
 
   /**
+   * Tabs with keys or a mouse button still held down. Left out when nothing is held.
+   */
+  held?: Array<SessionsAPI.CommandHeld>;
+
+  /**
    * Send it as after in the next request.
    */
   next?: string;
 
   observe?: CommandExecutionCancelResponse.Observe;
+
+  /**
+   * Why the execution stopped early, such as a cancel, a timeout, or a browser
+   * restart. A failed command has its error in results instead.
+   */
+  stopped?: SessionsAPI.CommandErrorInfo;
 }
 
 export namespace CommandExecutionCancelResponse {
-  export interface Execution {
-    id: string;
-
-    /**
-     * What happened to the page: nothing, a change, or a possible change.
-     */
-    effect: 'none' | 'applied' | 'unknown';
-
-    /**
-     * Commands started.
-     */
-    ran: number;
-
-    replayed: boolean;
-
-    state: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout' | 'expired';
-
-    error?: SessionsAPI.CommandErrorInfo;
-  }
-
   /**
    * The tab the execution used.
    */

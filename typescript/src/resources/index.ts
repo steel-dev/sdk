@@ -28,13 +28,28 @@ export {
   type ProfileCreateResponse,
   type ProfileUpdateResponse,
   type ProfileListResponse,
+  type ProfileDeleteResponse,
   type ProfileGetResponse,
   type ProfileCreateParams,
   type ProfileUpdateParams,
   type ProfileListParams,
+  type ProfileDeleteParams,
   type ProfileGetParams,
 } from './profiles';
 export { Projects, type Project, type ProjectsList } from './projects';
+export {
+  SecretConnections,
+  type SecretConnectionCreateResponse,
+  type SecretConnectionRetrieveResponse,
+  type SecretConnectionUpdateResponse,
+  type SecretConnectionListResponse,
+  type SecretConnectionCreateParams,
+  type SecretConnectionRetrieveParams,
+  type SecretConnectionUpdateParams,
+  type SecretConnectionListParams,
+  type SecretConnectionDeleteParams,
+  type SecretConnectionTestParams,
+} from './secret-connections';
 export {
   SessionslistSessionsSessionsCursor,
   Sessions,
@@ -43,11 +58,13 @@ export {
   type CommandErrorInfo,
   type CommandExpectation,
   type CommandFrame,
+  type CommandHeld,
   type CommandLocator,
   type CommandResult,
   type CommandTarget,
   type Session,
   type SessionContext,
+  type SessionCredentials,
   type Sessionslist,
   type SessionAgentTracesResponse,
   type SessionCommandsResponse,
@@ -80,3 +97,13 @@ export {
   type ScrapeParams,
   type ScreenshotParams,
 } from './top-level';
+export {
+  Vaults,
+  type Vault,
+  type VaultList,
+  type VaultCreateParams,
+  type VaultRetrieveParams,
+  type VaultUpdateParams,
+  type VaultListParams,
+  type VaultDeleteParams,
+} from './vaults';

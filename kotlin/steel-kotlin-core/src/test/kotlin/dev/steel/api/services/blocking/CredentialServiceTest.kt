@@ -33,6 +33,7 @@ internal class CredentialServiceTest {
                             .putAdditionalProperty("foo", JsonValue.from("string"))
                             .build()
                     )
+                    .additionalOrigins(listOf("x"))
                     .label("label")
                     .namespace("namespace")
                     .origin("origin")
@@ -53,6 +54,7 @@ internal class CredentialServiceTest {
         val response =
             service.update(
                 CredentialUpdateParams.builder()
+                    .additionalOrigins(listOf("x"))
                     .label("label")
                     .namespace("namespace")
                     .origin("origin")

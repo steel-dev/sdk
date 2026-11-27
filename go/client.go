@@ -19,13 +19,15 @@ import (
 type Client struct {
 	Options []option.RequestOption
 	// Create project-scoped API keys using an organization-scoped API key.
-	APIKeys     *APIKeyService
-	Credentials *CredentialService
-	Extensions  *ExtensionService
-	Files       *FileService
-	Profiles    *ProfileService
-	Projects    *ProjectService
-	Sessions    *SessionService
+	APIKeys           *APIKeyService
+	Credentials       *CredentialService
+	Extensions        *ExtensionService
+	Files             *FileService
+	Profiles          *ProfileService
+	Projects          *ProjectService
+	SecretConnections *SecretConnectionService
+	Sessions          *SessionService
+	Vaults            *VaultService
 }
 
 // DefaultClientOptions read from the environment (STEEL_API_KEY,
@@ -64,7 +66,9 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Files = NewFileService(opts...)
 	r.Profiles = NewProfileService(opts...)
 	r.Projects = NewProjectService(opts...)
+	r.SecretConnections = NewSecretConnectionService(opts...)
 	r.Sessions = NewSessionService(opts...)
+	r.Vaults = NewVaultService(opts...)
 
 	return
 }

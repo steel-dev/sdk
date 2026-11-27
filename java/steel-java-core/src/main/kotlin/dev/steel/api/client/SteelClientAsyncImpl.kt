@@ -32,8 +32,12 @@ import dev.steel.api.services.async.ProfileServiceAsync
 import dev.steel.api.services.async.ProfileServiceAsyncImpl
 import dev.steel.api.services.async.ProjectServiceAsync
 import dev.steel.api.services.async.ProjectServiceAsyncImpl
+import dev.steel.api.services.async.SecretConnectionServiceAsync
+import dev.steel.api.services.async.SecretConnectionServiceAsyncImpl
 import dev.steel.api.services.async.SessionServiceAsync
 import dev.steel.api.services.async.SessionServiceAsyncImpl
+import dev.steel.api.services.async.VaultServiceAsync
+import dev.steel.api.services.async.VaultServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
 import java.util.function.Consumer
 
@@ -75,8 +79,16 @@ class SteelClientAsyncImpl(private val clientOptions: ClientOptions) : SteelClie
         ProjectServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
+    private val secretConnections: SecretConnectionServiceAsync by lazy {
+        SecretConnectionServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
     private val sessions: SessionServiceAsync by lazy {
         SessionServiceAsyncImpl(clientOptionsWithUserAgent)
+    }
+
+    private val vaults: VaultServiceAsync by lazy {
+        VaultServiceAsyncImpl(clientOptionsWithUserAgent)
     }
 
     override fun sync(): SteelClient = sync
@@ -98,7 +110,11 @@ class SteelClientAsyncImpl(private val clientOptions: ClientOptions) : SteelClie
 
     override fun projects(): ProjectServiceAsync = projects
 
+    override fun secretConnections(): SecretConnectionServiceAsync = secretConnections
+
     override fun sessions(): SessionServiceAsync = sessions
+
+    override fun vaults(): VaultServiceAsync = vaults
 
     override fun pdf(
         params: ClientPdfParams,
@@ -150,8 +166,16 @@ class SteelClientAsyncImpl(private val clientOptions: ClientOptions) : SteelClie
             ProjectServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val secretConnections: SecretConnectionServiceAsync.WithRawResponse by lazy {
+            SecretConnectionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val sessions: SessionServiceAsync.WithRawResponse by lazy {
             SessionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val vaults: VaultServiceAsync.WithRawResponse by lazy {
+            VaultServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -173,7 +197,12 @@ class SteelClientAsyncImpl(private val clientOptions: ClientOptions) : SteelClie
 
         override fun projects(): ProjectServiceAsync.WithRawResponse = projects
 
+        override fun secretConnections(): SecretConnectionServiceAsync.WithRawResponse =
+            secretConnections
+
         override fun sessions(): SessionServiceAsync.WithRawResponse = sessions
+
+        override fun vaults(): VaultServiceAsync.WithRawResponse = vaults
 
         private val pdfHandler: Handler<ClientPdfResponse> =
             jsonHandler<ClientPdfResponse>(clientOptions.jsonMapper)

@@ -15,6 +15,7 @@ import dev.steel.api.core.toImmutable
 import dev.steel.api.errors.SteelInvalidDataException
 import dev.steel.api.models.sessions.CommandDialog
 import dev.steel.api.models.sessions.CommandErrorInfo
+import dev.steel.api.models.sessions.CommandHeld
 import dev.steel.api.models.sessions.CommandResult
 import java.util.Collections
 import java.util.Objects
@@ -24,27 +25,33 @@ class CommandExecutionRetrieveResponse
 @JsonCreator(mode = JsonCreator.Mode.DISABLED)
 private constructor(
     private val id: JsonField<String>,
-    private val execution: JsonField<Execution>,
+    private val effect: JsonField<Effect>,
     private val page: JsonField<PageModel>,
+    private val ran: JsonField<Long>,
+    private val replayed: JsonField<Boolean>,
     private val results: JsonField<List<CommandResult>>,
+    private val state: JsonField<State>,
     private val bodyExpired: JsonField<Boolean>,
     private val dialog: JsonField<CommandDialog>,
     private val epochChanged: JsonField<Boolean>,
+    private val held: JsonField<List<CommandHeld>>,
     private val next: JsonField<String>,
     private val observe: JsonField<Observe>,
+    private val stopped: JsonField<CommandErrorInfo>,
     private val additionalProperties: MutableMap<String, JsonValue>,
 ) {
 
     @JsonCreator
     private constructor(
         @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-        @JsonProperty("execution")
-        @ExcludeMissing
-        execution: JsonField<Execution> = JsonMissing.of(),
+        @JsonProperty("effect") @ExcludeMissing effect: JsonField<Effect> = JsonMissing.of(),
         @JsonProperty("page") @ExcludeMissing page: JsonField<PageModel> = JsonMissing.of(),
+        @JsonProperty("ran") @ExcludeMissing ran: JsonField<Long> = JsonMissing.of(),
+        @JsonProperty("replayed") @ExcludeMissing replayed: JsonField<Boolean> = JsonMissing.of(),
         @JsonProperty("results")
         @ExcludeMissing
         results: JsonField<List<CommandResult>> = JsonMissing.of(),
+        @JsonProperty("state") @ExcludeMissing state: JsonField<State> = JsonMissing.of(),
         @JsonProperty("bodyExpired")
         @ExcludeMissing
         bodyExpired: JsonField<Boolean> = JsonMissing.of(),
@@ -52,32 +59,48 @@ private constructor(
         @JsonProperty("epochChanged")
         @ExcludeMissing
         epochChanged: JsonField<Boolean> = JsonMissing.of(),
+        @JsonProperty("held") @ExcludeMissing held: JsonField<List<CommandHeld>> = JsonMissing.of(),
         @JsonProperty("next") @ExcludeMissing next: JsonField<String> = JsonMissing.of(),
         @JsonProperty("observe") @ExcludeMissing observe: JsonField<Observe> = JsonMissing.of(),
+        @JsonProperty("stopped")
+        @ExcludeMissing
+        stopped: JsonField<CommandErrorInfo> = JsonMissing.of(),
     ) : this(
         id,
-        execution,
+        effect,
         page,
+        ran,
+        replayed,
         results,
+        state,
         bodyExpired,
         dialog,
         epochChanged,
+        held,
         next,
         observe,
+        stopped,
         mutableMapOf(),
     )
 
-    /**
-     * The id of this execution, the same as execution.id. Use it to get or cancel the execution.
-     */
+    /** The id of this execution. Use it to get or cancel the execution. */
     fun id(): String = id.getRequired("id")
 
-    fun execution(): Execution = execution.getRequired("execution")
+    /** What happened to the page: nothing, a change, or a possible change. */
+    fun effect(): Effect = effect.getRequired("effect")
 
     /** The tab the execution used. */
     fun page(): PageModel? = page.getNullable("page")
 
+    /** Commands started. */
+    fun ran(): Long = ran.getRequired("ran")
+
+    /** This is the stored result of an earlier request. Nothing ran again. */
+    fun replayed(): Boolean = replayed.getRequired("replayed")
+
     fun results(): List<CommandResult> = results.getRequired("results")
+
+    fun state(): State = state.getRequired("state")
 
     fun bodyExpired(): Boolean? = bodyExpired.getNullable("bodyExpired")
 
@@ -91,20 +114,35 @@ private constructor(
      */
     fun epochChanged(): Boolean? = epochChanged.getNullable("epochChanged")
 
+    /** Tabs with keys or a mouse button still held down. Left out when nothing is held. */
+    fun held(): List<CommandHeld>? = held.getNullable("held")
+
     /** Send it as after in the next request. */
     fun next(): String? = next.getNullable("next")
 
     fun observe(): Observe? = observe.getNullable("observe")
 
+    /**
+     * Why the execution stopped early, such as a cancel, a timeout, or a browser restart. A failed
+     * command has its error in results instead.
+     */
+    fun stopped(): CommandErrorInfo? = stopped.getNullable("stopped")
+
     @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
 
-    @JsonProperty("execution") @ExcludeMissing fun _execution(): JsonField<Execution> = execution
+    @JsonProperty("effect") @ExcludeMissing fun _effect(): JsonField<Effect> = effect
 
     @JsonProperty("page") @ExcludeMissing fun _page(): JsonField<PageModel> = page
+
+    @JsonProperty("ran") @ExcludeMissing fun _ran(): JsonField<Long> = ran
+
+    @JsonProperty("replayed") @ExcludeMissing fun _replayed(): JsonField<Boolean> = replayed
 
     @JsonProperty("results")
     @ExcludeMissing
     fun _results(): JsonField<List<CommandResult>> = results
+
+    @JsonProperty("state") @ExcludeMissing fun _state(): JsonField<State> = state
 
     @JsonProperty("bodyExpired")
     @ExcludeMissing
@@ -116,9 +154,13 @@ private constructor(
     @ExcludeMissing
     fun _epochChanged(): JsonField<Boolean> = epochChanged
 
+    @JsonProperty("held") @ExcludeMissing fun _held(): JsonField<List<CommandHeld>> = held
+
     @JsonProperty("next") @ExcludeMissing fun _next(): JsonField<String> = next
 
     @JsonProperty("observe") @ExcludeMissing fun _observe(): JsonField<Observe> = observe
+
+    @JsonProperty("stopped") @ExcludeMissing fun _stopped(): JsonField<CommandErrorInfo> = stopped
 
     @JsonAnySetter
     private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -145,53 +187,71 @@ private constructor(
     class Builder internal constructor() {
 
         private var id: JsonField<String>? = null
-        private var execution: JsonField<Execution>? = null
+        private var effect: JsonField<Effect>? = null
         private var page: JsonField<PageModel>? = null
+        private var ran: JsonField<Long>? = null
+        private var replayed: JsonField<Boolean>? = null
         private var results: JsonField<MutableList<CommandResult>>? = null
+        private var state: JsonField<State>? = null
         private var bodyExpired: JsonField<Boolean> = JsonMissing.of()
         private var dialog: JsonField<CommandDialog> = JsonMissing.of()
         private var epochChanged: JsonField<Boolean> = JsonMissing.of()
+        private var held: JsonField<MutableList<CommandHeld>>? = null
         private var next: JsonField<String> = JsonMissing.of()
         private var observe: JsonField<Observe> = JsonMissing.of()
+        private var stopped: JsonField<CommandErrorInfo> = JsonMissing.of()
         private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
         @JvmSynthetic
         internal fun from(commandExecutionRetrieveResponse: CommandExecutionRetrieveResponse) =
             apply {
                 this.id = commandExecutionRetrieveResponse.id
-                this.execution = commandExecutionRetrieveResponse.execution
+                this.effect = commandExecutionRetrieveResponse.effect
                 this.page = commandExecutionRetrieveResponse.page
+                this.ran = commandExecutionRetrieveResponse.ran
+                this.replayed = commandExecutionRetrieveResponse.replayed
                 this.results = commandExecutionRetrieveResponse.results.map { it.toMutableList() }
+                this.state = commandExecutionRetrieveResponse.state
                 this.bodyExpired = commandExecutionRetrieveResponse.bodyExpired
                 this.dialog = commandExecutionRetrieveResponse.dialog
                 this.epochChanged = commandExecutionRetrieveResponse.epochChanged
+                this.held = commandExecutionRetrieveResponse.held.map { it.toMutableList() }
                 this.next = commandExecutionRetrieveResponse.next
                 this.observe = commandExecutionRetrieveResponse.observe
+                this.stopped = commandExecutionRetrieveResponse.stopped
                 this.additionalProperties =
                     commandExecutionRetrieveResponse.additionalProperties.toMutableMap()
             }
 
-        /**
-         * The id of this execution, the same as execution.id. Use it to get or cancel the
-         * execution.
-         */
+        /** The id of this execution. Use it to get or cancel the execution. */
         fun id(id: String) = id(JsonField.of(id))
 
-        /**
-         * The id of this execution, the same as execution.id. Use it to get or cancel the
-         * execution.
-         */
+        /** The id of this execution. Use it to get or cancel the execution. */
         fun id(id: JsonField<String>) = apply { this.id = id }
 
-        fun execution(execution: Execution) = execution(JsonField.of(execution))
+        /** What happened to the page: nothing, a change, or a possible change. */
+        fun effect(effect: Effect) = effect(JsonField.of(effect))
 
-        fun execution(execution: JsonField<Execution>) = apply { this.execution = execution }
+        /** What happened to the page: nothing, a change, or a possible change. */
+        fun effect(effect: JsonField<Effect>) = apply { this.effect = effect }
 
         /** The tab the execution used. */
         fun page(page: PageModel?) = page(JsonField.ofNullable(page))
 
         /** The tab the execution used. */
         fun page(page: JsonField<PageModel>) = apply { this.page = page }
+
+        /** Commands started. */
+        fun ran(ran: Long) = ran(JsonField.of(ran))
+
+        /** Commands started. */
+        fun ran(ran: JsonField<Long>) = apply { this.ran = ran }
+
+        /** This is the stored result of an earlier request. Nothing ran again. */
+        fun replayed(replayed: Boolean) = replayed(JsonField.of(replayed))
+
+        /** This is the stored result of an earlier request. Nothing ran again. */
+        fun replayed(replayed: JsonField<Boolean>) = apply { this.replayed = replayed }
 
         fun results(results: List<CommandResult>) = results(JsonField.of(results))
 
@@ -205,6 +265,10 @@ private constructor(
                     checkKnown("results", it).add(result)
                 }
         }
+
+        fun state(state: State) = state(JsonField.of(state))
+
+        fun state(state: JsonField<State>) = apply { this.state = state }
 
         fun bodyExpired(bodyExpired: Boolean) = bodyExpired(JsonField.of(bodyExpired))
 
@@ -232,6 +296,22 @@ private constructor(
             this.epochChanged = epochChanged
         }
 
+        /** Tabs with keys or a mouse button still held down. Left out when nothing is held. */
+        fun held(held: List<CommandHeld>) = held(JsonField.of(held))
+
+        /** Tabs with keys or a mouse button still held down. Left out when nothing is held. */
+        fun held(held: JsonField<List<CommandHeld>>) = apply {
+            this.held = held.map { it.toMutableList() }
+        }
+
+        /** Tabs with keys or a mouse button still held down. Left out when nothing is held. */
+        fun addHeld(held: CommandHeld) = apply {
+            this.held =
+                (this.held ?: JsonField.of(mutableListOf())).also {
+                    checkKnown("held", it).add(held)
+                }
+        }
+
         /** Send it as after in the next request. */
         fun next(next: String) = next(JsonField.of(next))
 
@@ -241,6 +321,18 @@ private constructor(
         fun observe(observe: Observe) = observe(JsonField.of(observe))
 
         fun observe(observe: JsonField<Observe>) = apply { this.observe = observe }
+
+        /**
+         * Why the execution stopped early, such as a cancel, a timeout, or a browser restart. A
+         * failed command has its error in results instead.
+         */
+        fun stopped(stopped: CommandErrorInfo) = stopped(JsonField.of(stopped))
+
+        /**
+         * Why the execution stopped early, such as a cancel, a timeout, or a browser restart. A
+         * failed command has its error in results instead.
+         */
+        fun stopped(stopped: JsonField<CommandErrorInfo>) = apply { this.stopped = stopped }
 
         fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
             this.additionalProperties.clear()
@@ -264,14 +356,19 @@ private constructor(
         fun build(): CommandExecutionRetrieveResponse =
             CommandExecutionRetrieveResponse(
                 checkRequired("id", id),
-                checkRequired("execution", execution),
+                checkRequired("effect", effect),
                 checkRequired("page", page),
+                checkRequired("ran", ran),
+                checkRequired("replayed", replayed),
                 checkRequired("results", results).map { it.toImmutable() },
+                checkRequired("state", state),
                 bodyExpired,
                 dialog,
                 epochChanged,
+                (held ?: JsonMissing.of()).map { it.toImmutable() },
                 next,
                 observe,
+                stopped,
                 additionalProperties.toMutableMap(),
             )
     }
@@ -292,179 +389,85 @@ private constructor(
         }
 
         id()
-        execution().validate()
+        effect().validate()
         page()?.let { it.validate() }
+        ran()
+        replayed()
         results().forEach { it.validate() }
+        state().validate()
         bodyExpired()
         dialog()?.let { it.validate() }
         epochChanged()
+        held()?.let { it.forEach { it.validate() } }
         next()
         observe()?.let { it.validate() }
+        stopped()?.let { it.validate() }
         validated = true
     }
 
     @JvmSynthetic
     internal fun validity(): Int =
         (if (id.asKnown().isPresent) 1 else 0) +
-            (execution.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+            (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
             (page.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+            (if (ran.asKnown().isPresent) 1 else 0) +
+            (if (replayed.asKnown().isPresent) 1 else 0) +
             (results.asKnown().getOrNull()?.let { it.sumOf { (it.validity()).toInt() } } ?: 0) +
+            (state.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
             (if (bodyExpired.asKnown().isPresent) 1 else 0) +
             (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
             (if (epochChanged.asKnown().isPresent) 1 else 0) +
+            (held.asKnown().getOrNull()?.let { it.sumOf { (it.validity()).toInt() } } ?: 0) +
             (if (next.asKnown().isPresent) 1 else 0) +
-            (observe.asKnown().getOrNull()?.let { it.validity() } ?: 0)
+            (observe.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+            (stopped.asKnown().getOrNull()?.let { it.validity() } ?: 0)
 
-    class Execution
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val id: JsonField<String>,
-        private val effect: JsonField<Effect>,
-        private val ran: JsonField<Long>,
-        private val replayed: JsonField<Boolean>,
-        private val state: JsonField<State>,
-        private val error: JsonField<CommandErrorInfo>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
+    class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
-        @JsonCreator
-        private constructor(
-            @JsonProperty("id") @ExcludeMissing id: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("effect") @ExcludeMissing effect: JsonField<Effect> = JsonMissing.of(),
-            @JsonProperty("ran") @ExcludeMissing ran: JsonField<Long> = JsonMissing.of(),
-            @JsonProperty("replayed")
-            @ExcludeMissing
-            replayed: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("state") @ExcludeMissing state: JsonField<State> = JsonMissing.of(),
-            @JsonProperty("error")
-            @ExcludeMissing
-            error: JsonField<CommandErrorInfo> = JsonMissing.of(),
-        ) : this(id, effect, ran, replayed, state, error, mutableMapOf())
-
-        fun id(): String = id.getRequired("id")
-
-        /** What happened to the page: nothing, a change, or a possible change. */
-        fun effect(): Effect = effect.getRequired("effect")
-
-        /** Commands started. */
-        fun ran(): Long = ran.getRequired("ran")
-
-        fun replayed(): Boolean = replayed.getRequired("replayed")
-
-        fun state(): State = state.getRequired("state")
-
-        fun error(): CommandErrorInfo? = error.getNullable("error")
-
-        @JsonProperty("id") @ExcludeMissing fun _id(): JsonField<String> = id
-
-        @JsonProperty("effect") @ExcludeMissing fun _effect(): JsonField<Effect> = effect
-
-        @JsonProperty("ran") @ExcludeMissing fun _ran(): JsonField<Long> = ran
-
-        @JsonProperty("replayed") @ExcludeMissing fun _replayed(): JsonField<Boolean> = replayed
-
-        @JsonProperty("state") @ExcludeMissing fun _state(): JsonField<State> = state
-
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Execution]. */
-            @JvmStatic fun builder() = Builder()
+            @JvmField val NONE = of("none")
+
+            @JvmField val APPLIED = of("applied")
+
+            @JvmField val UNKNOWN = of("unknown")
+
+            @JvmStatic fun of(value: String) = Effect(JsonField.of(value))
         }
 
-        /** A builder for [Execution]. */
-        class Builder internal constructor() {
-
-            private var id: JsonField<String>? = null
-            private var effect: JsonField<Effect>? = null
-            private var ran: JsonField<Long>? = null
-            private var replayed: JsonField<Boolean>? = null
-            private var state: JsonField<State>? = null
-            private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(execution: Execution) = apply {
-                this.id = execution.id
-                this.effect = execution.effect
-                this.ran = execution.ran
-                this.replayed = execution.replayed
-                this.state = execution.state
-                this.error = execution.error
-                this.additionalProperties = execution.additionalProperties.toMutableMap()
-            }
-
-            fun id(id: String) = id(JsonField.of(id))
-
-            fun id(id: JsonField<String>) = apply { this.id = id }
-
-            /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: Effect) = effect(JsonField.of(effect))
-
-            /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: JsonField<Effect>) = apply { this.effect = effect }
-
-            /** Commands started. */
-            fun ran(ran: Long) = ran(JsonField.of(ran))
-
-            /** Commands started. */
-            fun ran(ran: JsonField<Long>) = apply { this.ran = ran }
-
-            fun replayed(replayed: Boolean) = replayed(JsonField.of(replayed))
-
-            fun replayed(replayed: JsonField<Boolean>) = apply { this.replayed = replayed }
-
-            fun state(state: State) = state(JsonField.of(state))
-
-            fun state(state: JsonField<State>) = apply { this.state = state }
-
-            fun error(error: CommandErrorInfo) = error(JsonField.of(error))
-
-            fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Execution =
-                Execution(
-                    checkRequired("id", id),
-                    checkRequired("effect", effect),
-                    checkRequired("ran", ran),
-                    checkRequired("replayed", replayed),
-                    checkRequired("state", state),
-                    error,
-                    additionalProperties.toMutableMap(),
-                )
+        enum class Known {
+            NONE,
+            APPLIED,
+            UNKNOWN,
         }
+
+        enum class Value {
+            NONE,
+            APPLIED,
+            UNKNOWN,
+            _UNKNOWN,
+        }
+
+        fun value(): Value =
+            when (this) {
+                NONE -> Value.NONE
+                APPLIED -> Value.APPLIED
+                UNKNOWN -> Value.UNKNOWN
+                else -> Value._UNKNOWN
+            }
+
+        fun known(): Known =
+            when (this) {
+                NONE -> Known.NONE
+                APPLIED -> Known.APPLIED
+                UNKNOWN -> Known.UNKNOWN
+                else -> throw SteelInvalidDataException("Unknown Effect: $value")
+            }
+
+        fun asString(): String =
+            _value().asString().orElseThrow { SteelInvalidDataException("Value is not a String") }
 
         fun isValid(): Boolean =
             try {
@@ -476,242 +479,28 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Execution = apply {
+        fun validate(): Effect = apply {
             if (validated) {
                 return@apply
             }
 
-            id()
-            effect().validate()
-            ran()
-            replayed()
-            state().validate()
-            error()?.let { it.validate() }
+            known()
             validated = true
         }
 
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (if (id.asKnown().isPresent) 1 else 0) +
-                (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (ran.asKnown().isPresent) 1 else 0) +
-                (if (replayed.asKnown().isPresent) 1 else 0) +
-                (state.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (error.asKnown().getOrNull()?.let { it.validity() } ?: 0)
-
-        class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val NONE = of("none")
-
-                @JvmField val APPLIED = of("applied")
-
-                @JvmField val UNKNOWN = of("unknown")
-
-                @JvmStatic fun of(value: String) = Effect(JsonField.of(value))
-            }
-
-            enum class Known {
-                NONE,
-                APPLIED,
-                UNKNOWN,
-            }
-
-            enum class Value {
-                NONE,
-                APPLIED,
-                UNKNOWN,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    NONE -> Value.NONE
-                    APPLIED -> Value.APPLIED
-                    UNKNOWN -> Value.UNKNOWN
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    NONE -> Known.NONE
-                    APPLIED -> Known.APPLIED
-                    UNKNOWN -> Known.UNKNOWN
-                    else -> throw SteelInvalidDataException("Unknown Effect: $value")
-                }
-
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    SteelInvalidDataException("Value is not a String")
-                }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Effect = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Effect && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        class State @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val QUEUED = of("queued")
-
-                @JvmField val RUNNING = of("running")
-
-                @JvmField val COMPLETED = of("completed")
-
-                @JvmField val FAILED = of("failed")
-
-                @JvmField val CANCELLED = of("cancelled")
-
-                @JvmField val TIMEOUT = of("timeout")
-
-                @JvmField val EXPIRED = of("expired")
-
-                @JvmStatic fun of(value: String) = State(JsonField.of(value))
-            }
-
-            enum class Known {
-                QUEUED,
-                RUNNING,
-                COMPLETED,
-                FAILED,
-                CANCELLED,
-                TIMEOUT,
-                EXPIRED,
-            }
-
-            enum class Value {
-                QUEUED,
-                RUNNING,
-                COMPLETED,
-                FAILED,
-                CANCELLED,
-                TIMEOUT,
-                EXPIRED,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    QUEUED -> Value.QUEUED
-                    RUNNING -> Value.RUNNING
-                    COMPLETED -> Value.COMPLETED
-                    FAILED -> Value.FAILED
-                    CANCELLED -> Value.CANCELLED
-                    TIMEOUT -> Value.TIMEOUT
-                    EXPIRED -> Value.EXPIRED
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    QUEUED -> Known.QUEUED
-                    RUNNING -> Known.RUNNING
-                    COMPLETED -> Known.COMPLETED
-                    FAILED -> Known.FAILED
-                    CANCELLED -> Known.CANCELLED
-                    TIMEOUT -> Known.TIMEOUT
-                    EXPIRED -> Known.EXPIRED
-                    else -> throw SteelInvalidDataException("Unknown State: $value")
-                }
-
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    SteelInvalidDataException("Value is not a String")
-                }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): State = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is State && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Execution &&
-                this.id == other.id &&
-                this.effect == other.effect &&
-                this.ran == other.ran &&
-                this.replayed == other.replayed &&
-                this.state == other.state &&
-                this.error == other.error &&
-                this.additionalProperties == other.additionalProperties
+            return other is Effect && value == other.value
         }
 
-        private val hashCode: Int by lazy {
-            Objects.hash(id, effect, ran, replayed, state, error, additionalProperties)
-        }
+        override fun hashCode() = value.hashCode()
 
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Execution{id=$id, effect=$effect, ran=$ran, replayed=$replayed, state=$state, error=$error, additionalProperties=$additionalProperties}"
+        override fun toString() = value.toString()
     }
 
     /** The tab the execution used. */
@@ -862,6 +651,99 @@ private constructor(
 
         override fun toString() =
             "PageModel{tab=$tab, title=$title, url=$url, additionalProperties=$additionalProperties}"
+    }
+
+    class State @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+        @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+        companion object {
+
+            @JvmField val RUNNING = of("running")
+
+            @JvmField val COMPLETED = of("completed")
+
+            @JvmField val FAILED = of("failed")
+
+            @JvmField val CANCELLED = of("cancelled")
+
+            @JvmField val TIMEOUT = of("timeout")
+
+            @JvmStatic fun of(value: String) = State(JsonField.of(value))
+        }
+
+        enum class Known {
+            RUNNING,
+            COMPLETED,
+            FAILED,
+            CANCELLED,
+            TIMEOUT,
+        }
+
+        enum class Value {
+            RUNNING,
+            COMPLETED,
+            FAILED,
+            CANCELLED,
+            TIMEOUT,
+            _UNKNOWN,
+        }
+
+        fun value(): Value =
+            when (this) {
+                RUNNING -> Value.RUNNING
+                COMPLETED -> Value.COMPLETED
+                FAILED -> Value.FAILED
+                CANCELLED -> Value.CANCELLED
+                TIMEOUT -> Value.TIMEOUT
+                else -> Value._UNKNOWN
+            }
+
+        fun known(): Known =
+            when (this) {
+                RUNNING -> Known.RUNNING
+                COMPLETED -> Known.COMPLETED
+                FAILED -> Known.FAILED
+                CANCELLED -> Known.CANCELLED
+                TIMEOUT -> Known.TIMEOUT
+                else -> throw SteelInvalidDataException("Unknown State: $value")
+            }
+
+        fun asString(): String =
+            _value().asString().orElseThrow { SteelInvalidDataException("Value is not a String") }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: SteelInvalidDataException) {
+                false
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): State = apply {
+            if (validated) {
+                return@apply
+            }
+
+            known()
+            validated = true
+        }
+
+        @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is State && value == other.value
+        }
+
+        override fun hashCode() = value.hashCode()
+
+        override fun toString() = value.toString()
     }
 
     class Observe
@@ -1122,28 +1004,38 @@ private constructor(
 
         return other is CommandExecutionRetrieveResponse &&
             this.id == other.id &&
-            this.execution == other.execution &&
+            this.effect == other.effect &&
             this.page == other.page &&
+            this.ran == other.ran &&
+            this.replayed == other.replayed &&
             this.results == other.results &&
+            this.state == other.state &&
             this.bodyExpired == other.bodyExpired &&
             this.dialog == other.dialog &&
             this.epochChanged == other.epochChanged &&
+            this.held == other.held &&
             this.next == other.next &&
             this.observe == other.observe &&
+            this.stopped == other.stopped &&
             this.additionalProperties == other.additionalProperties
     }
 
     private val hashCode: Int by lazy {
         Objects.hash(
             id,
-            execution,
+            effect,
             page,
+            ran,
+            replayed,
             results,
+            state,
             bodyExpired,
             dialog,
             epochChanged,
+            held,
             next,
             observe,
+            stopped,
             additionalProperties,
         )
     }
@@ -1151,5 +1043,5 @@ private constructor(
     override fun hashCode(): Int = hashCode
 
     override fun toString() =
-        "CommandExecutionRetrieveResponse{id=$id, execution=$execution, page=$page, results=$results, bodyExpired=$bodyExpired, dialog=$dialog, epochChanged=$epochChanged, next=$next, observe=$observe, additionalProperties=$additionalProperties}"
+        "CommandExecutionRetrieveResponse{id=$id, effect=$effect, page=$page, ran=$ran, replayed=$replayed, results=$results, state=$state, bodyExpired=$bodyExpired, dialog=$dialog, epochChanged=$epochChanged, held=$held, next=$next, observe=$observe, stopped=$stopped, additionalProperties=$additionalProperties}"
 }

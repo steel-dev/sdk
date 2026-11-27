@@ -7,139 +7,157 @@ pub struct Profiles<'a> {
 
 impl<'a> Profiles<'a> {
     /// Create a new profile
-    pub async fn create(
-        &self,
-        params: ProfileCreateParams,
-    ) -> Result<ProfileCreateResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/profiles".to_owned());
-        let mut fields = Vec::new();
-        fields.push(crate::encoding::FormField::File(
-            "userDataDir".to_owned(),
-            params.user_data_dir.clone(),
-        ));
-        if let Some(value) = &params.dimensions {
-            fields.extend(crate::encoding::form(
-                "dimensions",
-                &serde_json::to_value(value)?,
+    pub fn create(&self, params: ProfileCreateParams) -> crate::Call<'a, ProfileCreateResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/profiles".to_owned());
+            let mut fields = Vec::new();
+            fields.push(crate::encoding::FormField::File(
+                "userDataDir".to_owned(),
+                params.user_data_dir.clone(),
             ));
-        }
-        if let Some(value) = &params.project_id {
-            fields.extend(crate::encoding::form(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.proxy_url {
-            fields.extend(crate::encoding::form(
-                "proxyUrl",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.use_proxy {
-            fields.extend(crate::encoding::form(
-                "useProxy",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.user_agent {
-            fields.extend(crate::encoding::form(
-                "userAgent",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        request.body = crate::client::Body::Form(fields);
-        self.client.json(request).await
+            if let Some(value) = &params.dimensions {
+                fields.extend(crate::encoding::form(
+                    "dimensions",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.project_id {
+                fields.extend(crate::encoding::form(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.proxy_url {
+                fields.extend(crate::encoding::form(
+                    "proxyUrl",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.use_proxy {
+                fields.extend(crate::encoding::form(
+                    "useProxy",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.user_agent {
+                fields.extend(crate::encoding::form(
+                    "userAgent",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            request.body = crate::client::Body::Form(fields);
+            client.json(request).await
+        })
     }
 
     /// Update an existing profile
-    pub async fn update(
+    pub fn update(
         &self,
         id: &str,
         params: ProfileUpdateParams,
-    ) -> Result<ProfileUpdateResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::PATCH,
-            format!("/v1/profiles/{}", crate::encoding::segment(id)),
-        );
-        if let Some(value) = &params.query_project_id {
-            request.query.extend(crate::encoding::query(
-                "projectId",
-                &serde_json::to_value(value)?,
+    ) -> crate::Call<'a, ProfileUpdateResponse> {
+        let client = self.client;
+        let path = format!("/v1/profiles/{}", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::PATCH, path);
+            if let Some(value) = &params.query_project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            let mut fields = Vec::new();
+            fields.push(crate::encoding::FormField::File(
+                "userDataDir".to_owned(),
+                params.user_data_dir.clone(),
             ));
-        }
-        let mut fields = Vec::new();
-        fields.push(crate::encoding::FormField::File(
-            "userDataDir".to_owned(),
-            params.user_data_dir.clone(),
-        ));
-        if let Some(value) = &params.dimensions {
-            fields.extend(crate::encoding::form(
-                "dimensions",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.body_project_id {
-            fields.extend(crate::encoding::form(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.proxy_url {
-            fields.extend(crate::encoding::form(
-                "proxyUrl",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.use_proxy {
-            fields.extend(crate::encoding::form(
-                "useProxy",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.user_agent {
-            fields.extend(crate::encoding::form(
-                "userAgent",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        request.body = crate::client::Body::Form(fields);
-        self.client.json(request).await
+            if let Some(value) = &params.dimensions {
+                fields.extend(crate::encoding::form(
+                    "dimensions",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.body_project_id {
+                fields.extend(crate::encoding::form(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.proxy_url {
+                fields.extend(crate::encoding::form(
+                    "proxyUrl",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.use_proxy {
+                fields.extend(crate::encoding::form(
+                    "useProxy",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.user_agent {
+                fields.extend(crate::encoding::form(
+                    "userAgent",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            request.body = crate::client::Body::Form(fields);
+            client.json(request).await
+        })
     }
 
     /// Retrieve a list of all profiles
-    pub async fn list(
+    pub fn list(&self, params: ProfileListParams) -> crate::Call<'a, ProfileListResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::GET, "/v1/profiles".to_owned());
+            if let Some(value) = &params.project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
+    }
+
+    /// Delete the profile and its stored browser data immediately, with a final asynchronous cleanup pass.
+    pub fn delete(
         &self,
-        params: ProfileListParams,
-    ) -> Result<ProfileListResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::GET, "/v1/profiles".to_owned());
-        if let Some(value) = &params.project_id {
-            request.query.extend(crate::encoding::query(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+        id: &str,
+        params: ProfileDeleteParams,
+    ) -> crate::Call<'a, ProfileDeleteResponse> {
+        let client = self.client;
+        let path = format!("/v1/profiles/{}", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::DELETE, path);
+            if let Some(value) = &params.project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 
     /// Retrieve a profile by ID
-    pub async fn get(
-        &self,
-        id: &str,
-        params: ProfileGetParams,
-    ) -> Result<ProfileGetResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/profiles/{}", crate::encoding::segment(id)),
-        );
-        if let Some(value) = &params.project_id {
-            request.query.extend(crate::encoding::query(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+    pub fn get(&self, id: &str, params: ProfileGetParams) -> crate::Call<'a, ProfileGetResponse> {
+        let client = self.client;
+        let path = format!("/v1/profiles/{}", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            if let Some(value) = &params.project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 }
 
@@ -179,8 +197,8 @@ pub struct ProfileCreateParamsDimensions {
 }
 
 impl ProfileCreateParamsDimensions {
-    pub fn new(height: f64, width: f64) -> Self {
-        ProfileCreateParamsDimensions { height, width }
+    pub fn new(width: f64, height: f64) -> Self {
+        ProfileCreateParamsDimensions { width, height }
     }
 }
 
@@ -238,7 +256,8 @@ pub struct ProfileCreateResponseFingerprint {
 pub struct ProfileCreateResponseFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
     pub audio_codecs: std::collections::HashMap<String, Option<String>>,
-    pub battery: ProfileCreateResponseFingerprintFingerprintBattery,
+    #[serde(default)]
+    pub battery: Option<ProfileCreateResponseFingerprintFingerprintBattery>,
     pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
@@ -408,12 +427,16 @@ pub struct ProfileCreateResponseFingerprintFingerprintPluginsDataPlugin {
 pub struct ProfileCreateResponseFingerprintFingerprintPluginsDataPluginMimeType {
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(rename = "enabledPlugin", default)]
-    pub enabled_plugin: Option<String>,
     #[serde(default)]
     pub suffixes: Option<String>,
     #[serde(default)]
     pub r#type: Option<String>,
+    #[serde(
+        rename = "enabledPlugin",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub enabled_plugin: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -540,8 +563,31 @@ pub enum ProfileCreateResponseStatus {
     Ready,
     #[serde(rename = "FAILED")]
     Failed,
+    #[serde(rename = "DELETING")]
+    Deleting,
+    #[serde(rename = "DELETED")]
+    Deleted,
     #[serde(other)]
     Unknown,
+}
+
+impl ProfileCreateResponseStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uploading => "UPLOADING",
+            Self::Ready => "READY",
+            Self::Failed => "FAILED",
+            Self::Deleting => "DELETING",
+            Self::Deleted => "DELETED",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ProfileCreateResponseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -583,8 +629,8 @@ pub struct ProfileUpdateParamsDimensions {
 }
 
 impl ProfileUpdateParamsDimensions {
-    pub fn new(height: f64, width: f64) -> Self {
-        ProfileUpdateParamsDimensions { height, width }
+    pub fn new(width: f64, height: f64) -> Self {
+        ProfileUpdateParamsDimensions { width, height }
     }
 }
 
@@ -642,7 +688,8 @@ pub struct ProfileUpdateResponseFingerprint {
 pub struct ProfileUpdateResponseFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
     pub audio_codecs: std::collections::HashMap<String, Option<String>>,
-    pub battery: ProfileUpdateResponseFingerprintFingerprintBattery,
+    #[serde(default)]
+    pub battery: Option<ProfileUpdateResponseFingerprintFingerprintBattery>,
     pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
@@ -812,12 +859,16 @@ pub struct ProfileUpdateResponseFingerprintFingerprintPluginsDataPlugin {
 pub struct ProfileUpdateResponseFingerprintFingerprintPluginsDataPluginMimeType {
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(rename = "enabledPlugin", default)]
-    pub enabled_plugin: Option<String>,
     #[serde(default)]
     pub suffixes: Option<String>,
     #[serde(default)]
     pub r#type: Option<String>,
+    #[serde(
+        rename = "enabledPlugin",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub enabled_plugin: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -944,8 +995,31 @@ pub enum ProfileUpdateResponseStatus {
     Ready,
     #[serde(rename = "FAILED")]
     Failed,
+    #[serde(rename = "DELETING")]
+    Deleting,
+    #[serde(rename = "DELETED")]
+    Deleted,
     #[serde(other)]
     Unknown,
+}
+
+impl ProfileUpdateResponseStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uploading => "UPLOADING",
+            Self::Ready => "READY",
+            Self::Failed => "FAILED",
+            Self::Deleting => "DELETING",
+            Self::Deleted => "DELETED",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ProfileUpdateResponseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -1016,7 +1090,8 @@ pub struct ProfileListResponseProfileFingerprint {
 pub struct ProfileListResponseProfileFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
     pub audio_codecs: std::collections::HashMap<String, Option<String>>,
-    pub battery: ProfileListResponseProfileFingerprintFingerprintBattery,
+    #[serde(default)]
+    pub battery: Option<ProfileListResponseProfileFingerprintFingerprintBattery>,
     pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
@@ -1186,12 +1261,16 @@ pub struct ProfileListResponseProfileFingerprintFingerprintPluginsDataPlugin {
 pub struct ProfileListResponseProfileFingerprintFingerprintPluginsDataPluginMimeType {
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(rename = "enabledPlugin", default)]
-    pub enabled_plugin: Option<String>,
     #[serde(default)]
     pub suffixes: Option<String>,
     #[serde(default)]
     pub r#type: Option<String>,
+    #[serde(
+        rename = "enabledPlugin",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub enabled_plugin: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1318,8 +1397,425 @@ pub enum ProfileListResponseProfileStatus {
     Ready,
     #[serde(rename = "FAILED")]
     Failed,
+    #[serde(rename = "DELETING")]
+    Deleting,
+    #[serde(rename = "DELETED")]
+    Deleted,
     #[serde(other)]
     Unknown,
+}
+
+impl ProfileListResponseProfileStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uploading => "UPLOADING",
+            Self::Ready => "READY",
+            Self::Failed => "FAILED",
+            Self::Deleting => "DELETING",
+            Self::Deleted => "DELETED",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ProfileListResponseProfileStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq)]
+pub struct ProfileDeleteParams {
+    /// Project to query profiles from
+    pub project_id: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponse {
+    /// The unique identifier for the profile
+    pub id: String,
+    /// The date and time when the profile was created
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
+    /// The credentials configuration associated with the profile
+    #[serde(rename = "credentialsConfig")]
+    pub credentials_config: serde_json::Value,
+    /// The dimensions associated with the profile
+    #[serde(default)]
+    pub dimensions: Option<ProfileDeleteResponseDimensions>,
+    /// The extension IDs associated with the profile
+    #[serde(rename = "extensionIds", default)]
+    pub extension_ids: Option<Vec<String>>,
+    /// The fingerprint associated with the profile
+    #[serde(default)]
+    pub fingerprint: Option<ProfileDeleteResponseFingerprint>,
+    /// The project ID associated with the profile
+    #[serde(rename = "projectId", default)]
+    pub project_id: Option<String>,
+    /// The last session ID associated with the profile
+    #[serde(rename = "sourceSessionId", default)]
+    pub source_session_id: Option<String>,
+    /// The status of the profile
+    pub status: ProfileDeleteResponseStatus,
+    /// The date and time when the profile was last updated
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
+    /// The proxy configuration associated with the profile
+    #[serde(rename = "useProxyConfig")]
+    pub use_proxy_config: serde_json::Value,
+    /// The user agent associated with the profile
+    #[serde(rename = "userAgent", default)]
+    pub user_agent: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseDimensions {
+    pub height: f64,
+    pub width: f64,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprint {
+    pub fingerprint: ProfileDeleteResponseFingerprintFingerprint,
+    pub headers: ProfileDeleteResponseFingerprintHeaders,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprint {
+    #[serde(rename = "audioCodecs")]
+    pub audio_codecs: std::collections::HashMap<String, Option<String>>,
+    #[serde(default)]
+    pub battery: Option<ProfileDeleteResponseFingerprintFingerprintBattery>,
+    pub fonts: Vec<Option<String>>,
+    #[serde(rename = "mockWebRTC", default)]
+    pub mock_web_rtc: Option<bool>,
+    #[serde(rename = "multimediaDevices")]
+    pub multimedia_devices: ProfileDeleteResponseFingerprintFingerprintMultimediaDevices,
+    pub navigator: ProfileDeleteResponseFingerprintFingerprintNavigator,
+    #[serde(rename = "pluginsData")]
+    pub plugins_data: ProfileDeleteResponseFingerprintFingerprintPluginsData,
+    pub screen: ProfileDeleteResponseFingerprintFingerprintScreen,
+    #[serde(default)]
+    pub slim: Option<bool>,
+    #[serde(rename = "videoCard")]
+    pub video_card: ProfileDeleteResponseFingerprintFingerprintVideoCard,
+    #[serde(rename = "videoCodecs")]
+    pub video_codecs: std::collections::HashMap<String, Option<String>>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintBattery {
+    #[serde(default)]
+    pub charging: Option<bool>,
+    #[serde(rename = "chargingTime", default)]
+    pub charging_time: Option<f64>,
+    #[serde(rename = "dischargingTime", default)]
+    pub discharging_time: Option<f64>,
+    #[serde(default)]
+    pub level: Option<f64>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintMultimediaDevices {
+    pub micros: Vec<ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesMicro>,
+    pub speakers: Vec<ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeaker>,
+    pub webcams: Vec<ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcam>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesMicro {
+    #[serde(rename = "deviceId", default)]
+    pub device_id: Option<String>,
+    #[serde(rename = "groupId", default)]
+    pub group_id: Option<String>,
+    #[serde(default)]
+    pub kind: Option<String>,
+    #[serde(default)]
+    pub label: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeaker {
+    #[serde(rename = "deviceId", default)]
+    pub device_id: Option<String>,
+    #[serde(rename = "groupId", default)]
+    pub group_id: Option<String>,
+    #[serde(default)]
+    pub kind: Option<String>,
+    #[serde(default)]
+    pub label: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcam {
+    #[serde(rename = "deviceId", default)]
+    pub device_id: Option<String>,
+    #[serde(rename = "groupId", default)]
+    pub group_id: Option<String>,
+    #[serde(default)]
+    pub kind: Option<String>,
+    #[serde(default)]
+    pub label: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintNavigator {
+    #[serde(rename = "appCodeName", default)]
+    pub app_code_name: Option<String>,
+    #[serde(rename = "appName", default)]
+    pub app_name: Option<String>,
+    #[serde(rename = "appVersion", default)]
+    pub app_version: Option<String>,
+    #[serde(rename = "deviceMemory", default)]
+    pub device_memory: Option<f64>,
+    #[serde(rename = "extraProperties")]
+    pub extra_properties: ProfileDeleteResponseFingerprintFingerprintNavigatorExtraProperties,
+    #[serde(rename = "hardwareConcurrency", default)]
+    pub hardware_concurrency: Option<f64>,
+    #[serde(default)]
+    pub language: Option<String>,
+    pub languages: Vec<Option<String>>,
+    #[serde(rename = "maxTouchPoints", default)]
+    pub max_touch_points: Option<f64>,
+    #[serde(default)]
+    pub oscpu: Option<String>,
+    #[serde(default)]
+    pub platform: Option<String>,
+    #[serde(default)]
+    pub product: Option<String>,
+    #[serde(rename = "productSub", default)]
+    pub product_sub: Option<String>,
+    #[serde(rename = "userAgent", default)]
+    pub user_agent: Option<String>,
+    #[serde(rename = "userAgentData")]
+    pub user_agent_data: ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentData,
+    #[serde(default)]
+    pub vendor: Option<String>,
+    #[serde(rename = "vendorSub", default)]
+    pub vendor_sub: Option<String>,
+    #[serde(default)]
+    pub webdriver: Option<bool>,
+    #[serde(
+        rename = "doNotTrack",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub do_not_track: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintNavigatorExtraProperties {
+    #[serde(rename = "globalPrivacyControl", default)]
+    pub global_privacy_control: Option<bool>,
+    #[serde(rename = "installedApps")]
+    pub installed_apps: Vec<Option<String>>,
+    #[serde(rename = "pdfViewerEnabled", default)]
+    pub pdf_viewer_enabled: Option<bool>,
+    #[serde(rename = "vendorFlavors")]
+    pub vendor_flavors: Vec<Option<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentData {
+    pub brands: Vec<ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrand>,
+    #[serde(default)]
+    pub mobile: Option<bool>,
+    #[serde(default)]
+    pub platform: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrand {
+    #[serde(default)]
+    pub brand: Option<String>,
+    #[serde(default)]
+    pub version: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintPluginsData {
+    #[serde(rename = "mimeTypes")]
+    pub mime_types: Vec<Option<String>>,
+    pub plugins: Vec<ProfileDeleteResponseFingerprintFingerprintPluginsDataPlugin>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintPluginsDataPlugin {
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub filename: Option<String>,
+    #[serde(rename = "mimeTypes")]
+    pub mime_types: Vec<ProfileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeType>,
+    #[serde(default)]
+    pub name: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeType {
+    #[serde(default)]
+    pub description: Option<String>,
+    #[serde(default)]
+    pub suffixes: Option<String>,
+    #[serde(default)]
+    pub r#type: Option<String>,
+    #[serde(
+        rename = "enabledPlugin",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub enabled_plugin: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintScreen {
+    #[serde(rename = "availHeight", default)]
+    pub avail_height: Option<f64>,
+    #[serde(rename = "availLeft", default)]
+    pub avail_left: Option<f64>,
+    #[serde(rename = "availTop", default)]
+    pub avail_top: Option<f64>,
+    #[serde(rename = "availWidth", default)]
+    pub avail_width: Option<f64>,
+    #[serde(rename = "clientHeight", default)]
+    pub client_height: Option<f64>,
+    #[serde(rename = "clientWidth", default)]
+    pub client_width: Option<f64>,
+    #[serde(rename = "colorDepth", default)]
+    pub color_depth: Option<f64>,
+    #[serde(rename = "devicePixelRatio", default)]
+    pub device_pixel_ratio: Option<f64>,
+    #[serde(rename = "hasHDR", default)]
+    pub has_hdr: Option<bool>,
+    #[serde(default)]
+    pub height: Option<f64>,
+    #[serde(rename = "innerHeight", default)]
+    pub inner_height: Option<f64>,
+    #[serde(rename = "innerWidth", default)]
+    pub inner_width: Option<f64>,
+    #[serde(rename = "outerHeight", default)]
+    pub outer_height: Option<f64>,
+    #[serde(rename = "outerWidth", default)]
+    pub outer_width: Option<f64>,
+    #[serde(rename = "pageXOffset", default)]
+    pub page_x_offset: Option<f64>,
+    #[serde(rename = "pageYOffset", default)]
+    pub page_y_offset: Option<f64>,
+    #[serde(rename = "pixelDepth", default)]
+    pub pixel_depth: Option<f64>,
+    #[serde(rename = "screenX", default)]
+    pub screen_x: Option<f64>,
+    #[serde(default)]
+    pub width: Option<f64>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintFingerprintVideoCard {
+    #[serde(default)]
+    pub renderer: Option<String>,
+    #[serde(default)]
+    pub vendor: Option<String>,
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct ProfileDeleteResponseFingerprintHeaders {
+    #[serde(rename = "user-agent", default)]
+    pub user_agent: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub accept: Option<String>,
+    #[serde(
+        rename = "accept-encoding",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub accept_encoding: Option<String>,
+    #[serde(
+        rename = "accept-language",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub accept_language: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dnt: Option<String>,
+    #[serde(rename = "sec-ch-ua", default, skip_serializing_if = "Option::is_none")]
+    pub sec_ch_ua: Option<String>,
+    #[serde(
+        rename = "sec-ch-ua-mobile",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sec_ch_ua_mobile: Option<String>,
+    #[serde(
+        rename = "sec-ch-ua-platform",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sec_ch_ua_platform: Option<String>,
+    #[serde(
+        rename = "sec-fetch-dest",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sec_fetch_dest: Option<String>,
+    #[serde(
+        rename = "sec-fetch-mode",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sec_fetch_mode: Option<String>,
+    #[serde(
+        rename = "sec-fetch-site",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sec_fetch_site: Option<String>,
+    #[serde(
+        rename = "sec-fetch-user",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub sec_fetch_user: Option<String>,
+    #[serde(
+        rename = "upgrade-insecure-requests",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub upgrade_insecure_requests: Option<String>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum ProfileDeleteResponseStatus {
+    #[serde(rename = "UPLOADING")]
+    Uploading,
+    #[serde(rename = "READY")]
+    Ready,
+    #[serde(rename = "FAILED")]
+    Failed,
+    #[serde(rename = "DELETING")]
+    Deleting,
+    #[serde(rename = "DELETED")]
+    Deleted,
+    #[serde(other)]
+    Unknown,
+}
+
+impl ProfileDeleteResponseStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uploading => "UPLOADING",
+            Self::Ready => "READY",
+            Self::Failed => "FAILED",
+            Self::Deleting => "DELETING",
+            Self::Deleted => "DELETED",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ProfileDeleteResponseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
@@ -1382,7 +1878,8 @@ pub struct ProfileGetResponseFingerprint {
 pub struct ProfileGetResponseFingerprintFingerprint {
     #[serde(rename = "audioCodecs")]
     pub audio_codecs: std::collections::HashMap<String, Option<String>>,
-    pub battery: ProfileGetResponseFingerprintFingerprintBattery,
+    #[serde(default)]
+    pub battery: Option<ProfileGetResponseFingerprintFingerprintBattery>,
     pub fonts: Vec<Option<String>>,
     #[serde(rename = "mockWebRTC", default)]
     pub mock_web_rtc: Option<bool>,
@@ -1552,12 +2049,16 @@ pub struct ProfileGetResponseFingerprintFingerprintPluginsDataPlugin {
 pub struct ProfileGetResponseFingerprintFingerprintPluginsDataPluginMimeType {
     #[serde(default)]
     pub description: Option<String>,
-    #[serde(rename = "enabledPlugin", default)]
-    pub enabled_plugin: Option<String>,
     #[serde(default)]
     pub suffixes: Option<String>,
     #[serde(default)]
     pub r#type: Option<String>,
+    #[serde(
+        rename = "enabledPlugin",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub enabled_plugin: Option<String>,
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1684,6 +2185,29 @@ pub enum ProfileGetResponseStatus {
     Ready,
     #[serde(rename = "FAILED")]
     Failed,
+    #[serde(rename = "DELETING")]
+    Deleting,
+    #[serde(rename = "DELETED")]
+    Deleted,
     #[serde(other)]
     Unknown,
+}
+
+impl ProfileGetResponseStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uploading => "UPLOADING",
+            Self::Ready => "READY",
+            Self::Failed => "FAILED",
+            Self::Deleting => "DELETING",
+            Self::Deleted => "DELETED",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ProfileGetResponseStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }

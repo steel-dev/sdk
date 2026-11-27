@@ -11,7 +11,9 @@ public final class Quickstart {
     public static void main(String[] args) {
         SteelClient client = SteelOkHttpClient.fromEnv();
 
-        Session session = client.sessions().create(SessionCreateParams.none());
+        SessionCreateParams params =
+                SessionCreateParams.builder().inactivityTimeout(3 * 60 * 1000L).build();
+        Session session = client.sessions().create(params);
         try {
             System.out.println("Watch the session live at " + session.sessionViewerUrl());
             System.out.println(

@@ -8,21 +8,24 @@ pub struct ApiKeys<'a> {
 
 impl<'a> ApiKeys<'a> {
     /// Create a project-scoped API key using a global (organization-scoped) API key. Supply projectId for an active project in the authenticated organization; scopeType must be project or omitted. Project-scoped API keys cannot create keys, and global keys cannot create other global keys. Dashboard users may also create project keys, or global keys with organization admin access. Returns the full secret once with Cache-Control: no-store; save it securely. The new key is independent: revoking the creating global key does not revoke keys it created. Missing projectId returns 400; insufficient scope returns 403; an unavailable or foreign project returns 404.
-    pub async fn create(&self, params: ApiKeyCreateParams) -> Result<crate::ApiKey, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/api-keys".to_owned());
-        let mut body = serde_json::Map::new();
-        if let Some(value) = &params.name {
-            body.insert("name".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.scope_type {
-            body.insert("scopeType".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    pub fn create(&self, params: ApiKeyCreateParams) -> crate::Call<'a, crate::ApiKey> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/api-keys".to_owned());
+            let mut body = serde_json::Map::new();
+            if let Some(value) = &params.name {
+                body.insert("name".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.scope_type {
+                body.insert("scopeType".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 }
 
@@ -44,6 +47,22 @@ pub enum ApiKeyCreateParamsScopeType {
     Global,
     #[serde(other)]
     Unknown,
+}
+
+impl ApiKeyCreateParamsScopeType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Project => "project",
+            Self::Global => "global",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ApiKeyCreateParamsScopeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -73,4 +92,20 @@ pub enum ApiKeyScopeType {
     Global,
     #[serde(other)]
     Unknown,
+}
+
+impl ApiKeyScopeType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Project => "project",
+            Self::Global => "global",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ApiKeyScopeType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }

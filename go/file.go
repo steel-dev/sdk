@@ -112,7 +112,7 @@ type File struct {
 	// Path to the file in the storage system
 	Path string `json:"path" api:"required"`
 	// Size of the file in bytes
-	Size float64  `json:"size" api:"required"`
+	Size int64    `json:"size" api:"required"`
 	JSON fileJSON `json:"-"`
 }
 
@@ -161,7 +161,7 @@ type FileslistData struct {
 	// Path to the file in the storage system
 	Path string `json:"path" api:"required"`
 	// Size of the file in bytes
-	Size float64           `json:"size" api:"required"`
+	Size int64             `json:"size" api:"required"`
 	JSON fileslistDataJSON `json:"-"`
 }
 

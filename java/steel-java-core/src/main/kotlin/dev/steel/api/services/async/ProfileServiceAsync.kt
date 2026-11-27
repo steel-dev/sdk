@@ -5,6 +5,8 @@ import dev.steel.api.core.RequestOptions
 import dev.steel.api.core.http.HttpResponseFor
 import dev.steel.api.models.profiles.ProfileCreateParams
 import dev.steel.api.models.profiles.ProfileCreateResponse
+import dev.steel.api.models.profiles.ProfileDeleteParams
+import dev.steel.api.models.profiles.ProfileDeleteResponse
 import dev.steel.api.models.profiles.ProfileGetParams
 import dev.steel.api.models.profiles.ProfileGetResponse
 import dev.steel.api.models.profiles.ProfileListParams
@@ -76,6 +78,42 @@ interface ProfileServiceAsync {
     /** @see list */
     fun list(requestOptions: RequestOptions): CompletableFuture<ProfileListResponse> =
         list(ProfileListParams.none(), requestOptions)
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: ProfileDeleteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProfileDeleteResponse> =
+        delete(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(id: String, params: ProfileDeleteParams): CompletableFuture<ProfileDeleteResponse> =
+        delete(id, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(id: String): CompletableFuture<ProfileDeleteResponse> =
+        delete(id, ProfileDeleteParams.none())
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProfileDeleteResponse> =
+        delete(id, ProfileDeleteParams.none(), requestOptions)
+
+    /**
+     * Delete the profile and its stored browser data immediately, with a final asynchronous cleanup
+     * pass.
+     */
+    fun delete(
+        params: ProfileDeleteParams,
+        requestOptions: RequestOptions,
+    ): CompletableFuture<ProfileDeleteResponse>
+
+    /** @see delete */
+    fun delete(params: ProfileDeleteParams): CompletableFuture<ProfileDeleteResponse> =
+        delete(params, RequestOptions.none())
 
     /** @see get */
     fun get(
@@ -175,6 +213,47 @@ interface ProfileServiceAsync {
             requestOptions: RequestOptions
         ): CompletableFuture<HttpResponseFor<ProfileListResponse>> =
             list(ProfileListParams.none(), requestOptions)
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            params: ProfileDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProfileDeleteResponse>> =
+            delete(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            params: ProfileDeleteParams,
+        ): CompletableFuture<HttpResponseFor<ProfileDeleteResponse>> =
+            delete(id, params, RequestOptions.none())
+
+        /** @see delete */
+        fun delete(id: String): CompletableFuture<HttpResponseFor<ProfileDeleteResponse>> =
+            delete(id, ProfileDeleteParams.none())
+
+        /** @see delete */
+        fun delete(
+            id: String,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProfileDeleteResponse>> =
+            delete(id, ProfileDeleteParams.none(), requestOptions)
+
+        /**
+         * Delete the profile and its stored browser data immediately, with a final asynchronous
+         * cleanup pass.
+         */
+        fun delete(
+            params: ProfileDeleteParams,
+            requestOptions: RequestOptions,
+        ): CompletableFuture<HttpResponseFor<ProfileDeleteResponse>>
+
+        /** @see delete */
+        fun delete(
+            params: ProfileDeleteParams
+        ): CompletableFuture<HttpResponseFor<ProfileDeleteResponse>> =
+            delete(params, RequestOptions.none())
 
         /** @see get */
         fun get(

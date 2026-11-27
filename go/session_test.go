@@ -39,9 +39,14 @@ func TestSessionNewWithOptionalParams(t *testing.T) {
 			Concurrency:    steel.F(int64(-9007199254740991)),
 			Credentials: steel.F(steel.SessionNewParamsCredentials{
 				AutoSubmit:         steel.F(true),
+				Bindings:           steel.F([]steel.SessionNewParamsCredentialsBindingUnion{shared.UnionString("string")}),
 				BlurFields:         steel.F(true),
+				CredentialIDs:      steel.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
 				CredentialProvider: steel.F("credentialProvider"),
+				DomTrigger:         steel.F(true),
+				Enabled:            steel.F(true),
 				ExactOrigin:        steel.F(true),
+				Lookup:             steel.F(steel.SessionNewParamsCredentialsLookupImplicit),
 				Origins:            steel.F([]string{"string"}),
 			}),
 			DebugConfig: steel.F(steel.SessionNewParamsDebugConfig{
@@ -266,7 +271,7 @@ func TestSessionCommandsWithOptionalParams(t *testing.T) {
 			}),
 			After: steel.F("x"),
 			Observe: steel.F(steel.SessionCommandsParamsObserve{
-				Mode:        steel.F(steel.SessionCommandsParamsObserveModeNone),
+				Mode:        steel.F(steel.SessionCommandsParamsObserveModeSnapshot),
 				Base:        steel.F("x"),
 				Compact:     steel.F(true),
 				Depth:       steel.F(int64(0)),

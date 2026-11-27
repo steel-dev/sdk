@@ -134,7 +134,7 @@ private constructor(
     private constructor(
         private val lastModified: JsonField<OffsetDateTime>,
         private val path: JsonField<String>,
-        private val size: JsonField<Double>,
+        private val size: JsonField<Long>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -144,7 +144,7 @@ private constructor(
             @ExcludeMissing
             lastModified: JsonField<OffsetDateTime> = JsonMissing.of(),
             @JsonProperty("path") @ExcludeMissing path: JsonField<String> = JsonMissing.of(),
-            @JsonProperty("size") @ExcludeMissing size: JsonField<Double> = JsonMissing.of(),
+            @JsonProperty("size") @ExcludeMissing size: JsonField<Long> = JsonMissing.of(),
         ) : this(lastModified, path, size, mutableMapOf())
 
         /** Timestamp when the file was created */
@@ -154,7 +154,7 @@ private constructor(
         fun path(): String = path.getRequired("path")
 
         /** Size of the file in bytes */
-        fun size(): Double = size.getRequired("size")
+        fun size(): Long = size.getRequired("size")
 
         @JsonProperty("lastModified")
         @ExcludeMissing
@@ -162,7 +162,7 @@ private constructor(
 
         @JsonProperty("path") @ExcludeMissing fun _path(): JsonField<String> = path
 
-        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Double> = size
+        @JsonProperty("size") @ExcludeMissing fun _size(): JsonField<Long> = size
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -187,7 +187,7 @@ private constructor(
 
             private var lastModified: JsonField<OffsetDateTime>? = null
             private var path: JsonField<String>? = null
-            private var size: JsonField<Double>? = null
+            private var size: JsonField<Long>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -214,10 +214,10 @@ private constructor(
             fun path(path: JsonField<String>) = apply { this.path = path }
 
             /** Size of the file in bytes */
-            fun size(size: Double) = size(JsonField.of(size))
+            fun size(size: Long) = size(JsonField.of(size))
 
             /** Size of the file in bytes */
-            fun size(size: JsonField<Double>) = apply { this.size = size }
+            fun size(size: JsonField<Long>) = apply { this.size = size }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()

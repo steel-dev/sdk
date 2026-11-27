@@ -43,6 +43,8 @@ import { File, FileUploadParams, Files, Fileslist } from './resources/files';
 import {
   ProfileCreateParams,
   ProfileCreateResponse,
+  ProfileDeleteParams,
+  ProfileDeleteResponse,
   ProfileGetParams,
   ProfileGetResponse,
   ProfileListParams,
@@ -53,11 +55,25 @@ import {
 } from './resources/profiles';
 import { Project, Projects, ProjectsList } from './resources/projects';
 import {
+  SecretConnectionCreateParams,
+  SecretConnectionCreateResponse,
+  SecretConnectionDeleteParams,
+  SecretConnectionListParams,
+  SecretConnectionListResponse,
+  SecretConnectionRetrieveParams,
+  SecretConnectionRetrieveResponse,
+  SecretConnectionTestParams,
+  SecretConnectionUpdateParams,
+  SecretConnectionUpdateResponse,
+  SecretConnections,
+} from './resources/secret-connections';
+import {
   Command,
   CommandDialog,
   CommandErrorInfo,
   CommandExpectation,
   CommandFrame,
+  CommandHeld,
   CommandLocator,
   CommandResult,
   CommandTarget,
@@ -71,6 +87,7 @@ import {
   SessionContext,
   SessionCostResponse,
   SessionCreateParams,
+  SessionCredentials,
   SessionEventsParams,
   SessionEventsResponse,
   SessionListParams,
@@ -89,6 +106,16 @@ import {
   Sessionslist,
   SessionslistSessionsSessionsCursor,
 } from './resources/sessions/sessions';
+import {
+  Vault,
+  VaultCreateParams,
+  VaultDeleteParams,
+  VaultList,
+  VaultListParams,
+  VaultRetrieveParams,
+  VaultUpdateParams,
+  Vaults,
+} from './resources/vaults';
 
 export interface ClientOptions {
   /**
@@ -222,7 +249,9 @@ export class Steel extends Core.APIClient {
   files: API.Files = new API.Files(this);
   profiles: API.Profiles = new API.Profiles(this);
   projects: API.Projects = new API.Projects(this);
+  secretConnections: API.SecretConnections = new API.SecretConnections(this);
   sessions: API.Sessions = new API.Sessions(this);
+  vaults: API.Vaults = new API.Vaults(this);
 
   /**
    * Check whether the base URL is set to its default.
@@ -307,7 +336,9 @@ Steel.Extensions = Extensions;
 Steel.Files = Files;
 Steel.Profiles = Profiles;
 Steel.Projects = Projects;
+Steel.SecretConnections = SecretConnections;
 Steel.Sessions = Sessions;
+Steel.Vaults = Vaults;
 Steel.SessionslistSessionsSessionsCursor = SessionslistSessionsSessionsCursor;
 
 export declare namespace Steel {
@@ -365,14 +396,30 @@ export declare namespace Steel {
     type ProfileCreateResponse as ProfileCreateResponse,
     type ProfileUpdateResponse as ProfileUpdateResponse,
     type ProfileListResponse as ProfileListResponse,
+    type ProfileDeleteResponse as ProfileDeleteResponse,
     type ProfileGetResponse as ProfileGetResponse,
     type ProfileCreateParams as ProfileCreateParams,
     type ProfileUpdateParams as ProfileUpdateParams,
     type ProfileListParams as ProfileListParams,
+    type ProfileDeleteParams as ProfileDeleteParams,
     type ProfileGetParams as ProfileGetParams,
   };
 
   export { Projects as Projects, type Project as Project, type ProjectsList as ProjectsList };
+
+  export {
+    SecretConnections as SecretConnections,
+    type SecretConnectionCreateResponse as SecretConnectionCreateResponse,
+    type SecretConnectionRetrieveResponse as SecretConnectionRetrieveResponse,
+    type SecretConnectionUpdateResponse as SecretConnectionUpdateResponse,
+    type SecretConnectionListResponse as SecretConnectionListResponse,
+    type SecretConnectionCreateParams as SecretConnectionCreateParams,
+    type SecretConnectionRetrieveParams as SecretConnectionRetrieveParams,
+    type SecretConnectionUpdateParams as SecretConnectionUpdateParams,
+    type SecretConnectionListParams as SecretConnectionListParams,
+    type SecretConnectionDeleteParams as SecretConnectionDeleteParams,
+    type SecretConnectionTestParams as SecretConnectionTestParams,
+  };
 
   export {
     Sessions as Sessions,
@@ -381,11 +428,13 @@ export declare namespace Steel {
     type CommandErrorInfo as CommandErrorInfo,
     type CommandExpectation as CommandExpectation,
     type CommandFrame as CommandFrame,
+    type CommandHeld as CommandHeld,
     type CommandLocator as CommandLocator,
     type CommandResult as CommandResult,
     type CommandTarget as CommandTarget,
     type Session as Session,
     type SessionContext as SessionContext,
+    type SessionCredentials as SessionCredentials,
     type Sessionslist as Sessionslist,
     type SessionAgentTracesResponse as SessionAgentTracesResponse,
     type SessionCommandsResponse as SessionCommandsResponse,
@@ -410,6 +459,17 @@ export declare namespace Steel {
     type SessionReleaseAllParams as SessionReleaseAllParams,
     type SessionReplaceMetadataParams as SessionReplaceMetadataParams,
     type SessionUpdateMetadataParams as SessionUpdateMetadataParams,
+  };
+
+  export {
+    Vaults as Vaults,
+    type Vault as Vault,
+    type VaultList as VaultList,
+    type VaultCreateParams as VaultCreateParams,
+    type VaultRetrieveParams as VaultRetrieveParams,
+    type VaultUpdateParams as VaultUpdateParams,
+    type VaultListParams as VaultListParams,
+    type VaultDeleteParams as VaultDeleteParams,
   };
 }
 

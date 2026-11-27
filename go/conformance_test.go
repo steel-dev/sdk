@@ -172,10 +172,11 @@ func TestConformanceCredentialsCreateFull(t *testing.T) {
 			Value: steel.F(map[string]string{
 				"foo": "string",
 			}),
-			Label:     steel.F("label"),
-			Namespace: steel.F("namespace"),
-			Origin:    steel.F("origin"),
-			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			AdditionalOrigins: steel.F([]string{"x"}),
+			Label:             steel.F("label"),
+			Namespace:         steel.F("namespace"),
+			Origin:            steel.F("origin"),
+			ProjectID:         steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		})
 		return conformance.JSON(res), err
 	})
@@ -209,10 +210,11 @@ func TestConformanceCredentialsUpdateFull(t *testing.T) {
 	conformance.Conform(t, "credentials.update/full", func(baseURL string, apiKey string) (conformance.Result, error) {
 		client := conformanceClient(baseURL, apiKey)
 		res, err := client.Credentials.Update(context.TODO(), steel.CredentialUpdateParams{
-			Label:     steel.F("label"),
-			Namespace: steel.F("namespace"),
-			Origin:    steel.F("origin"),
-			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			AdditionalOrigins: steel.F([]string{"x"}),
+			Label:             steel.F("label"),
+			Namespace:         steel.F("namespace"),
+			Origin:            steel.F("origin"),
+			ProjectID:         steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Value: steel.F(map[string]string{
 				"foo": "string",
 			}),
@@ -760,6 +762,50 @@ func TestConformanceProfilesListEscaped(t *testing.T) {
 	})
 }
 
+func TestConformanceProfilesDeleteFull(t *testing.T) {
+	conformance.Conform(t, "profiles.delete/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Profiles.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.ProfileDeleteParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceProfilesDeleteRequired(t *testing.T) {
+	conformance.Conform(t, "profiles.delete/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Profiles.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.ProfileDeleteParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceProfilesDeleteNulls(t *testing.T) {
+	conformance.Conform(t, "profiles.delete/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Profiles.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.ProfileDeleteParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceProfilesDeleteUnknown(t *testing.T) {
+	conformance.Conform(t, "profiles.delete/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Profiles.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.ProfileDeleteParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceProfilesDeleteEscaped(t *testing.T) {
+	conformance.Conform(t, "profiles.delete/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Profiles.Delete(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.ProfileDeleteParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
 func TestConformanceProfilesGetFull(t *testing.T) {
 	conformance.Conform(t, "profiles.get/full", func(baseURL string, apiKey string) (conformance.Result, error) {
 		client := conformanceClient(baseURL, apiKey)
@@ -860,6 +906,278 @@ func TestConformanceProjectsListNulls(t *testing.T) {
 	})
 }
 
+func TestConformanceSecretConnectionsCreateFull(t *testing.T) {
+	conformance.Conform(t, "secret_connections.create/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.New(context.TODO(), steel.SecretConnectionNewParams{
+			Auth: steel.F(steel.SecretConnectionNewParamsAuth{
+				Token:               steel.F("x"),
+				Mount:               steel.F("x"),
+				RoleID:              steel.F("x"),
+				SecretID:            steel.F("x"),
+				ServiceAccountToken: steel.F("x"),
+				Type:                steel.F(steel.SecretConnectionNewParamsAuthTypeToken),
+			}),
+			Name:     steel.F("x"),
+			Provider: steel.F(steel.SecretConnectionNewParamsProvider1password),
+			Config: steel.F(steel.SecretConnectionNewParamsConfig{
+				Address:   steel.F("x"),
+				CaPem:     steel.F("x"),
+				Namespace: steel.F("x"),
+			}),
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			TokenBudget: steel.F(steel.SecretConnectionNewParamsTokenBudget{
+				Burst:           steel.F(int64(2)),
+				RefillPerSecond: steel.F(0.001),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsCreateRequired(t *testing.T) {
+	conformance.Conform(t, "secret_connections.create/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.New(context.TODO(), steel.SecretConnectionNewParams{
+			Auth:     steel.F(steel.SecretConnectionNewParamsAuth{}),
+			Name:     steel.F("x"),
+			Provider: steel.F(steel.SecretConnectionNewParamsProvider1password),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsCreateNulls(t *testing.T) {
+	conformance.Conform(t, "secret_connections.create/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.New(context.TODO(), steel.SecretConnectionNewParams{
+			Auth:     steel.F(steel.SecretConnectionNewParamsAuth{}),
+			Name:     steel.F("x"),
+			Provider: steel.F(steel.SecretConnectionNewParamsProvider1password),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsCreateUnknown(t *testing.T) {
+	conformance.Conform(t, "secret_connections.create/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.New(context.TODO(), steel.SecretConnectionNewParams{
+			Auth:     steel.F(steel.SecretConnectionNewParamsAuth{}),
+			Name:     steel.F("x"),
+			Provider: steel.F(steel.SecretConnectionNewParamsProvider1password),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsRetrieveFull(t *testing.T) {
+	conformance.Conform(t, "secret_connections.retrieve/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionGetParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsRetrieveRequired(t *testing.T) {
+	conformance.Conform(t, "secret_connections.retrieve/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionGetParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsRetrieveNulls(t *testing.T) {
+	conformance.Conform(t, "secret_connections.retrieve/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionGetParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsRetrieveUnknown(t *testing.T) {
+	conformance.Conform(t, "secret_connections.retrieve/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionGetParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsRetrieveEscaped(t *testing.T) {
+	conformance.Conform(t, "secret_connections.retrieve/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Get(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SecretConnectionGetParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsUpdateFull(t *testing.T) {
+	conformance.Conform(t, "secret_connections.update/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionUpdateParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			Auth: steel.F(steel.SecretConnectionUpdateParamsAuth{
+				Token:               steel.F("x"),
+				Mount:               steel.F("x"),
+				RoleID:              steel.F("x"),
+				SecretID:            steel.F("x"),
+				ServiceAccountToken: steel.F("x"),
+				Type:                steel.F(steel.SecretConnectionUpdateParamsAuthTypeToken),
+			}),
+			Config: steel.F(steel.SecretConnectionUpdateParamsConfig{
+				Address:   steel.F("x"),
+				CaPem:     steel.F("x"),
+				Namespace: steel.F("x"),
+			}),
+			Enabled: steel.F(true),
+			Name:    steel.F("x"),
+			TokenBudget: steel.F(steel.SecretConnectionUpdateParamsTokenBudget{
+				Burst:           steel.F(int64(2)),
+				RefillPerSecond: steel.F(0.001),
+			}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsUpdateRequired(t *testing.T) {
+	conformance.Conform(t, "secret_connections.update/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionUpdateParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsUpdateNulls(t *testing.T) {
+	conformance.Conform(t, "secret_connections.update/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionUpdateParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsUpdateUnknown(t *testing.T) {
+	conformance.Conform(t, "secret_connections.update/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionUpdateParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsUpdateEscaped(t *testing.T) {
+	conformance.Conform(t, "secret_connections.update/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.Update(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SecretConnectionUpdateParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsListFull(t *testing.T) {
+	conformance.Conform(t, "secret_connections.list/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.List(context.TODO(), steel.SecretConnectionListParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsListRequired(t *testing.T) {
+	conformance.Conform(t, "secret_connections.list/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.List(context.TODO(), steel.SecretConnectionListParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsListNulls(t *testing.T) {
+	conformance.Conform(t, "secret_connections.list/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.List(context.TODO(), steel.SecretConnectionListParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsListUnknown(t *testing.T) {
+	conformance.Conform(t, "secret_connections.list/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.List(context.TODO(), steel.SecretConnectionListParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsListEscaped(t *testing.T) {
+	conformance.Conform(t, "secret_connections.list/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.SecretConnections.List(context.TODO(), steel.SecretConnectionListParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSecretConnectionsDeleteFull(t *testing.T) {
+	conformance.Conform(t, "secret_connections.delete/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.SecretConnections.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionDeleteParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceSecretConnectionsDeleteRequired(t *testing.T) {
+	conformance.Conform(t, "secret_connections.delete/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.SecretConnections.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionDeleteParams{})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceSecretConnectionsDeleteEscaped(t *testing.T) {
+	conformance.Conform(t, "secret_connections.delete/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.SecretConnections.Delete(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SecretConnectionDeleteParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceSecretConnectionsTestFull(t *testing.T) {
+	conformance.Conform(t, "secret_connections.test/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.SecretConnections.Test(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionTestParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceSecretConnectionsTestRequired(t *testing.T) {
+	conformance.Conform(t, "secret_connections.test/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.SecretConnections.Test(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SecretConnectionTestParams{})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceSecretConnectionsTestEscaped(t *testing.T) {
+	conformance.Conform(t, "secret_connections.test/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.SecretConnections.Test(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SecretConnectionTestParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.None(), err
+	})
+}
+
 func TestConformanceSessionsCreateFull(t *testing.T) {
 	conformance.Conform(t, "sessions.create/full", func(baseURL string, apiKey string) (conformance.Result, error) {
 		client := conformanceClient(baseURL, apiKey)
@@ -869,9 +1187,14 @@ func TestConformanceSessionsCreateFull(t *testing.T) {
 			Concurrency:    steel.F(int64(-9007199254740991)),
 			Credentials: steel.F(steel.SessionNewParamsCredentials{
 				AutoSubmit:         steel.F(true),
+				Bindings:           steel.F([]steel.SessionNewParamsCredentialsBindingUnion{shared.UnionString("string")}),
 				BlurFields:         steel.F(true),
+				CredentialIDs:      steel.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
 				CredentialProvider: steel.F("credentialProvider"),
+				DomTrigger:         steel.F(true),
+				Enabled:            steel.F(true),
 				ExactOrigin:        steel.F(true),
+				Lookup:             steel.F(steel.SessionNewParamsCredentialsLookupImplicit),
 				Origins:            steel.F([]string{"string"}),
 			}),
 			DebugConfig: steel.F(steel.SessionNewParamsDebugConfig{
@@ -1155,7 +1478,7 @@ func TestConformanceSessionsCommandsFull(t *testing.T) {
 			}),
 			After: steel.F("x"),
 			Observe: steel.F(steel.SessionCommandsParamsObserve{
-				Mode:        steel.F(steel.SessionCommandsParamsObserveModeNone),
+				Mode:        steel.F(steel.SessionCommandsParamsObserveModeSnapshot),
 				Base:        steel.F("x"),
 				Compact:     steel.F(true),
 				Depth:       steel.F(int64(0)),
@@ -2705,6 +3028,264 @@ func TestConformanceSessionsCommandExecutionsCancelEscaped(t *testing.T) {
 	})
 }
 
+func TestConformanceSessionsCredentialsListFull(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.list/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.List(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsListRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.list/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.List(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsListNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.list/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.List(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsListUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.list/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.List(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsListVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.list/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.List(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsListEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.list/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.List(context.TODO(), "a b/c?d#e%f+g&h=i é")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsAttachFull(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.attach/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Attach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialAttachParams{
+			Bindings:      steel.F([]steel.SessionCredentialAttachParamsBindingUnion{shared.UnionString("string")}),
+			CredentialIDs: steel.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsAttachRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.attach/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Attach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialAttachParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsAttachNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.attach/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Attach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialAttachParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsAttachUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.attach/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Attach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialAttachParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsAttachVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.attach/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Attach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialAttachParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsAttachEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.attach/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Attach(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SessionCredentialAttachParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachFull(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Detach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Detach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Detach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Detach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Detach(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Detach(context.TODO(), "a b/c?d#e%f+g&h=i é", "a b/c?d#e%f+g&h=i é")
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachBindingFull(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach_binding/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.DetachBinding(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialDetachBindingParams{
+			Reference: steel.F("reference"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachBindingRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach_binding/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.DetachBinding(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialDetachBindingParams{
+			Reference: steel.F("reference"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachBindingNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach_binding/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.DetachBinding(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialDetachBindingParams{
+			Reference: steel.F("reference"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachBindingUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach_binding/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.DetachBinding(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialDetachBindingParams{
+			Reference: steel.F("reference"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachBindingVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach_binding/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.DetachBinding(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialDetachBindingParams{
+			Reference: steel.F("reference"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsDetachBindingEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.detach_binding/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.DetachBinding(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SessionCredentialDetachBindingParams{
+			Reference: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsReplaceFull(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.replace/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Replace(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialReplaceParams{
+			Bindings:      steel.F([]steel.SessionCredentialReplaceParamsBindingUnion{shared.UnionString("string")}),
+			CredentialIDs: steel.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsReplaceRequired(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.replace/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Replace(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialReplaceParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsReplaceNulls(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.replace/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Replace(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialReplaceParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsReplaceUnknown(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.replace/unknown", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Replace(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialReplaceParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsReplaceVariant0_1(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.replace/variant-0-1", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Replace(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.SessionCredentialReplaceParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceSessionsCredentialsReplaceEscaped(t *testing.T) {
+	conformance.Conform(t, "sessions.credentials.replace/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Sessions.Credentials.Replace(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.SessionCredentialReplaceParams{})
+		return conformance.JSON(res), err
+	})
+}
+
 func TestConformanceSessionsFilesListFull(t *testing.T) {
 	conformance.Conform(t, "sessions.files.list/full", func(baseURL string, apiKey string) (conformance.Result, error) {
 		client := conformanceClient(baseURL, apiKey)
@@ -2901,5 +3482,175 @@ func TestConformanceSessionsFilesUploadEscaped(t *testing.T) {
 			File: steel.F(io.Reader(bytes.NewBuffer([]byte("Example data")))),
 		})
 		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsCreateFull(t *testing.T) {
+	conformance.Conform(t, "vaults.create/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.New(context.TODO(), steel.VaultNewParams{
+			Name:        steel.F("name"),
+			Description: steel.F("description"),
+			ProjectID:   steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsCreateRequired(t *testing.T) {
+	conformance.Conform(t, "vaults.create/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.New(context.TODO(), steel.VaultNewParams{
+			Name: steel.F("name"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsCreateNulls(t *testing.T) {
+	conformance.Conform(t, "vaults.create/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.New(context.TODO(), steel.VaultNewParams{
+			Name: steel.F("name"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsRetrieveFull(t *testing.T) {
+	conformance.Conform(t, "vaults.retrieve/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultGetParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsRetrieveRequired(t *testing.T) {
+	conformance.Conform(t, "vaults.retrieve/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultGetParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsRetrieveNulls(t *testing.T) {
+	conformance.Conform(t, "vaults.retrieve/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultGetParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsRetrieveEscaped(t *testing.T) {
+	conformance.Conform(t, "vaults.retrieve/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Get(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.VaultGetParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsUpdateFull(t *testing.T) {
+	conformance.Conform(t, "vaults.update/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultUpdateParams{
+			ProjectID:   steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			Description: steel.F("description"),
+			Name:        steel.F("name"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsUpdateRequired(t *testing.T) {
+	conformance.Conform(t, "vaults.update/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultUpdateParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsUpdateNulls(t *testing.T) {
+	conformance.Conform(t, "vaults.update/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Update(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultUpdateParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsUpdateEscaped(t *testing.T) {
+	conformance.Conform(t, "vaults.update/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.Update(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.VaultUpdateParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsListFull(t *testing.T) {
+	conformance.Conform(t, "vaults.list/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.List(context.TODO(), steel.VaultListParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsListRequired(t *testing.T) {
+	conformance.Conform(t, "vaults.list/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.List(context.TODO(), steel.VaultListParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsListNulls(t *testing.T) {
+	conformance.Conform(t, "vaults.list/nulls", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.List(context.TODO(), steel.VaultListParams{})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsListEscaped(t *testing.T) {
+	conformance.Conform(t, "vaults.list/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		res, err := client.Vaults.List(context.TODO(), steel.VaultListParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.JSON(res), err
+	})
+}
+
+func TestConformanceVaultsDeleteFull(t *testing.T) {
+	conformance.Conform(t, "vaults.delete/full", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.Vaults.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultDeleteParams{
+			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceVaultsDeleteRequired(t *testing.T) {
+	conformance.Conform(t, "vaults.delete/required", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.Vaults.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", steel.VaultDeleteParams{})
+		return conformance.None(), err
+	})
+}
+
+func TestConformanceVaultsDeleteEscaped(t *testing.T) {
+	conformance.Conform(t, "vaults.delete/escaped", func(baseURL string, apiKey string) (conformance.Result, error) {
+		client := conformanceClient(baseURL, apiKey)
+		err := client.Vaults.Delete(context.TODO(), "a b/c?d#e%f+g&h=i é", steel.VaultDeleteParams{
+			ProjectID: steel.F("a b/c?d#e%f+g&h=i é"),
+		})
+		return conformance.None(), err
 	})
 }

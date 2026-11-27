@@ -12,7 +12,9 @@ func main() {
 	ctx := context.Background()
 	client := steel.NewClient()
 
-	session, err := client.Sessions.New(ctx, steel.SessionNewParams{})
+	session, err := client.Sessions.New(ctx, steel.SessionNewParams{
+		InactivityTimeout: steel.F(int64(3 * 60 * 1000)),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

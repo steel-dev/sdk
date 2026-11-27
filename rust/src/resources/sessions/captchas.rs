@@ -7,74 +7,74 @@ pub struct SessionsCaptchas<'a> {
 
 impl<'a> SessionsCaptchas<'a> {
     /// Solves captcha(s) for the session. If pageId, url, or taskId is provided, solves that specific captcha. If no parameters are provided, solves all detected captchas. Use this when autoCaptchaSolving is disabled in stealthConfig.
-    pub async fn solve(
+    pub fn solve(
         &self,
         session_id: &str,
         params: SessionCaptchaSolveParams,
-    ) -> Result<SessionCaptchaSolveResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::POST,
-            format!(
-                "/v1/sessions/{}/captchas/solve",
-                crate::encoding::segment(session_id)
-            ),
+    ) -> crate::Call<'a, SessionCaptchaSolveResponse> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/captchas/solve",
+            crate::encoding::segment(session_id)
         );
-        let mut body = serde_json::Map::new();
-        if let Some(value) = &params.page_id {
-            body.insert("pageId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.task_id {
-            body.insert("taskId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.url {
-            body.insert("url".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::POST, path);
+            let mut body = serde_json::Map::new();
+            if let Some(value) = &params.page_id {
+                body.insert("pageId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.task_id {
+                body.insert("taskId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.url {
+                body.insert("url".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Solves an image captcha using XPath selectors
-    pub async fn solve_image(
+    pub fn solve_image(
         &self,
         session_id: &str,
         params: SessionCaptchaSolveImageParams,
-    ) -> Result<SessionCaptchaSolveImageResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::POST,
-            format!(
-                "/v1/sessions/{}/captchas/solve-image",
-                crate::encoding::segment(session_id)
-            ),
+    ) -> crate::Call<'a, SessionCaptchaSolveImageResponse> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/captchas/solve-image",
+            crate::encoding::segment(session_id)
         );
-        let mut body = serde_json::Map::new();
-        body.insert(
-            "imageXPath".to_owned(),
-            serde_json::to_value(&params.image_x_path)?,
-        );
-        body.insert(
-            "inputXPath".to_owned(),
-            serde_json::to_value(&params.input_x_path)?,
-        );
-        if let Some(value) = &params.url {
-            body.insert("url".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::POST, path);
+            let mut body = serde_json::Map::new();
+            body.insert(
+                "imageXPath".to_owned(),
+                serde_json::to_value(&params.image_x_path)?,
+            );
+            body.insert(
+                "inputXPath".to_owned(),
+                serde_json::to_value(&params.input_x_path)?,
+            );
+            if let Some(value) = &params.url {
+                body.insert("url".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Gets the current captcha status for a session
-    pub async fn status(
-        &self,
-        session_id: &str,
-    ) -> Result<Vec<SessionCaptchaStatusResponse>, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!(
-                "/v1/sessions/{}/captchas/status",
-                crate::encoding::segment(session_id)
-            ),
+    pub fn status(&self, session_id: &str) -> crate::Call<'a, Vec<SessionCaptchaStatusResponse>> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/captchas/status",
+            crate::encoding::segment(session_id)
         );
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 }
 

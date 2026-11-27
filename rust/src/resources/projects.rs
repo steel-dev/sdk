@@ -7,18 +7,23 @@ pub struct Projects<'a> {
 
 impl<'a> Projects<'a> {
     /// Get a project by ID.
-    pub async fn retrieve(&self, id: &str) -> Result<crate::Project, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/projects/{}", crate::encoding::segment(id)),
-        );
-        self.client.json(request).await
+    pub fn retrieve(&self, id: &str) -> crate::Call<'a, crate::Project> {
+        let client = self.client;
+        let path = format!("/v1/projects/{}", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 
     /// List projects for the authenticated organization.
-    pub async fn list(&self) -> Result<crate::ProjectsList, crate::Error> {
-        let request = crate::client::Request::new(reqwest::Method::GET, "/v1/projects".to_owned());
-        self.client.json(request).await
+    pub fn list(&self) -> crate::Call<'a, crate::ProjectsList> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let request =
+                crate::client::Request::new(reqwest::Method::GET, "/v1/projects".to_owned());
+            client.json(request).await
+        })
     }
 }
 

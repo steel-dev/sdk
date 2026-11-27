@@ -38,6 +38,7 @@ import dev.steel.api.models.sessions.SessionUpdateMetadataParams
 import dev.steel.api.models.sessions.SessionUpdateMetadataResponse
 import dev.steel.api.services.async.sessions.CaptchaServiceAsync
 import dev.steel.api.services.async.sessions.CommandExecutionServiceAsync
+import dev.steel.api.services.async.sessions.CredentialServiceAsync
 import dev.steel.api.services.async.sessions.FileServiceAsync
 import java.util.function.Consumer
 
@@ -58,6 +59,8 @@ interface SessionServiceAsync {
     fun captchas(): CaptchaServiceAsync
 
     fun commandExecutions(): CommandExecutionServiceAsync
+
+    fun credentials(): CredentialServiceAsync
 
     fun files(): FileServiceAsync
 
@@ -507,6 +510,8 @@ interface SessionServiceAsync {
         fun captchas(): CaptchaServiceAsync.WithRawResponse
 
         fun commandExecutions(): CommandExecutionServiceAsync.WithRawResponse
+
+        fun credentials(): CredentialServiceAsync.WithRawResponse
 
         fun files(): FileServiceAsync.WithRawResponse
 

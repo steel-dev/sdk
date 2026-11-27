@@ -83,6 +83,7 @@ describe('conformance', () => {
     conform('credentials.create/full', make, async (client) =>
       client.credentials.create({
         value: { foo: 'string' },
+        additionalOrigins: ['x'],
         label: 'label',
         namespace: 'namespace',
         origin: 'origin',
@@ -103,6 +104,7 @@ describe('conformance', () => {
   test('credentials.update/full', () =>
     conform('credentials.update/full', make, async (client) =>
       client.credentials.update({
+        additionalOrigins: ['x'],
         label: 'label',
         namespace: 'namespace',
         origin: 'origin',
@@ -372,6 +374,33 @@ describe('conformance', () => {
       client.profiles.list({ projectId: 'a b/c?d#e%f+g&h=i é' }),
     ));
 
+  test('profiles.delete/full', () =>
+    conform('profiles.delete/full', make, async (client) =>
+      client.profiles.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('profiles.delete/required', () =>
+    conform('profiles.delete/required', make, async (client) =>
+      client.profiles.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('profiles.delete/nulls', () =>
+    conform('profiles.delete/nulls', make, async (client) =>
+      client.profiles.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('profiles.delete/unknown', () =>
+    conform('profiles.delete/unknown', make, async (client) =>
+      client.profiles.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('profiles.delete/escaped', () =>
+    conform('profiles.delete/escaped', make, async (client) =>
+      client.profiles.delete('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
   test('profiles.get/full', () =>
     conform('profiles.get/full', make, async (client) =>
       client.profiles.get('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
@@ -428,6 +457,179 @@ describe('conformance', () => {
   test('projects.list/nulls', () =>
     conform('projects.list/nulls', make, async (client) => client.projects.list()));
 
+  test('secret_connections.create/full', () =>
+    conform('secret_connections.create/full', make, async (client) =>
+      client.secretConnections.create({
+        auth: {
+          token: 'x',
+          mount: 'x',
+          roleId: 'x',
+          secretId: 'x',
+          serviceAccountToken: 'x',
+          type: 'token',
+        },
+        name: 'x',
+        provider: '1password',
+        config: {
+          address: 'x',
+          caPem: 'x',
+          namespace: 'x',
+        },
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        tokenBudget: { burst: 2, refillPerSecond: 0.001 },
+      }),
+    ));
+
+  test('secret_connections.create/required', () =>
+    conform('secret_connections.create/required', make, async (client) =>
+      client.secretConnections.create({
+        auth: {},
+        name: 'x',
+        provider: '1password',
+      }),
+    ));
+
+  test('secret_connections.create/nulls', () =>
+    conform('secret_connections.create/nulls', make, async (client) =>
+      client.secretConnections.create({
+        auth: {},
+        name: 'x',
+        provider: '1password',
+      }),
+    ));
+
+  test('secret_connections.create/unknown', () =>
+    conform('secret_connections.create/unknown', make, async (client) =>
+      client.secretConnections.create({
+        auth: {},
+        name: 'x',
+        provider: '1password',
+      }),
+    ));
+
+  test('secret_connections.retrieve/full', () =>
+    conform('secret_connections.retrieve/full', make, async (client) =>
+      client.secretConnections.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('secret_connections.retrieve/required', () =>
+    conform('secret_connections.retrieve/required', make, async (client) =>
+      client.secretConnections.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.retrieve/nulls', () =>
+    conform('secret_connections.retrieve/nulls', make, async (client) =>
+      client.secretConnections.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.retrieve/unknown', () =>
+    conform('secret_connections.retrieve/unknown', make, async (client) =>
+      client.secretConnections.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.retrieve/escaped', () =>
+    conform('secret_connections.retrieve/escaped', make, async (client) =>
+      client.secretConnections.retrieve('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('secret_connections.update/full', () =>
+    conform('secret_connections.update/full', make, async (client) =>
+      client.secretConnections.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        auth: {
+          token: 'x',
+          mount: 'x',
+          roleId: 'x',
+          secretId: 'x',
+          serviceAccountToken: 'x',
+          type: 'token',
+        },
+        config: {
+          address: 'x',
+          caPem: 'x',
+          namespace: 'x',
+        },
+        enabled: true,
+        name: 'x',
+        tokenBudget: { burst: 2, refillPerSecond: 0.001 },
+      }),
+    ));
+
+  test('secret_connections.update/required', () =>
+    conform('secret_connections.update/required', make, async (client) =>
+      client.secretConnections.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.update/nulls', () =>
+    conform('secret_connections.update/nulls', make, async (client) =>
+      client.secretConnections.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.update/unknown', () =>
+    conform('secret_connections.update/unknown', make, async (client) =>
+      client.secretConnections.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.update/escaped', () =>
+    conform('secret_connections.update/escaped', make, async (client) =>
+      client.secretConnections.update('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('secret_connections.list/full', () =>
+    conform('secret_connections.list/full', make, async (client) =>
+      client.secretConnections.list({ projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e' }),
+    ));
+
+  test('secret_connections.list/required', () =>
+    conform('secret_connections.list/required', make, async (client) => client.secretConnections.list({})));
+
+  test('secret_connections.list/nulls', () =>
+    conform('secret_connections.list/nulls', make, async (client) => client.secretConnections.list({})));
+
+  test('secret_connections.list/unknown', () =>
+    conform('secret_connections.list/unknown', make, async (client) => client.secretConnections.list({})));
+
+  test('secret_connections.list/escaped', () =>
+    conform('secret_connections.list/escaped', make, async (client) =>
+      client.secretConnections.list({ projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('secret_connections.delete/full', () =>
+    conform('secret_connections.delete/full', make, async (client) =>
+      client.secretConnections.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('secret_connections.delete/required', () =>
+    conform('secret_connections.delete/required', make, async (client) =>
+      client.secretConnections.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.delete/escaped', () =>
+    conform('secret_connections.delete/escaped', make, async (client) =>
+      client.secretConnections.delete('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('secret_connections.test/full', () =>
+    conform('secret_connections.test/full', make, async (client) =>
+      client.secretConnections.test('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('secret_connections.test/required', () =>
+    conform('secret_connections.test/required', make, async (client) =>
+      client.secretConnections.test('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('secret_connections.test/escaped', () =>
+    conform('secret_connections.test/escaped', make, async (client) =>
+      client.secretConnections.test('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
   test('sessions.create/full', () =>
     conform('sessions.create/full', make, async (client) =>
       client.sessions.create({
@@ -436,9 +638,14 @@ describe('conformance', () => {
         concurrency: -9007199254740991,
         credentials: {
           autoSubmit: true,
+          bindings: ['string'],
           blurFields: true,
+          credentialIds: ['182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'],
           credentialProvider: 'credentialProvider',
+          domTrigger: true,
+          enabled: true,
           exactOrigin: true,
+          lookup: 'implicit',
           origins: ['string'],
         },
         debugConfig: { interactive: true, systemCursor: true },
@@ -646,7 +853,7 @@ describe('conformance', () => {
         },
         after: 'x',
         observe: {
-          mode: 'none',
+          mode: 'snapshot',
           base: 'x',
           compact: true,
           depth: 0,
@@ -1476,6 +1683,187 @@ describe('conformance', () => {
       client.sessions.commandExecutions.cancel('a b/c?d#e%f+g&h=i é', 'a b/c?d#e%f+g&h=i é'),
     ));
 
+  test('sessions.credentials.list/full', () =>
+    conform('sessions.credentials.list/full', make, async (client) =>
+      client.sessions.credentials.list('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'),
+    ));
+
+  test('sessions.credentials.list/required', () =>
+    conform('sessions.credentials.list/required', make, async (client) =>
+      client.sessions.credentials.list('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'),
+    ));
+
+  test('sessions.credentials.list/nulls', () =>
+    conform('sessions.credentials.list/nulls', make, async (client) =>
+      client.sessions.credentials.list('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'),
+    ));
+
+  test('sessions.credentials.list/unknown', () =>
+    conform('sessions.credentials.list/unknown', make, async (client) =>
+      client.sessions.credentials.list('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'),
+    ));
+
+  test('sessions.credentials.list/variant-0-1', () =>
+    conform('sessions.credentials.list/variant-0-1', make, async (client) =>
+      client.sessions.credentials.list('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'),
+    ));
+
+  test('sessions.credentials.list/escaped', () =>
+    conform('sessions.credentials.list/escaped', make, async (client) =>
+      client.sessions.credentials.list('a b/c?d#e%f+g&h=i é'),
+    ));
+
+  test('sessions.credentials.attach/full', () =>
+    conform('sessions.credentials.attach/full', make, async (client) =>
+      client.sessions.credentials.attach('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        bindings: ['string'],
+        credentialIds: ['182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'],
+      }),
+    ));
+
+  test('sessions.credentials.attach/required', () =>
+    conform('sessions.credentials.attach/required', make, async (client) =>
+      client.sessions.credentials.attach('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.attach/nulls', () =>
+    conform('sessions.credentials.attach/nulls', make, async (client) =>
+      client.sessions.credentials.attach('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.attach/unknown', () =>
+    conform('sessions.credentials.attach/unknown', make, async (client) =>
+      client.sessions.credentials.attach('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.attach/variant-0-1', () =>
+    conform('sessions.credentials.attach/variant-0-1', make, async (client) =>
+      client.sessions.credentials.attach('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.attach/escaped', () =>
+    conform('sessions.credentials.attach/escaped', make, async (client) =>
+      client.sessions.credentials.attach('a b/c?d#e%f+g&h=i é', {}),
+    ));
+
+  test('sessions.credentials.detach/full', () =>
+    conform('sessions.credentials.detach/full', make, async (client) =>
+      client.sessions.credentials.detach(
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      ),
+    ));
+
+  test('sessions.credentials.detach/required', () =>
+    conform('sessions.credentials.detach/required', make, async (client) =>
+      client.sessions.credentials.detach(
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      ),
+    ));
+
+  test('sessions.credentials.detach/nulls', () =>
+    conform('sessions.credentials.detach/nulls', make, async (client) =>
+      client.sessions.credentials.detach(
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      ),
+    ));
+
+  test('sessions.credentials.detach/unknown', () =>
+    conform('sessions.credentials.detach/unknown', make, async (client) =>
+      client.sessions.credentials.detach(
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      ),
+    ));
+
+  test('sessions.credentials.detach/variant-0-1', () =>
+    conform('sessions.credentials.detach/variant-0-1', make, async (client) =>
+      client.sessions.credentials.detach(
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      ),
+    ));
+
+  test('sessions.credentials.detach/escaped', () =>
+    conform('sessions.credentials.detach/escaped', make, async (client) =>
+      client.sessions.credentials.detach('a b/c?d#e%f+g&h=i é', 'a b/c?d#e%f+g&h=i é'),
+    ));
+
+  test('sessions.credentials.detach_binding/full', () =>
+    conform('sessions.credentials.detach_binding/full', make, async (client) =>
+      client.sessions.credentials.detachBinding('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        reference: 'reference',
+      }),
+    ));
+
+  test('sessions.credentials.detach_binding/required', () =>
+    conform('sessions.credentials.detach_binding/required', make, async (client) =>
+      client.sessions.credentials.detachBinding('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        reference: 'reference',
+      }),
+    ));
+
+  test('sessions.credentials.detach_binding/nulls', () =>
+    conform('sessions.credentials.detach_binding/nulls', make, async (client) =>
+      client.sessions.credentials.detachBinding('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        reference: 'reference',
+      }),
+    ));
+
+  test('sessions.credentials.detach_binding/unknown', () =>
+    conform('sessions.credentials.detach_binding/unknown', make, async (client) =>
+      client.sessions.credentials.detachBinding('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        reference: 'reference',
+      }),
+    ));
+
+  test('sessions.credentials.detach_binding/variant-0-1', () =>
+    conform('sessions.credentials.detach_binding/variant-0-1', make, async (client) =>
+      client.sessions.credentials.detachBinding('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        reference: 'reference',
+      }),
+    ));
+
+  test('sessions.credentials.detach_binding/escaped', () =>
+    conform('sessions.credentials.detach_binding/escaped', make, async (client) =>
+      client.sessions.credentials.detachBinding('a b/c?d#e%f+g&h=i é', { reference: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('sessions.credentials.replace/full', () =>
+    conform('sessions.credentials.replace/full', make, async (client) =>
+      client.sessions.credentials.replace('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        bindings: ['string'],
+        credentialIds: ['182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'],
+      }),
+    ));
+
+  test('sessions.credentials.replace/required', () =>
+    conform('sessions.credentials.replace/required', make, async (client) =>
+      client.sessions.credentials.replace('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.replace/nulls', () =>
+    conform('sessions.credentials.replace/nulls', make, async (client) =>
+      client.sessions.credentials.replace('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.replace/unknown', () =>
+    conform('sessions.credentials.replace/unknown', make, async (client) =>
+      client.sessions.credentials.replace('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.replace/variant-0-1', () =>
+    conform('sessions.credentials.replace/variant-0-1', make, async (client) =>
+      client.sessions.credentials.replace('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('sessions.credentials.replace/escaped', () =>
+    conform('sessions.credentials.replace/escaped', make, async (client) =>
+      client.sessions.credentials.replace('a b/c?d#e%f+g&h=i é', {}),
+    ));
+
   test('sessions.files.list/full', () =>
     conform('sessions.files.list/full', make, async (client) => client.sessions.files.list('sessionId')));
 
@@ -1577,5 +1965,99 @@ describe('conformance', () => {
       client.sessions.files.upload('a b/c?d#e%f+g&h=i é', {
         file: await toFile(Buffer.from('Example data'), 'README.md'),
       }),
+    ));
+
+  test('vaults.create/full', () =>
+    conform('vaults.create/full', make, async (client) =>
+      client.vaults.create({
+        name: 'name',
+        description: 'description',
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('vaults.create/required', () =>
+    conform('vaults.create/required', make, async (client) => client.vaults.create({ name: 'name' })));
+
+  test('vaults.create/nulls', () =>
+    conform('vaults.create/nulls', make, async (client) => client.vaults.create({ name: 'name' })));
+
+  test('vaults.retrieve/full', () =>
+    conform('vaults.retrieve/full', make, async (client) =>
+      client.vaults.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('vaults.retrieve/required', () =>
+    conform('vaults.retrieve/required', make, async (client) =>
+      client.vaults.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('vaults.retrieve/nulls', () =>
+    conform('vaults.retrieve/nulls', make, async (client) =>
+      client.vaults.retrieve('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('vaults.retrieve/escaped', () =>
+    conform('vaults.retrieve/escaped', make, async (client) =>
+      client.vaults.retrieve('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('vaults.update/full', () =>
+    conform('vaults.update/full', make, async (client) =>
+      client.vaults.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+        description: 'description',
+        name: 'name',
+      }),
+    ));
+
+  test('vaults.update/required', () =>
+    conform('vaults.update/required', make, async (client) =>
+      client.vaults.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('vaults.update/nulls', () =>
+    conform('vaults.update/nulls', make, async (client) =>
+      client.vaults.update('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('vaults.update/escaped', () =>
+    conform('vaults.update/escaped', make, async (client) =>
+      client.vaults.update('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('vaults.list/full', () =>
+    conform('vaults.list/full', make, async (client) =>
+      client.vaults.list({ projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e' }),
+    ));
+
+  test('vaults.list/required', () =>
+    conform('vaults.list/required', make, async (client) => client.vaults.list({})));
+
+  test('vaults.list/nulls', () =>
+    conform('vaults.list/nulls', make, async (client) => client.vaults.list({})));
+
+  test('vaults.list/escaped', () =>
+    conform('vaults.list/escaped', make, async (client) =>
+      client.vaults.list({ projectId: 'a b/c?d#e%f+g&h=i é' }),
+    ));
+
+  test('vaults.delete/full', () =>
+    conform('vaults.delete/full', make, async (client) =>
+      client.vaults.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {
+        projectId: '182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e',
+      }),
+    ));
+
+  test('vaults.delete/required', () =>
+    conform('vaults.delete/required', make, async (client) =>
+      client.vaults.delete('182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e', {}),
+    ));
+
+  test('vaults.delete/escaped', () =>
+    conform('vaults.delete/escaped', make, async (client) =>
+      client.vaults.delete('a b/c?d#e%f+g&h=i é', { projectId: 'a b/c?d#e%f+g&h=i é' }),
     ));
 });

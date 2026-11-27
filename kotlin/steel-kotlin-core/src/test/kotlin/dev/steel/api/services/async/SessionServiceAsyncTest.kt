@@ -59,9 +59,18 @@ internal class SessionServiceAsyncTest {
                         .credentials(
                             SessionCreateParams.Credentials.builder()
                                 .autoSubmit(true)
+                                .bindings(
+                                    listOf(
+                                        SessionCreateParams.Credentials.Binding.ofString("string")
+                                    )
+                                )
                                 .blurFields(true)
+                                .credentialIds(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
                                 .credentialProvider("credentialProvider")
+                                .domTrigger(true)
+                                .enabled(true)
                                 .exactOrigin(true)
+                                .lookup(SessionCreateParams.Credentials.Lookup.IMPLICIT)
                                 .origins(listOf("string"))
                                 .build()
                         )
@@ -329,7 +338,7 @@ internal class SessionServiceAsyncTest {
                         .after("x")
                         .observe(
                             SessionCommandsParams.Observe.builder()
-                                .mode(SessionCommandsParams.Observe.Mode.NONE)
+                                .mode(SessionCommandsParams.Observe.Mode.SNAPSHOT)
                                 .base("x")
                                 .compact(true)
                                 .depth(0L)

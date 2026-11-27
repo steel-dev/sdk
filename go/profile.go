@@ -195,7 +195,7 @@ func (r profileNewResponseFingerprintJSON) RawJSON() string {
 
 type ProfileNewResponseFingerprintFingerprint struct {
 	AudioCodecs       map[string]string                                         `json:"audioCodecs" api:"required"`
-	Battery           ProfileNewResponseFingerprintFingerprintBattery           `json:"battery" api:"required"`
+	Battery           ProfileNewResponseFingerprintFingerprintBattery           `json:"battery" api:"required,nullable"`
 	Fonts             []string                                                  `json:"fonts" api:"required"`
 	MockWebRtc        bool                                                      `json:"mockWebRTC" api:"required,nullable"`
 	MultimediaDevices ProfileNewResponseFingerprintFingerprintMultimediaDevices `json:"multimediaDevices" api:"required"`
@@ -559,9 +559,9 @@ func (r profileNewResponseFingerprintFingerprintPluginsDataPluginJSON) RawJSON()
 
 type ProfileNewResponseFingerprintFingerprintPluginsDataPluginMimeType struct {
 	Description   string                                                                `json:"description" api:"required,nullable"`
-	EnabledPlugin string                                                                `json:"enabledPlugin" api:"required,nullable"`
 	Suffixes      string                                                                `json:"suffixes" api:"required,nullable"`
 	Type          string                                                                `json:"type" api:"required,nullable"`
+	EnabledPlugin string                                                                `json:"enabledPlugin" api:"nullable"`
 	JSON          profileNewResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON `json:"-"`
 }
 
@@ -570,9 +570,9 @@ type ProfileNewResponseFingerprintFingerprintPluginsDataPluginMimeType struct {
 // [ProfileNewResponseFingerprintFingerprintPluginsDataPluginMimeType]
 type profileNewResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON struct {
 	Description   apijson.Field
-	EnabledPlugin apijson.Field
 	Suffixes      apijson.Field
 	Type          apijson.Field
+	EnabledPlugin apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -717,11 +717,13 @@ const (
 	ProfileNewResponseStatusUploading ProfileNewResponseStatus = "UPLOADING"
 	ProfileNewResponseStatusReady     ProfileNewResponseStatus = "READY"
 	ProfileNewResponseStatusFailed    ProfileNewResponseStatus = "FAILED"
+	ProfileNewResponseStatusDeleting  ProfileNewResponseStatus = "DELETING"
+	ProfileNewResponseStatusDeleted   ProfileNewResponseStatus = "DELETED"
 )
 
 func (r ProfileNewResponseStatus) IsKnown() bool {
 	switch r {
-	case ProfileNewResponseStatusUploading, ProfileNewResponseStatusReady, ProfileNewResponseStatusFailed:
+	case ProfileNewResponseStatusUploading, ProfileNewResponseStatusReady, ProfileNewResponseStatusFailed, ProfileNewResponseStatusDeleting, ProfileNewResponseStatusDeleted:
 		return true
 	}
 	return false
@@ -895,7 +897,7 @@ func (r profileUpdateResponseFingerprintJSON) RawJSON() string {
 
 type ProfileUpdateResponseFingerprintFingerprint struct {
 	AudioCodecs       map[string]string                                            `json:"audioCodecs" api:"required"`
-	Battery           ProfileUpdateResponseFingerprintFingerprintBattery           `json:"battery" api:"required"`
+	Battery           ProfileUpdateResponseFingerprintFingerprintBattery           `json:"battery" api:"required,nullable"`
 	Fonts             []string                                                     `json:"fonts" api:"required"`
 	MockWebRtc        bool                                                         `json:"mockWebRTC" api:"required,nullable"`
 	MultimediaDevices ProfileUpdateResponseFingerprintFingerprintMultimediaDevices `json:"multimediaDevices" api:"required"`
@@ -1261,9 +1263,9 @@ func (r profileUpdateResponseFingerprintFingerprintPluginsDataPluginJSON) RawJSO
 
 type ProfileUpdateResponseFingerprintFingerprintPluginsDataPluginMimeType struct {
 	Description   string                                                                   `json:"description" api:"required,nullable"`
-	EnabledPlugin string                                                                   `json:"enabledPlugin" api:"required,nullable"`
 	Suffixes      string                                                                   `json:"suffixes" api:"required,nullable"`
 	Type          string                                                                   `json:"type" api:"required,nullable"`
+	EnabledPlugin string                                                                   `json:"enabledPlugin" api:"nullable"`
 	JSON          profileUpdateResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON `json:"-"`
 }
 
@@ -1272,9 +1274,9 @@ type ProfileUpdateResponseFingerprintFingerprintPluginsDataPluginMimeType struct
 // [ProfileUpdateResponseFingerprintFingerprintPluginsDataPluginMimeType]
 type profileUpdateResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON struct {
 	Description   apijson.Field
-	EnabledPlugin apijson.Field
 	Suffixes      apijson.Field
 	Type          apijson.Field
+	EnabledPlugin apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -1420,11 +1422,13 @@ const (
 	ProfileUpdateResponseStatusUploading ProfileUpdateResponseStatus = "UPLOADING"
 	ProfileUpdateResponseStatusReady     ProfileUpdateResponseStatus = "READY"
 	ProfileUpdateResponseStatusFailed    ProfileUpdateResponseStatus = "FAILED"
+	ProfileUpdateResponseStatusDeleting  ProfileUpdateResponseStatus = "DELETING"
+	ProfileUpdateResponseStatusDeleted   ProfileUpdateResponseStatus = "DELETED"
 )
 
 func (r ProfileUpdateResponseStatus) IsKnown() bool {
 	switch r {
-	case ProfileUpdateResponseStatusUploading, ProfileUpdateResponseStatusReady, ProfileUpdateResponseStatusFailed:
+	case ProfileUpdateResponseStatusUploading, ProfileUpdateResponseStatusReady, ProfileUpdateResponseStatusFailed, ProfileUpdateResponseStatusDeleting, ProfileUpdateResponseStatusDeleted:
 		return true
 	}
 	return false
@@ -1582,7 +1586,7 @@ func (r profileListResponseProfileFingerprintJSON) RawJSON() string {
 
 type ProfileListResponseProfileFingerprintFingerprint struct {
 	AudioCodecs       map[string]string                                                 `json:"audioCodecs" api:"required"`
-	Battery           ProfileListResponseProfileFingerprintFingerprintBattery           `json:"battery" api:"required"`
+	Battery           ProfileListResponseProfileFingerprintFingerprintBattery           `json:"battery" api:"required,nullable"`
 	Fonts             []string                                                          `json:"fonts" api:"required"`
 	MockWebRtc        bool                                                              `json:"mockWebRTC" api:"required,nullable"`
 	MultimediaDevices ProfileListResponseProfileFingerprintFingerprintMultimediaDevices `json:"multimediaDevices" api:"required"`
@@ -1949,9 +1953,9 @@ func (r profileListResponseProfileFingerprintFingerprintPluginsDataPluginJSON) R
 
 type ProfileListResponseProfileFingerprintFingerprintPluginsDataPluginMimeType struct {
 	Description   string                                                                        `json:"description" api:"required,nullable"`
-	EnabledPlugin string                                                                        `json:"enabledPlugin" api:"required,nullable"`
 	Suffixes      string                                                                        `json:"suffixes" api:"required,nullable"`
 	Type          string                                                                        `json:"type" api:"required,nullable"`
+	EnabledPlugin string                                                                        `json:"enabledPlugin" api:"nullable"`
 	JSON          profileListResponseProfileFingerprintFingerprintPluginsDataPluginMimeTypeJSON `json:"-"`
 }
 
@@ -1960,9 +1964,9 @@ type ProfileListResponseProfileFingerprintFingerprintPluginsDataPluginMimeType s
 // [ProfileListResponseProfileFingerprintFingerprintPluginsDataPluginMimeType]
 type profileListResponseProfileFingerprintFingerprintPluginsDataPluginMimeTypeJSON struct {
 	Description   apijson.Field
-	EnabledPlugin apijson.Field
 	Suffixes      apijson.Field
 	Type          apijson.Field
+	EnabledPlugin apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -2109,11 +2113,681 @@ const (
 	ProfileListResponseProfileStatusUploading ProfileListResponseProfileStatus = "UPLOADING"
 	ProfileListResponseProfileStatusReady     ProfileListResponseProfileStatus = "READY"
 	ProfileListResponseProfileStatusFailed    ProfileListResponseProfileStatus = "FAILED"
+	ProfileListResponseProfileStatusDeleting  ProfileListResponseProfileStatus = "DELETING"
+	ProfileListResponseProfileStatusDeleted   ProfileListResponseProfileStatus = "DELETED"
 )
 
 func (r ProfileListResponseProfileStatus) IsKnown() bool {
 	switch r {
-	case ProfileListResponseProfileStatusUploading, ProfileListResponseProfileStatusReady, ProfileListResponseProfileStatusFailed:
+	case ProfileListResponseProfileStatusUploading, ProfileListResponseProfileStatusReady, ProfileListResponseProfileStatusFailed, ProfileListResponseProfileStatusDeleting, ProfileListResponseProfileStatusDeleted:
+		return true
+	}
+	return false
+}
+
+// Delete the profile and its stored browser data immediately, with a final
+// asynchronous cleanup pass.
+func (r *ProfileService) Delete(ctx context.Context, id string, query ProfileDeleteParams, opts ...option.RequestOption) (res *ProfileDeleteResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if id == "" {
+		err = errors.New("missing required id parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/profiles/%s", url.PathEscape(id))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, query, &res, opts...)
+	return res, err
+}
+
+type ProfileDeleteParams struct {
+	// Project to query profiles from
+	ProjectID param.Field[string] `query:"projectId" format:"uuid"`
+}
+
+// URLQuery serializes [ProfileDeleteParams]'s query parameters as `url.Values`.
+func (r ProfileDeleteParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
+}
+
+type ProfileDeleteResponse struct {
+	// The unique identifier for the profile
+	ID string `json:"id" api:"required" format:"uuid"`
+	// The date and time when the profile was created
+	CreatedAt time.Time `json:"createdAt" api:"required" format:"date-time"`
+	// The credentials configuration associated with the profile
+	CredentialsConfig interface{} `json:"credentialsConfig" api:"required"`
+	// The dimensions associated with the profile
+	Dimensions ProfileDeleteResponseDimensions `json:"dimensions" api:"required,nullable"`
+	// The extension IDs associated with the profile
+	ExtensionIDs []string `json:"extensionIds" api:"required,nullable"`
+	// The fingerprint associated with the profile
+	Fingerprint ProfileDeleteResponseFingerprint `json:"fingerprint" api:"required,nullable"`
+	// The project ID associated with the profile
+	ProjectID string `json:"projectId" api:"required,nullable" format:"uuid"`
+	// The last session ID associated with the profile
+	SourceSessionID string `json:"sourceSessionId" api:"required,nullable" format:"uuid"`
+	// The status of the profile
+	Status ProfileDeleteResponseStatus `json:"status" api:"required"`
+	// The date and time when the profile was last updated
+	UpdatedAt time.Time `json:"updatedAt" api:"required" format:"date-time"`
+	// The proxy configuration associated with the profile
+	UseProxyConfig interface{} `json:"useProxyConfig" api:"required"`
+	// The user agent associated with the profile
+	UserAgent string                    `json:"userAgent" api:"required,nullable"`
+	JSON      profileDeleteResponseJSON `json:"-"`
+}
+
+// profileDeleteResponseJSON contains the JSON metadata for the struct
+// [ProfileDeleteResponse]
+type profileDeleteResponseJSON struct {
+	ID                apijson.Field
+	CreatedAt         apijson.Field
+	CredentialsConfig apijson.Field
+	Dimensions        apijson.Field
+	ExtensionIDs      apijson.Field
+	Fingerprint       apijson.Field
+	ProjectID         apijson.Field
+	SourceSessionID   apijson.Field
+	Status            apijson.Field
+	UpdatedAt         apijson.Field
+	UseProxyConfig    apijson.Field
+	UserAgent         apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// The dimensions associated with the profile
+type ProfileDeleteResponseDimensions struct {
+	Height float64                             `json:"height" api:"required"`
+	Width  float64                             `json:"width" api:"required"`
+	JSON   profileDeleteResponseDimensionsJSON `json:"-"`
+}
+
+// profileDeleteResponseDimensionsJSON contains the JSON metadata for the struct
+// [ProfileDeleteResponseDimensions]
+type profileDeleteResponseDimensionsJSON struct {
+	Height      apijson.Field
+	Width       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseDimensions) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseDimensionsJSON) RawJSON() string {
+	return r.raw
+}
+
+// The fingerprint associated with the profile
+type ProfileDeleteResponseFingerprint struct {
+	Fingerprint ProfileDeleteResponseFingerprintFingerprint `json:"fingerprint" api:"required"`
+	Headers     ProfileDeleteResponseFingerprintHeaders     `json:"headers" api:"required"`
+	JSON        profileDeleteResponseFingerprintJSON        `json:"-"`
+}
+
+// profileDeleteResponseFingerprintJSON contains the JSON metadata for the
+// struct [ProfileDeleteResponseFingerprint]
+type profileDeleteResponseFingerprintJSON struct {
+	Fingerprint apijson.Field
+	Headers     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprint) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprint struct {
+	AudioCodecs       map[string]string                                            `json:"audioCodecs" api:"required"`
+	Battery           ProfileDeleteResponseFingerprintFingerprintBattery           `json:"battery" api:"required,nullable"`
+	Fonts             []string                                                     `json:"fonts" api:"required"`
+	MockWebRtc        bool                                                         `json:"mockWebRTC" api:"required,nullable"`
+	MultimediaDevices ProfileDeleteResponseFingerprintFingerprintMultimediaDevices `json:"multimediaDevices" api:"required"`
+	Navigator         ProfileDeleteResponseFingerprintFingerprintNavigator         `json:"navigator" api:"required"`
+	PluginsData       ProfileDeleteResponseFingerprintFingerprintPluginsData       `json:"pluginsData" api:"required"`
+	Screen            ProfileDeleteResponseFingerprintFingerprintScreen            `json:"screen" api:"required"`
+	Slim              bool                                                         `json:"slim" api:"required,nullable"`
+	VideoCard         ProfileDeleteResponseFingerprintFingerprintVideoCard         `json:"videoCard" api:"required"`
+	VideoCodecs       map[string]string                                            `json:"videoCodecs" api:"required"`
+	JSON              profileDeleteResponseFingerprintFingerprintJSON              `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintJSON contains the JSON metadata
+// for the struct [ProfileDeleteResponseFingerprintFingerprint]
+type profileDeleteResponseFingerprintFingerprintJSON struct {
+	AudioCodecs       apijson.Field
+	Battery           apijson.Field
+	Fonts             apijson.Field
+	MockWebRtc        apijson.Field
+	MultimediaDevices apijson.Field
+	Navigator         apijson.Field
+	PluginsData       apijson.Field
+	Screen            apijson.Field
+	Slim              apijson.Field
+	VideoCard         apijson.Field
+	VideoCodecs       apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprint) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintBattery struct {
+	Charging        bool                                                   `json:"charging" api:"required,nullable"`
+	ChargingTime    float64                                                `json:"chargingTime" api:"required,nullable"`
+	DischargingTime float64                                                `json:"dischargingTime" api:"required,nullable"`
+	Level           float64                                                `json:"level" api:"required,nullable"`
+	JSON            profileDeleteResponseFingerprintFingerprintBatteryJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintBatteryJSON contains the JSON
+// metadata for the struct [ProfileDeleteResponseFingerprintFingerprintBattery]
+type profileDeleteResponseFingerprintFingerprintBatteryJSON struct {
+	Charging        apijson.Field
+	ChargingTime    apijson.Field
+	DischargingTime apijson.Field
+	Level           apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintBattery) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintBatteryJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintMultimediaDevices struct {
+	Micros   []ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesMicro   `json:"micros" api:"required"`
+	Speakers []ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeaker `json:"speakers" api:"required"`
+	Webcams  []ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcam  `json:"webcams" api:"required"`
+	JSON     profileDeleteResponseFingerprintFingerprintMultimediaDevicesJSON      `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintMultimediaDevicesJSON contains the
+// JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintMultimediaDevices]
+type profileDeleteResponseFingerprintFingerprintMultimediaDevicesJSON struct {
+	Micros      apijson.Field
+	Speakers    apijson.Field
+	Webcams     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintMultimediaDevices) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintMultimediaDevicesJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesMicro struct {
+	DeviceID string                                                                `json:"deviceId" api:"required,nullable"`
+	GroupID  string                                                                `json:"groupId" api:"required,nullable"`
+	Kind     string                                                                `json:"kind" api:"required,nullable"`
+	Label    string                                                                `json:"label" api:"required,nullable"`
+	JSON     profileDeleteResponseFingerprintFingerprintMultimediaDevicesMicroJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintMultimediaDevicesMicroJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesMicro]
+type profileDeleteResponseFingerprintFingerprintMultimediaDevicesMicroJSON struct {
+	DeviceID    apijson.Field
+	GroupID     apijson.Field
+	Kind        apijson.Field
+	Label       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesMicro) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintMultimediaDevicesMicroJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeaker struct {
+	DeviceID string                                                                  `json:"deviceId" api:"required,nullable"`
+	GroupID  string                                                                  `json:"groupId" api:"required,nullable"`
+	Kind     string                                                                  `json:"kind" api:"required,nullable"`
+	Label    string                                                                  `json:"label" api:"required,nullable"`
+	JSON     profileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeakerJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeakerJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeaker]
+type profileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeakerJSON struct {
+	DeviceID    apijson.Field
+	GroupID     apijson.Field
+	Kind        apijson.Field
+	Label       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeaker) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintMultimediaDevicesSpeakerJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcam struct {
+	DeviceID string                                                                 `json:"deviceId" api:"required,nullable"`
+	GroupID  string                                                                 `json:"groupId" api:"required,nullable"`
+	Kind     string                                                                 `json:"kind" api:"required,nullable"`
+	Label    string                                                                 `json:"label" api:"required,nullable"`
+	JSON     profileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcamJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcamJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcam]
+type profileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcamJSON struct {
+	DeviceID    apijson.Field
+	GroupID     apijson.Field
+	Kind        apijson.Field
+	Label       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcam) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintMultimediaDevicesWebcamJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintNavigator struct {
+	AppCodeName         string                                                              `json:"appCodeName" api:"required,nullable"`
+	AppName             string                                                              `json:"appName" api:"required,nullable"`
+	AppVersion          string                                                              `json:"appVersion" api:"required,nullable"`
+	DeviceMemory        float64                                                             `json:"deviceMemory" api:"required,nullable"`
+	ExtraProperties     ProfileDeleteResponseFingerprintFingerprintNavigatorExtraProperties `json:"extraProperties" api:"required"`
+	HardwareConcurrency float64                                                             `json:"hardwareConcurrency" api:"required,nullable"`
+	Language            string                                                              `json:"language" api:"required,nullable"`
+	Languages           []string                                                            `json:"languages" api:"required"`
+	MaxTouchPoints      float64                                                             `json:"maxTouchPoints" api:"required,nullable"`
+	Oscpu               string                                                              `json:"oscpu" api:"required,nullable"`
+	Platform            string                                                              `json:"platform" api:"required,nullable"`
+	Product             string                                                              `json:"product" api:"required,nullable"`
+	ProductSub          string                                                              `json:"productSub" api:"required,nullable"`
+	UserAgent           string                                                              `json:"userAgent" api:"required,nullable"`
+	UserAgentData       ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentData   `json:"userAgentData" api:"required"`
+	Vendor              string                                                              `json:"vendor" api:"required,nullable"`
+	VendorSub           string                                                              `json:"vendorSub" api:"required,nullable"`
+	Webdriver           bool                                                                `json:"webdriver" api:"required,nullable"`
+	DoNotTrack          string                                                              `json:"doNotTrack" api:"nullable"`
+	JSON                profileDeleteResponseFingerprintFingerprintNavigatorJSON            `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintNavigatorJSON contains the JSON
+// metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintNavigator]
+type profileDeleteResponseFingerprintFingerprintNavigatorJSON struct {
+	AppCodeName         apijson.Field
+	AppName             apijson.Field
+	AppVersion          apijson.Field
+	DeviceMemory        apijson.Field
+	ExtraProperties     apijson.Field
+	HardwareConcurrency apijson.Field
+	Language            apijson.Field
+	Languages           apijson.Field
+	MaxTouchPoints      apijson.Field
+	Oscpu               apijson.Field
+	Platform            apijson.Field
+	Product             apijson.Field
+	ProductSub          apijson.Field
+	UserAgent           apijson.Field
+	UserAgentData       apijson.Field
+	Vendor              apijson.Field
+	VendorSub           apijson.Field
+	Webdriver           apijson.Field
+	DoNotTrack          apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintNavigator) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintNavigatorJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintNavigatorExtraProperties struct {
+	GlobalPrivacyControl bool                                                                    `json:"globalPrivacyControl" api:"required,nullable"`
+	InstalledApps        []string                                                                `json:"installedApps" api:"required"`
+	PdfViewerEnabled     bool                                                                    `json:"pdfViewerEnabled" api:"required,nullable"`
+	VendorFlavors        []string                                                                `json:"vendorFlavors" api:"required"`
+	JSON                 profileDeleteResponseFingerprintFingerprintNavigatorExtraPropertiesJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintNavigatorExtraPropertiesJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintNavigatorExtraProperties]
+type profileDeleteResponseFingerprintFingerprintNavigatorExtraPropertiesJSON struct {
+	GlobalPrivacyControl apijson.Field
+	InstalledApps        apijson.Field
+	PdfViewerEnabled     apijson.Field
+	VendorFlavors        apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintNavigatorExtraProperties) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintNavigatorExtraPropertiesJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentData struct {
+	Brands   []ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrand `json:"brands" api:"required"`
+	Mobile   bool                                                                     `json:"mobile" api:"required,nullable"`
+	Platform string                                                                   `json:"platform" api:"required,nullable"`
+	JSON     profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataJSON    `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentData]
+type profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataJSON struct {
+	Brands      apijson.Field
+	Mobile      apijson.Field
+	Platform    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrand struct {
+	Brand   string                                                                     `json:"brand" api:"required,nullable"`
+	Version string                                                                     `json:"version" api:"required,nullable"`
+	JSON    profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrandJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrandJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrand]
+type profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrandJSON struct {
+	Brand       apijson.Field
+	Version     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrand) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintNavigatorUserAgentDataBrandJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintPluginsData struct {
+	MimeTypes []string                                                       `json:"mimeTypes" api:"required"`
+	Plugins   []ProfileDeleteResponseFingerprintFingerprintPluginsDataPlugin `json:"plugins" api:"required"`
+	JSON      profileDeleteResponseFingerprintFingerprintPluginsDataJSON     `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintPluginsDataJSON contains the JSON
+// metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintPluginsData]
+type profileDeleteResponseFingerprintFingerprintPluginsDataJSON struct {
+	MimeTypes   apijson.Field
+	Plugins     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintPluginsData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintPluginsDataJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintPluginsDataPlugin struct {
+	Description string                                                                 `json:"description" api:"required,nullable"`
+	Filename    string                                                                 `json:"filename" api:"required,nullable"`
+	MimeTypes   []ProfileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeType `json:"mimeTypes" api:"required"`
+	Name        string                                                                 `json:"name" api:"required,nullable"`
+	JSON        profileDeleteResponseFingerprintFingerprintPluginsDataPluginJSON       `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintPluginsDataPluginJSON contains the
+// JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintPluginsDataPlugin]
+type profileDeleteResponseFingerprintFingerprintPluginsDataPluginJSON struct {
+	Description apijson.Field
+	Filename    apijson.Field
+	MimeTypes   apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintPluginsDataPlugin) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintPluginsDataPluginJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeType struct {
+	Description   string                                                                   `json:"description" api:"required,nullable"`
+	Suffixes      string                                                                   `json:"suffixes" api:"required,nullable"`
+	Type          string                                                                   `json:"type" api:"required,nullable"`
+	EnabledPlugin string                                                                   `json:"enabledPlugin" api:"nullable"`
+	JSON          profileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON
+// contains the JSON metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeType]
+type profileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON struct {
+	Description   apijson.Field
+	Suffixes      apijson.Field
+	Type          apijson.Field
+	EnabledPlugin apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeType) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintScreen struct {
+	AvailHeight      float64                                               `json:"availHeight" api:"required,nullable"`
+	AvailLeft        float64                                               `json:"availLeft" api:"required,nullable"`
+	AvailTop         float64                                               `json:"availTop" api:"required,nullable"`
+	AvailWidth       float64                                               `json:"availWidth" api:"required,nullable"`
+	ClientHeight     float64                                               `json:"clientHeight" api:"required,nullable"`
+	ClientWidth      float64                                               `json:"clientWidth" api:"required,nullable"`
+	ColorDepth       float64                                               `json:"colorDepth" api:"required,nullable"`
+	DevicePixelRatio float64                                               `json:"devicePixelRatio" api:"required,nullable"`
+	HasHdr           bool                                                  `json:"hasHDR" api:"required,nullable"`
+	Height           float64                                               `json:"height" api:"required,nullable"`
+	InnerHeight      float64                                               `json:"innerHeight" api:"required,nullable"`
+	InnerWidth       float64                                               `json:"innerWidth" api:"required,nullable"`
+	OuterHeight      float64                                               `json:"outerHeight" api:"required,nullable"`
+	OuterWidth       float64                                               `json:"outerWidth" api:"required,nullable"`
+	PageXOffset      float64                                               `json:"pageXOffset" api:"required,nullable"`
+	PageYOffset      float64                                               `json:"pageYOffset" api:"required,nullable"`
+	PixelDepth       float64                                               `json:"pixelDepth" api:"required,nullable"`
+	ScreenX          float64                                               `json:"screenX" api:"required,nullable"`
+	Width            float64                                               `json:"width" api:"required,nullable"`
+	JSON             profileDeleteResponseFingerprintFingerprintScreenJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintScreenJSON contains the JSON
+// metadata for the struct [ProfileDeleteResponseFingerprintFingerprintScreen]
+type profileDeleteResponseFingerprintFingerprintScreenJSON struct {
+	AvailHeight      apijson.Field
+	AvailLeft        apijson.Field
+	AvailTop         apijson.Field
+	AvailWidth       apijson.Field
+	ClientHeight     apijson.Field
+	ClientWidth      apijson.Field
+	ColorDepth       apijson.Field
+	DevicePixelRatio apijson.Field
+	HasHdr           apijson.Field
+	Height           apijson.Field
+	InnerHeight      apijson.Field
+	InnerWidth       apijson.Field
+	OuterHeight      apijson.Field
+	OuterWidth       apijson.Field
+	PageXOffset      apijson.Field
+	PageYOffset      apijson.Field
+	PixelDepth       apijson.Field
+	ScreenX          apijson.Field
+	Width            apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintScreen) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintScreenJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintFingerprintVideoCard struct {
+	Renderer string                                                   `json:"renderer" api:"required,nullable"`
+	Vendor   string                                                   `json:"vendor" api:"required,nullable"`
+	JSON     profileDeleteResponseFingerprintFingerprintVideoCardJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintFingerprintVideoCardJSON contains the JSON
+// metadata for the struct
+// [ProfileDeleteResponseFingerprintFingerprintVideoCard]
+type profileDeleteResponseFingerprintFingerprintVideoCardJSON struct {
+	Renderer    apijson.Field
+	Vendor      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintFingerprintVideoCard) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintFingerprintVideoCardJSON) RawJSON() string {
+	return r.raw
+}
+
+type ProfileDeleteResponseFingerprintHeaders struct {
+	UserAgent               string                                      `json:"user-agent" api:"required,nullable"`
+	Accept                  string                                      `json:"accept" api:"nullable"`
+	AcceptEncoding          string                                      `json:"accept-encoding" api:"nullable"`
+	AcceptLanguage          string                                      `json:"accept-language" api:"nullable"`
+	Dnt                     string                                      `json:"dnt" api:"nullable"`
+	SecChUa                 string                                      `json:"sec-ch-ua" api:"nullable"`
+	SecChUaMobile           string                                      `json:"sec-ch-ua-mobile" api:"nullable"`
+	SecChUaPlatform         string                                      `json:"sec-ch-ua-platform" api:"nullable"`
+	SecFetchDest            string                                      `json:"sec-fetch-dest" api:"nullable"`
+	SecFetchMode            string                                      `json:"sec-fetch-mode" api:"nullable"`
+	SecFetchSite            string                                      `json:"sec-fetch-site" api:"nullable"`
+	SecFetchUser            string                                      `json:"sec-fetch-user" api:"nullable"`
+	UpgradeInsecureRequests string                                      `json:"upgrade-insecure-requests" api:"nullable"`
+	JSON                    profileDeleteResponseFingerprintHeadersJSON `json:"-"`
+}
+
+// profileDeleteResponseFingerprintHeadersJSON contains the JSON metadata for
+// the struct [ProfileDeleteResponseFingerprintHeaders]
+type profileDeleteResponseFingerprintHeadersJSON struct {
+	UserAgent               apijson.Field
+	Accept                  apijson.Field
+	AcceptEncoding          apijson.Field
+	AcceptLanguage          apijson.Field
+	Dnt                     apijson.Field
+	SecChUa                 apijson.Field
+	SecChUaMobile           apijson.Field
+	SecChUaPlatform         apijson.Field
+	SecFetchDest            apijson.Field
+	SecFetchMode            apijson.Field
+	SecFetchSite            apijson.Field
+	SecFetchUser            apijson.Field
+	UpgradeInsecureRequests apijson.Field
+	raw                     string
+	ExtraFields             map[string]apijson.Field
+}
+
+func (r *ProfileDeleteResponseFingerprintHeaders) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r profileDeleteResponseFingerprintHeadersJSON) RawJSON() string {
+	return r.raw
+}
+
+// The status of the profile
+type ProfileDeleteResponseStatus string
+
+const (
+	ProfileDeleteResponseStatusUploading ProfileDeleteResponseStatus = "UPLOADING"
+	ProfileDeleteResponseStatusReady     ProfileDeleteResponseStatus = "READY"
+	ProfileDeleteResponseStatusFailed    ProfileDeleteResponseStatus = "FAILED"
+	ProfileDeleteResponseStatusDeleting  ProfileDeleteResponseStatus = "DELETING"
+	ProfileDeleteResponseStatusDeleted   ProfileDeleteResponseStatus = "DELETED"
+)
+
+func (r ProfileDeleteResponseStatus) IsKnown() bool {
+	switch r {
+	case ProfileDeleteResponseStatusUploading, ProfileDeleteResponseStatusReady, ProfileDeleteResponseStatusFailed, ProfileDeleteResponseStatusDeleting, ProfileDeleteResponseStatusDeleted:
 		return true
 	}
 	return false
@@ -2249,7 +2923,7 @@ func (r profileGetResponseFingerprintJSON) RawJSON() string {
 
 type ProfileGetResponseFingerprintFingerprint struct {
 	AudioCodecs       map[string]string                                         `json:"audioCodecs" api:"required"`
-	Battery           ProfileGetResponseFingerprintFingerprintBattery           `json:"battery" api:"required"`
+	Battery           ProfileGetResponseFingerprintFingerprintBattery           `json:"battery" api:"required,nullable"`
 	Fonts             []string                                                  `json:"fonts" api:"required"`
 	MockWebRtc        bool                                                      `json:"mockWebRTC" api:"required,nullable"`
 	MultimediaDevices ProfileGetResponseFingerprintFingerprintMultimediaDevices `json:"multimediaDevices" api:"required"`
@@ -2613,9 +3287,9 @@ func (r profileGetResponseFingerprintFingerprintPluginsDataPluginJSON) RawJSON()
 
 type ProfileGetResponseFingerprintFingerprintPluginsDataPluginMimeType struct {
 	Description   string                                                                `json:"description" api:"required,nullable"`
-	EnabledPlugin string                                                                `json:"enabledPlugin" api:"required,nullable"`
 	Suffixes      string                                                                `json:"suffixes" api:"required,nullable"`
 	Type          string                                                                `json:"type" api:"required,nullable"`
+	EnabledPlugin string                                                                `json:"enabledPlugin" api:"nullable"`
 	JSON          profileGetResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON `json:"-"`
 }
 
@@ -2624,9 +3298,9 @@ type ProfileGetResponseFingerprintFingerprintPluginsDataPluginMimeType struct {
 // [ProfileGetResponseFingerprintFingerprintPluginsDataPluginMimeType]
 type profileGetResponseFingerprintFingerprintPluginsDataPluginMimeTypeJSON struct {
 	Description   apijson.Field
-	EnabledPlugin apijson.Field
 	Suffixes      apijson.Field
 	Type          apijson.Field
+	EnabledPlugin apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -2771,11 +3445,13 @@ const (
 	ProfileGetResponseStatusUploading ProfileGetResponseStatus = "UPLOADING"
 	ProfileGetResponseStatusReady     ProfileGetResponseStatus = "READY"
 	ProfileGetResponseStatusFailed    ProfileGetResponseStatus = "FAILED"
+	ProfileGetResponseStatusDeleting  ProfileGetResponseStatus = "DELETING"
+	ProfileGetResponseStatusDeleted   ProfileGetResponseStatus = "DELETED"
 )
 
 func (r ProfileGetResponseStatus) IsKnown() bool {
 	switch r {
-	case ProfileGetResponseStatusUploading, ProfileGetResponseStatusReady, ProfileGetResponseStatusFailed:
+	case ProfileGetResponseStatusUploading, ProfileGetResponseStatusReady, ProfileGetResponseStatusFailed, ProfileGetResponseStatusDeleting, ProfileGetResponseStatusDeleted:
 		return true
 	}
 	return false

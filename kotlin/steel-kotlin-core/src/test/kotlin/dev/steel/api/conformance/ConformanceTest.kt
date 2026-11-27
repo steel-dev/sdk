@@ -24,11 +24,18 @@ import dev.steel.api.models.files.FileDownloadParams
 import dev.steel.api.models.files.FileListParams
 import dev.steel.api.models.files.FileUploadParams
 import dev.steel.api.models.profiles.ProfileCreateParams
+import dev.steel.api.models.profiles.ProfileDeleteParams
 import dev.steel.api.models.profiles.ProfileGetParams
 import dev.steel.api.models.profiles.ProfileListParams
 import dev.steel.api.models.profiles.ProfileUpdateParams
 import dev.steel.api.models.projects.ProjectListParams
 import dev.steel.api.models.projects.ProjectRetrieveParams
+import dev.steel.api.models.secretconnections.SecretConnectionCreateParams
+import dev.steel.api.models.secretconnections.SecretConnectionDeleteParams
+import dev.steel.api.models.secretconnections.SecretConnectionListParams
+import dev.steel.api.models.secretconnections.SecretConnectionRetrieveParams
+import dev.steel.api.models.secretconnections.SecretConnectionTestParams
+import dev.steel.api.models.secretconnections.SecretConnectionUpdateParams
 import dev.steel.api.models.sessions.SessionAgentTracesParams
 import dev.steel.api.models.sessions.SessionCommandsParams
 import dev.steel.api.models.sessions.SessionComputerParams
@@ -51,8 +58,17 @@ import dev.steel.api.models.sessions.captchas.CaptchaSolveParams
 import dev.steel.api.models.sessions.captchas.CaptchaStatusParams
 import dev.steel.api.models.sessions.commandexecutions.CommandExecutionCancelParams
 import dev.steel.api.models.sessions.commandexecutions.CommandExecutionRetrieveParams
+import dev.steel.api.models.sessions.credentials.CredentialAttachParams
+import dev.steel.api.models.sessions.credentials.CredentialDetachBindingParams
+import dev.steel.api.models.sessions.credentials.CredentialDetachParams
+import dev.steel.api.models.sessions.credentials.CredentialReplaceParams
 import dev.steel.api.models.sessions.files.FileDeleteAllParams
 import dev.steel.api.models.sessions.files.FileDownloadArchiveParams
+import dev.steel.api.models.vaults.VaultCreateParams
+import dev.steel.api.models.vaults.VaultDeleteParams
+import dev.steel.api.models.vaults.VaultListParams
+import dev.steel.api.models.vaults.VaultRetrieveParams
+import dev.steel.api.models.vaults.VaultUpdateParams
 import java.time.OffsetDateTime
 import kotlin.io.path.name
 import org.junit.jupiter.api.Test
@@ -216,6 +232,7 @@ internal class ConformanceTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
+                        .additionalOrigins(listOf("x"))
                         .label("label")
                         .namespace("namespace")
                         .origin("origin")
@@ -269,6 +286,7 @@ internal class ConformanceTest {
                 .credentials()
                 .update(
                     CredentialUpdateParams.builder()
+                        .additionalOrigins(listOf("x"))
                         .label("label")
                         .namespace("namespace")
                         .origin("origin")
@@ -879,6 +897,71 @@ internal class ConformanceTest {
     }
 
     @Test
+    fun profilesDeleteFull() {
+        Harness.conform("profiles.delete/full", ::make) { client ->
+            client
+                .profiles()
+                .delete(
+                    ProfileDeleteParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun profilesDeleteRequired() {
+        Harness.conform("profiles.delete/required", ::make) { client ->
+            client
+                .profiles()
+                .delete(
+                    ProfileDeleteParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun profilesDeleteNulls() {
+        Harness.conform("profiles.delete/nulls", ::make) { client ->
+            client
+                .profiles()
+                .delete(
+                    ProfileDeleteParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun profilesDeleteUnknown() {
+        Harness.conform("profiles.delete/unknown", ::make) { client ->
+            client
+                .profiles()
+                .delete(
+                    ProfileDeleteParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+        }
+    }
+
+    @Test
+    fun profilesDeleteEscaped() {
+        Harness.conform("profiles.delete/escaped", ::make) { client ->
+            client
+                .profiles()
+                .delete(
+                    ProfileDeleteParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
     fun profilesGetFull() {
         Harness.conform("profiles.get/full", ::make) { client ->
             client
@@ -1011,6 +1094,390 @@ internal class ConformanceTest {
     }
 
     @Test
+    fun secretConnectionsCreateFull() {
+        Harness.conform("secret_connections.create/full", ::make) { client ->
+            client
+                .secretConnections()
+                .create(
+                    SecretConnectionCreateParams.builder()
+                        .auth(
+                            SecretConnectionCreateParams.Auth.builder()
+                                .token("x")
+                                .mount("x")
+                                .roleId("x")
+                                .secretId("x")
+                                .serviceAccountToken("x")
+                                .type(SecretConnectionCreateParams.Auth.Type.TOKEN)
+                                .build()
+                        )
+                        .name("x")
+                        .provider(SecretConnectionCreateParams.Provider._1PASSWORD)
+                        .config(
+                            SecretConnectionCreateParams.Config.builder()
+                                .address("x")
+                                .caPem("x")
+                                .namespace("x")
+                                .build()
+                        )
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .tokenBudget(
+                            SecretConnectionCreateParams.TokenBudget.builder()
+                                .burst(2L)
+                                .refillPerSecond(0.001)
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsCreateRequired() {
+        Harness.conform("secret_connections.create/required", ::make) { client ->
+            client
+                .secretConnections()
+                .create(
+                    SecretConnectionCreateParams.builder()
+                        .auth(SecretConnectionCreateParams.Auth.builder().build())
+                        .name("x")
+                        .provider(SecretConnectionCreateParams.Provider._1PASSWORD)
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsCreateNulls() {
+        Harness.conform("secret_connections.create/nulls", ::make) { client ->
+            client
+                .secretConnections()
+                .create(
+                    SecretConnectionCreateParams.builder()
+                        .auth(SecretConnectionCreateParams.Auth.builder().build())
+                        .name("x")
+                        .provider(SecretConnectionCreateParams.Provider._1PASSWORD)
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsCreateUnknown() {
+        Harness.conform("secret_connections.create/unknown", ::make) { client ->
+            client
+                .secretConnections()
+                .create(
+                    SecretConnectionCreateParams.builder()
+                        .auth(SecretConnectionCreateParams.Auth.builder().build())
+                        .name("x")
+                        .provider(SecretConnectionCreateParams.Provider._1PASSWORD)
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsRetrieveFull() {
+        Harness.conform("secret_connections.retrieve/full", ::make) { client ->
+            client
+                .secretConnections()
+                .retrieve(
+                    SecretConnectionRetrieveParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsRetrieveRequired() {
+        Harness.conform("secret_connections.retrieve/required", ::make) { client ->
+            client
+                .secretConnections()
+                .retrieve(
+                    SecretConnectionRetrieveParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsRetrieveNulls() {
+        Harness.conform("secret_connections.retrieve/nulls", ::make) { client ->
+            client
+                .secretConnections()
+                .retrieve(
+                    SecretConnectionRetrieveParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsRetrieveUnknown() {
+        Harness.conform("secret_connections.retrieve/unknown", ::make) { client ->
+            client
+                .secretConnections()
+                .retrieve(
+                    SecretConnectionRetrieveParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsRetrieveEscaped() {
+        Harness.conform("secret_connections.retrieve/escaped", ::make) { client ->
+            client
+                .secretConnections()
+                .retrieve(
+                    SecretConnectionRetrieveParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsUpdateFull() {
+        Harness.conform("secret_connections.update/full", ::make) { client ->
+            client
+                .secretConnections()
+                .update(
+                    SecretConnectionUpdateParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .auth(
+                            SecretConnectionUpdateParams.Auth.builder()
+                                .token("x")
+                                .mount("x")
+                                .roleId("x")
+                                .secretId("x")
+                                .serviceAccountToken("x")
+                                .type(SecretConnectionUpdateParams.Auth.Type.TOKEN)
+                                .build()
+                        )
+                        .config(
+                            SecretConnectionUpdateParams.Config.builder()
+                                .address("x")
+                                .caPem("x")
+                                .namespace("x")
+                                .build()
+                        )
+                        .enabled(true)
+                        .name("x")
+                        .tokenBudget(
+                            SecretConnectionUpdateParams.TokenBudget.builder()
+                                .burst(2L)
+                                .refillPerSecond(0.001)
+                                .build()
+                        )
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsUpdateRequired() {
+        Harness.conform("secret_connections.update/required", ::make) { client ->
+            client
+                .secretConnections()
+                .update(
+                    SecretConnectionUpdateParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsUpdateNulls() {
+        Harness.conform("secret_connections.update/nulls", ::make) { client ->
+            client
+                .secretConnections()
+                .update(
+                    SecretConnectionUpdateParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsUpdateUnknown() {
+        Harness.conform("secret_connections.update/unknown", ::make) { client ->
+            client
+                .secretConnections()
+                .update(
+                    SecretConnectionUpdateParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsUpdateEscaped() {
+        Harness.conform("secret_connections.update/escaped", ::make) { client ->
+            client
+                .secretConnections()
+                .update(
+                    SecretConnectionUpdateParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsListFull() {
+        Harness.conform("secret_connections.list/full", ::make) { client ->
+            client
+                .secretConnections()
+                .list(
+                    SecretConnectionListParams.builder()
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsListRequired() {
+        Harness.conform("secret_connections.list/required", ::make) { client ->
+            client.secretConnections().list(SecretConnectionListParams.builder().build()).also {
+                it.validate()
+            }
+        }
+    }
+
+    @Test
+    fun secretConnectionsListNulls() {
+        Harness.conform("secret_connections.list/nulls", ::make) { client ->
+            client.secretConnections().list(SecretConnectionListParams.builder().build()).also {
+                it.validate()
+            }
+        }
+    }
+
+    @Test
+    fun secretConnectionsListUnknown() {
+        Harness.conform("secret_connections.list/unknown", ::make) { client ->
+            client.secretConnections().list(SecretConnectionListParams.builder().build())
+        }
+    }
+
+    @Test
+    fun secretConnectionsListEscaped() {
+        Harness.conform("secret_connections.list/escaped", ::make) { client ->
+            client
+                .secretConnections()
+                .list(SecretConnectionListParams.builder().projectId("a b/c?d#e%f+g&h=i é").build())
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun secretConnectionsDeleteFull() {
+        Harness.conform("secret_connections.delete/full", ::make) { client ->
+            client
+                .secretConnections()
+                .delete(
+                    SecretConnectionDeleteParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsDeleteRequired() {
+        Harness.conform("secret_connections.delete/required", ::make) { client ->
+            client
+                .secretConnections()
+                .delete(
+                    SecretConnectionDeleteParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsDeleteEscaped() {
+        Harness.conform("secret_connections.delete/escaped", ::make) { client ->
+            client
+                .secretConnections()
+                .delete(
+                    SecretConnectionDeleteParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsTestFull() {
+        Harness.conform("secret_connections.test/full", ::make) { client ->
+            client
+                .secretConnections()
+                .test(
+                    SecretConnectionTestParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsTestRequired() {
+        Harness.conform("secret_connections.test/required", ::make) { client ->
+            client
+                .secretConnections()
+                .test(
+                    SecretConnectionTestParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun secretConnectionsTestEscaped() {
+        Harness.conform("secret_connections.test/escaped", ::make) { client ->
+            client
+                .secretConnections()
+                .test(
+                    SecretConnectionTestParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+        }
+    }
+
+    @Test
     fun sessionsCreateFull() {
         Harness.conform("sessions.create/full", ::make) { client ->
             client
@@ -1023,9 +1490,18 @@ internal class ConformanceTest {
                         .credentials(
                             SessionCreateParams.Credentials.builder()
                                 .autoSubmit(true)
+                                .bindings(
+                                    listOf(
+                                        SessionCreateParams.Credentials.Binding.ofString("string")
+                                    )
+                                )
                                 .blurFields(true)
+                                .credentialIds(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
                                 .credentialProvider("credentialProvider")
+                                .domTrigger(true)
+                                .enabled(true)
                                 .exactOrigin(true)
+                                .lookup(SessionCreateParams.Credentials.Lookup.IMPLICIT)
                                 .origins(listOf("string"))
                                 .build()
                         )
@@ -1441,7 +1917,7 @@ internal class ConformanceTest {
                         .after("x")
                         .observe(
                             SessionCommandsParams.Observe.builder()
-                                .mode(SessionCommandsParams.Observe.Mode.NONE)
+                                .mode(SessionCommandsParams.Observe.Mode.SNAPSHOT)
                                 .base("x")
                                 .compact(true)
                                 .depth(0L)
@@ -3984,6 +4460,459 @@ internal class ConformanceTest {
     }
 
     @Test
+    fun sessionsCredentialsListFull() {
+        Harness.conform("sessions.credentials.list/full", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .list(
+                    dev.steel.api.models.sessions.credentials.CredentialListParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsListRequired() {
+        Harness.conform("sessions.credentials.list/required", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .list(
+                    dev.steel.api.models.sessions.credentials.CredentialListParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsListNulls() {
+        Harness.conform("sessions.credentials.list/nulls", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .list(
+                    dev.steel.api.models.sessions.credentials.CredentialListParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsListUnknown() {
+        Harness.conform("sessions.credentials.list/unknown", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .list(
+                    dev.steel.api.models.sessions.credentials.CredentialListParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsListVariant01() {
+        Harness.conform("sessions.credentials.list/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .list(
+                    dev.steel.api.models.sessions.credentials.CredentialListParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsListEscaped() {
+        Harness.conform("sessions.credentials.list/escaped", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .list(
+                    dev.steel.api.models.sessions.credentials.CredentialListParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsAttachFull() {
+        Harness.conform("sessions.credentials.attach/full", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .attach(
+                    CredentialAttachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .bindings(listOf(CredentialAttachParams.Binding.ofString("string")))
+                        .credentialIds(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsAttachRequired() {
+        Harness.conform("sessions.credentials.attach/required", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .attach(
+                    CredentialAttachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsAttachNulls() {
+        Harness.conform("sessions.credentials.attach/nulls", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .attach(
+                    CredentialAttachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsAttachUnknown() {
+        Harness.conform("sessions.credentials.attach/unknown", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .attach(
+                    CredentialAttachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsAttachVariant01() {
+        Harness.conform("sessions.credentials.attach/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .attach(
+                    CredentialAttachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsAttachEscaped() {
+        Harness.conform("sessions.credentials.attach/escaped", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .attach(CredentialAttachParams.builder().id("a b/c?d#e%f+g&h=i é").build())
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachFull() {
+        Harness.conform("sessions.credentials.detach/full", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detach(
+                    CredentialDetachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .credentialId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachRequired() {
+        Harness.conform("sessions.credentials.detach/required", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detach(
+                    CredentialDetachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .credentialId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachNulls() {
+        Harness.conform("sessions.credentials.detach/nulls", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detach(
+                    CredentialDetachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .credentialId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachUnknown() {
+        Harness.conform("sessions.credentials.detach/unknown", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detach(
+                    CredentialDetachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .credentialId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachVariant01() {
+        Harness.conform("sessions.credentials.detach/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detach(
+                    CredentialDetachParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .credentialId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachEscaped() {
+        Harness.conform("sessions.credentials.detach/escaped", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detach(
+                    CredentialDetachParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .credentialId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachBindingFull() {
+        Harness.conform("sessions.credentials.detach_binding/full", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detachBinding(
+                    CredentialDetachBindingParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .reference("reference")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachBindingRequired() {
+        Harness.conform("sessions.credentials.detach_binding/required", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detachBinding(
+                    CredentialDetachBindingParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .reference("reference")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachBindingNulls() {
+        Harness.conform("sessions.credentials.detach_binding/nulls", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detachBinding(
+                    CredentialDetachBindingParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .reference("reference")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachBindingUnknown() {
+        Harness.conform("sessions.credentials.detach_binding/unknown", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detachBinding(
+                    CredentialDetachBindingParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .reference("reference")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachBindingVariant01() {
+        Harness.conform("sessions.credentials.detach_binding/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detachBinding(
+                    CredentialDetachBindingParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .reference("reference")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsDetachBindingEscaped() {
+        Harness.conform("sessions.credentials.detach_binding/escaped", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .detachBinding(
+                    CredentialDetachBindingParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .reference("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsReplaceFull() {
+        Harness.conform("sessions.credentials.replace/full", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .replace(
+                    CredentialReplaceParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .bindings(listOf(CredentialReplaceParams.Binding.ofString("string")))
+                        .credentialIds(listOf("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"))
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsReplaceRequired() {
+        Harness.conform("sessions.credentials.replace/required", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .replace(
+                    CredentialReplaceParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsReplaceNulls() {
+        Harness.conform("sessions.credentials.replace/nulls", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .replace(
+                    CredentialReplaceParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsReplaceUnknown() {
+        Harness.conform("sessions.credentials.replace/unknown", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .replace(
+                    CredentialReplaceParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsReplaceVariant01() {
+        Harness.conform("sessions.credentials.replace/variant-0-1", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .replace(
+                    CredentialReplaceParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun sessionsCredentialsReplaceEscaped() {
+        Harness.conform("sessions.credentials.replace/escaped", ::make) { client ->
+            client
+                .sessions()
+                .credentials()
+                .replace(CredentialReplaceParams.builder().id("a b/c?d#e%f+g&h=i é").build())
+                .also { it.validate() }
+        }
+    }
+
+    @Test
     fun sessionsFilesListFull() {
         Harness.conform("sessions.files.list/full", ::make) { client ->
             client
@@ -4263,6 +5192,227 @@ internal class ConformanceTest {
                         .build()
                 )
                 .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsCreateFull() {
+        Harness.conform("vaults.create/full", ::make) { client ->
+            client
+                .vaults()
+                .create(
+                    VaultCreateParams.builder()
+                        .name("name")
+                        .description("description")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsCreateRequired() {
+        Harness.conform("vaults.create/required", ::make) { client ->
+            client.vaults().create(VaultCreateParams.builder().name("name").build()).also {
+                it.validate()
+            }
+        }
+    }
+
+    @Test
+    fun vaultsCreateNulls() {
+        Harness.conform("vaults.create/nulls", ::make) { client ->
+            client.vaults().create(VaultCreateParams.builder().name("name").build()).also {
+                it.validate()
+            }
+        }
+    }
+
+    @Test
+    fun vaultsRetrieveFull() {
+        Harness.conform("vaults.retrieve/full", ::make) { client ->
+            client
+                .vaults()
+                .retrieve(
+                    VaultRetrieveParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsRetrieveRequired() {
+        Harness.conform("vaults.retrieve/required", ::make) { client ->
+            client
+                .vaults()
+                .retrieve(
+                    VaultRetrieveParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsRetrieveNulls() {
+        Harness.conform("vaults.retrieve/nulls", ::make) { client ->
+            client
+                .vaults()
+                .retrieve(
+                    VaultRetrieveParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsRetrieveEscaped() {
+        Harness.conform("vaults.retrieve/escaped", ::make) { client ->
+            client
+                .vaults()
+                .retrieve(
+                    VaultRetrieveParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsUpdateFull() {
+        Harness.conform("vaults.update/full", ::make) { client ->
+            client
+                .vaults()
+                .update(
+                    VaultUpdateParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .description("description")
+                        .name("name")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsUpdateRequired() {
+        Harness.conform("vaults.update/required", ::make) { client ->
+            client
+                .vaults()
+                .update(
+                    VaultUpdateParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsUpdateNulls() {
+        Harness.conform("vaults.update/nulls", ::make) { client ->
+            client
+                .vaults()
+                .update(
+                    VaultUpdateParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsUpdateEscaped() {
+        Harness.conform("vaults.update/escaped", ::make) { client ->
+            client
+                .vaults()
+                .update(
+                    VaultUpdateParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsListFull() {
+        Harness.conform("vaults.list/full", ::make) { client ->
+            client
+                .vaults()
+                .list(
+                    VaultListParams.builder()
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsListRequired() {
+        Harness.conform("vaults.list/required", ::make) { client ->
+            client.vaults().list(VaultListParams.builder().build()).also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsListNulls() {
+        Harness.conform("vaults.list/nulls", ::make) { client ->
+            client.vaults().list(VaultListParams.builder().build()).also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsListEscaped() {
+        Harness.conform("vaults.list/escaped", ::make) { client ->
+            client
+                .vaults()
+                .list(VaultListParams.builder().projectId("a b/c?d#e%f+g&h=i é").build())
+                .also { it.validate() }
+        }
+    }
+
+    @Test
+    fun vaultsDeleteFull() {
+        Harness.conform("vaults.delete/full", ::make) { client ->
+            client
+                .vaults()
+                .delete(
+                    VaultDeleteParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+        }
+    }
+
+    @Test
+    fun vaultsDeleteRequired() {
+        Harness.conform("vaults.delete/required", ::make) { client ->
+            client
+                .vaults()
+                .delete(
+                    VaultDeleteParams.builder().id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e").build()
+                )
+        }
+    }
+
+    @Test
+    fun vaultsDeleteEscaped() {
+        Harness.conform("vaults.delete/escaped", ::make) { client ->
+            client
+                .vaults()
+                .delete(
+                    VaultDeleteParams.builder()
+                        .id("a b/c?d#e%f+g&h=i é")
+                        .projectId("a b/c?d#e%f+g&h=i é")
+                        .build()
+                )
         }
     }
 }

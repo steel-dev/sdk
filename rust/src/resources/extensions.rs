@@ -7,84 +7,93 @@ pub struct Extensions<'a> {
 
 impl<'a> Extensions<'a> {
     /// Update a Chrome extension (.zip/.crx file or Chrome Web Store URL) for the organization
-    pub async fn update(
+    pub fn update(
         &self,
         extension_id: &str,
         params: ExtensionUpdateParams,
-    ) -> Result<ExtensionUpdateResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::PUT,
-            format!("/v1/extensions/{}", crate::encoding::segment(extension_id)),
-        );
-        let mut fields = Vec::new();
-        if let Some(value) = &params.file {
-            fields.push(crate::encoding::FormField::File(
-                "file".to_owned(),
-                value.clone(),
-            ));
-        }
-        if let Some(value) = &params.url {
-            fields.extend(crate::encoding::form("url", &serde_json::to_value(value)?));
-        }
-        request.body = crate::client::Body::Form(fields);
-        self.client.json(request).await
+    ) -> crate::Call<'a, ExtensionUpdateResponse> {
+        let client = self.client;
+        let path = format!("/v1/extensions/{}", crate::encoding::segment(extension_id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::PUT, path);
+            let mut fields = Vec::new();
+            if let Some(value) = &params.file {
+                fields.push(crate::encoding::FormField::File(
+                    "file".to_owned(),
+                    value.clone(),
+                ));
+            }
+            if let Some(value) = &params.url {
+                fields.extend(crate::encoding::form("url", &serde_json::to_value(value)?));
+            }
+            request.body = crate::client::Body::Form(fields);
+            client.json(request).await
+        })
     }
 
     /// List all extensions for the organization
-    pub async fn list(&self) -> Result<ExtensionListResponse, crate::Error> {
-        let request =
-            crate::client::Request::new(reqwest::Method::GET, "/v1/extensions".to_owned());
-        self.client.json(request).await
+    pub fn list(&self) -> crate::Call<'a, ExtensionListResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let request =
+                crate::client::Request::new(reqwest::Method::GET, "/v1/extensions".to_owned());
+            client.json(request).await
+        })
     }
 
     /// Delete an extension by ID
-    pub async fn delete(
-        &self,
-        extension_id: &str,
-    ) -> Result<ExtensionDeleteResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::DELETE,
-            format!("/v1/extensions/{}", crate::encoding::segment(extension_id)),
-        );
-        self.client.json(request).await
+    pub fn delete(&self, extension_id: &str) -> crate::Call<'a, ExtensionDeleteResponse> {
+        let client = self.client;
+        let path = format!("/v1/extensions/{}", crate::encoding::segment(extension_id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::DELETE, path);
+            client.json(request).await
+        })
     }
 
     /// Delete all extensions for the organization
-    pub async fn delete_all(&self) -> Result<ExtensionDeleteAllResponse, crate::Error> {
-        let request =
-            crate::client::Request::new(reqwest::Method::DELETE, "/v1/extensions".to_owned());
-        self.client.json(request).await
+    pub fn delete_all(&self) -> crate::Call<'a, ExtensionDeleteAllResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let request =
+                crate::client::Request::new(reqwest::Method::DELETE, "/v1/extensions".to_owned());
+            client.json(request).await
+        })
     }
 
     /// Download an extension file by extension ID
-    pub async fn download(&self, extension_id: &str) -> Result<bytes::Bytes, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/extensions/{}", crate::encoding::segment(extension_id)),
-        );
-        request.accept = Some("application/zip");
-        self.client.bytes(request).await
+    pub fn download(&self, extension_id: &str) -> crate::Call<'a, bytes::Bytes> {
+        let client = self.client;
+        let path = format!("/v1/extensions/{}", crate::encoding::segment(extension_id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            request.accept = Some("application/zip");
+            client.bytes(request).await
+        })
     }
 
     /// Upload a Chrome extension (.zip/.crx file or Chrome Web Store URL) for the organization
-    pub async fn upload(
+    pub fn upload(
         &self,
         params: ExtensionUploadParams,
-    ) -> Result<ExtensionUploadResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/extensions".to_owned());
-        let mut fields = Vec::new();
-        if let Some(value) = &params.file {
-            fields.push(crate::encoding::FormField::File(
-                "file".to_owned(),
-                value.clone(),
-            ));
-        }
-        if let Some(value) = &params.url {
-            fields.extend(crate::encoding::form("url", &serde_json::to_value(value)?));
-        }
-        request.body = crate::client::Body::Form(fields);
-        self.client.json(request).await
+    ) -> crate::Call<'a, ExtensionUploadResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/extensions".to_owned());
+            let mut fields = Vec::new();
+            if let Some(value) = &params.file {
+                fields.push(crate::encoding::FormField::File(
+                    "file".to_owned(),
+                    value.clone(),
+                ));
+            }
+            if let Some(value) = &params.url {
+                fields.extend(crate::encoding::form("url", &serde_json::to_value(value)?));
+            }
+            request.body = crate::client::Body::Form(fields);
+            client.json(request).await
+        })
     }
 }
 

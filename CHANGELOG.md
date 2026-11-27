@@ -1,5 +1,817 @@
 # Changelog
 
+## 0.24.0 (2026-11-27)
+
+- Breaking types: the `size` of a file is an integer. Go reads it as `int64`, Rust as `i64`, and Java and Kotlin as `Long`. Go used to print a size of 1,000,000 bytes or more in exponent form, such as `1.048576e+06`.
+- Breaking: Rust constructors take their required fields in the order the API lists them. The `new` of the `Dimensions` of `sessions.create`, `profiles.create` and `profiles.update` takes the width first, so `new(1920, 1080)` is 1920 wide. It used to take the height first. Both are numbers, so the compiler cannot point to an old call. Check each one. The `new` of the `upload` and `is` commands, and of `partitionKey` and `indexedDB` in `sessionContext`, change order too, and the compiler points to those calls.
+- Breaking: the Python SDK needs Python 3.10 or later. Python 3.9 reached its end of life in October 2025, and the fixed versions of `aiohttp`, `anyio` and `multidict` need Python 3.10. On Python 3.9, pip keeps installing 0.23.0.
+- Breaking: `dblclick` is no longer a command. Use `click` with `clicks: 2`. Browsers still accept `dblclick` for now, so older SDKs keep working, and they mark those responses with `x-steel-deprecated`.
+- Breaking: `observe` no longer takes `mode: "none"`. Leave `observe` out. Browsers still accept it for now, and mark those responses with `x-steel-deprecated`.
+- Breaking types: the `state` of an execution is `running`, `completed`, `failed`, `cancelled` or `timeout`. `queued` and `expired` are gone from the type. No response carried them.
+- Breaking: the fields of `execution` move to the top of a commands response. Read `state`, `effect`, `ran` and `replayed` where you read `execution.state`, `execution.effect`, `execution.ran` and `execution.replayed`. `execution.error` is now `stopped`. Responses still carry `execution` for now, so older SDKs keep working. A self-hosted steel-browser must be updated too, because older versions send these fields only inside `execution`.
+- Breaking: `keydown` and `keyup` are now one command, `keyboard`, with `action` `down` or `up`. `{ command: "keydown", key: "Shift" }` becomes `{ command: "keyboard", action: "down", key: "Shift" }`. Browsers still accept `keydown` and `keyup` for now, so older SDKs keep working, and they mark those responses with `x-steel-deprecated`.
+- Added: in Rust, `with_response()` on a call gives a `Response` with the status, the headers and the data. Awaiting a call still gives the data.
+- Added: Rust enums implement `Display`, and `as_str()` gives the same text, the value the API uses, such as `live`.
+- Added: `click` takes `button` (`left`, `right` or `middle`) and `clicks` (1 to 3).
+- Added: the result of a command that opens tabs lists their ids in `opened`.
+- Added: the result of `get` has `what`, which tells the type of `value`.
+- Added: the `dialog` command answers an open dialog by its id: `{ command: "dialog", dialog: "d-3", action: "accept" }`. `action` is `accept` or `dismiss`, and `text` answers a `prompt`. It never sends a key to the page, and fails if the dialog is no longer open.
+- Added: the `release` command lets go of every key and mouse button held on a tab. A response lists held input in `held`.
+- Changed: commands answer dialogs again, through the `dialog` command or `press`. On a tab with an open dialog, `press` with `Enter` accepts the dialog and `Escape` dismisses it, and its result has `answered` with the dialog's id.
+- Changed: `navigate`, `back`, `forward`, `reload` and `tab` `new` no longer fail with `timeout` when the page's DOM is loaded but the page is still loading after 15 seconds. They succeed with `loading: true`.
+- Changed: write a ref as `e12`, or as `ref=e12` the way snapshots print it. Browsers still read `@e12` for now, and mark those responses with `x-steel-deprecated`.
+- Fixed: the docs of `blockAds` in `sessions.create` say that ads are blocked by default, as they are.
+- Fixed: Python `to_json()` writes each field once. A field whose API name differs from its Python name, such as `totalCost`, appeared twice. That API name no longer works as an attribute either, so `cost.totalCost` fails. Use the Python name, `cost.total_cost`.
+
+- Added `client.credentials.create` body `additionalOrigins`.
+- Added `client.credentials.create` response `additionalOrigins`.
+- Added `client.credentials.list` response `credentials[].additionalOrigins`.
+- Added `client.credentials.update` body `additionalOrigins`.
+- Added `client.credentials.update` response `additionalOrigins`.
+- Breaking: `client.profiles.create` response `fingerprint.fingerprint.battery` can now be null.
+- Breaking: `client.profiles.create` response `fingerprint.fingerprint.pluginsData.plugins[].mimeTypes[].enabledPlugin` is now optional.
+- `client.profiles.create` response `status` allows `DELETING`, `DELETED`.
+- Added `client.profiles.delete`.
+- Breaking: `client.profiles.get` response `fingerprint.fingerprint.battery` can now be null.
+- Breaking: `client.profiles.get` response `fingerprint.fingerprint.pluginsData.plugins[].mimeTypes[].enabledPlugin` is now optional.
+- `client.profiles.get` response `status` allows `DELETING`, `DELETED`.
+- Breaking: `client.profiles.list` response `profiles[].fingerprint.fingerprint.battery` can now be null.
+- Breaking: `client.profiles.list` response `profiles[].fingerprint.fingerprint.pluginsData.plugins[].mimeTypes[].enabledPlugin` is now optional.
+- `client.profiles.list` response `profiles[].status` allows `DELETING`, `DELETED`.
+- Breaking: `client.profiles.update` response `fingerprint.fingerprint.battery` can now be null.
+- Breaking: `client.profiles.update` response `fingerprint.fingerprint.pluginsData.plugins[].mimeTypes[].enabledPlugin` is now optional.
+- `client.profiles.update` response `status` allows `DELETING`, `DELETED`.
+- Added `client.secret_connections.create`.
+- Added `client.secret_connections.delete`.
+- Added `client.secret_connections.list`.
+- Added `client.secret_connections.retrieve`.
+- Added `client.secret_connections.test`.
+- Added `client.secret_connections.update`.
+- Breaking: Removed `client.sessions.command_executions.cancel` response `execution`.
+- Updated the docs of `client.sessions.command_executions.cancel` response `id`.
+- Added `client.sessions.command_executions.cancel` response `effect`, which is required.
+- Added `client.sessions.command_executions.cancel` response `ran`, which is required.
+- Added `client.sessions.command_executions.cancel` response `replayed`, which is required.
+- Added `client.sessions.command_executions.cancel` response `state`, which is required.
+- Added `client.sessions.command_executions.cancel` response `held`.
+- Added `client.sessions.command_executions.cancel` response `stopped`.
+- Breaking: Removed `client.sessions.command_executions.retrieve` response `execution`.
+- Updated the docs of `client.sessions.command_executions.retrieve` response `id`.
+- Added `client.sessions.command_executions.retrieve` response `effect`, which is required.
+- Added `client.sessions.command_executions.retrieve` response `ran`, which is required.
+- Added `client.sessions.command_executions.retrieve` response `replayed`, which is required.
+- Added `client.sessions.command_executions.retrieve` response `state`, which is required.
+- Added `client.sessions.command_executions.retrieve` response `held`.
+- Added `client.sessions.command_executions.retrieve` response `stopped`.
+- Added `client.sessions.commands` body `commands(variant 6).button`.
+- Added `client.sessions.commands` body `commands(variant 6).clicks`.
+- Breaking: `client.sessions.commands` body `commands(variant 7)` was renamed from `DblclickCommand` to `HoverCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 7)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 7)` is now `HoverCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 7)` is now `CommandsHoverCommand`.
+- `client.sessions.commands` body `commands(variant 7).command` allows `hover`.
+- Breaking: `client.sessions.commands` body `commands(variant 7).command` no longer allows `dblclick`.
+- Breaking: `client.sessions.commands` body `commands(variant 8)` was renamed from `HoverCommand` to `FocusCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 8)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 8)` is now `FocusCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 8)` is now `CommandsFocusCommand`.
+- `client.sessions.commands` body `commands(variant 8).command` allows `focus`.
+- Breaking: `client.sessions.commands` body `commands(variant 8).command` no longer allows `hover`.
+- Breaking: `client.sessions.commands` body `commands(variant 9)` was renamed from `FocusCommand` to `TypeCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 9)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 9)` is now `TypeCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 9)` is now `CommandsTypeCommand`.
+- `client.sessions.commands` body `commands(variant 9).command` allows `type`.
+- Breaking: `client.sessions.commands` body `commands(variant 9).command` no longer allows `focus`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 9).text`, which is required.
+- Added `client.sessions.commands` body `commands(variant 9).clear`.
+- Added `client.sessions.commands` body `commands(variant 9).delay`.
+- Breaking: `client.sessions.commands` body `commands(variant 10)` was renamed from `TypeCommand` to `FillCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 10)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 10)` is now `FillCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 10)` is now `CommandsFillCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 10).text`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 10).clear`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 10).delay`.
+- `client.sessions.commands` body `commands(variant 10).command` allows `fill`.
+- Breaking: `client.sessions.commands` body `commands(variant 10).command` no longer allows `type`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 10).value`, which is required.
+- Breaking: `client.sessions.commands` body `commands(variant 11)` was renamed from `FillCommand` to `PressCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 11)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 11)` is now `PressCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 11)` is now `CommandsPressCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 11).value`.
+- `client.sessions.commands` body `commands(variant 11).command` allows `press`.
+- Breaking: `client.sessions.commands` body `commands(variant 11).command` no longer allows `fill`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 11).key`, which is required.
+- `client.sessions.commands` body `commands(variant 11).target` is now optional.
+- Breaking: `client.sessions.commands` body `commands(variant 12)` was renamed from `PressCommand` to `KeyboardCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 12)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 12)` is now `KeyboardCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 12)` is now `CommandsKeyboardCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 12).expect`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 12).frame`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 12).target`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 12).action`, which is required.
+- `client.sessions.commands` body `commands(variant 12).command` allows `keyboard`.
+- Breaking: `client.sessions.commands` body `commands(variant 12).command` no longer allows `press`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 12).key`.
+- Breaking: `client.sessions.commands` body `commands(variant 13)` was renamed from `KeydownCommand` to `ReleaseCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 13)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 13)` is now `ReleaseCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 13)` is now `CommandsReleaseCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 13).key`.
+- `client.sessions.commands` body `commands(variant 13).command` allows `release`.
+- Breaking: `client.sessions.commands` body `commands(variant 13).command` no longer allows `keydown`.
+- Breaking: `client.sessions.commands` body `commands(variant 14)` was renamed from `KeyupCommand` to `MouseCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 14)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 14)` is now `MouseCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 14)` is now `CommandsMouseCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 14).key`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 14).action`, which is required.
+- `client.sessions.commands` body `commands(variant 14).command` allows `mouse`.
+- Breaking: `client.sessions.commands` body `commands(variant 14).command` no longer allows `keyup`.
+- Added `client.sessions.commands` body `commands(variant 14).button`.
+- Added `client.sessions.commands` body `commands(variant 14).clicks`.
+- Added `client.sessions.commands` body `commands(variant 14).deltaX`.
+- Added `client.sessions.commands` body `commands(variant 14).deltaY`.
+- Added `client.sessions.commands` body `commands(variant 14).x`.
+- Added `client.sessions.commands` body `commands(variant 14).y`.
+- Breaking: `client.sessions.commands` body `commands(variant 15)` was renamed from `MouseCommand` to `SelectCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 15)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 15)` is now `SelectCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 15)` is now `CommandsSelectCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).action`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).button`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).clicks`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).deltaX`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).deltaY`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).x`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 15).y`.
+- `client.sessions.commands` body `commands(variant 15).command` allows `select`.
+- Breaking: `client.sessions.commands` body `commands(variant 15).command` no longer allows `mouse`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 15).target`, which is required.
+- Breaking: Added `client.sessions.commands` body `commands(variant 15).values`, which is required.
+- Added `client.sessions.commands` body `commands(variant 15).expect`.
+- Added `client.sessions.commands` body `commands(variant 15).frame`.
+- Breaking: `client.sessions.commands` body `commands(variant 16)` was renamed from `SelectCommand` to `CheckCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 16)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 16)` is now `CheckCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 16)` is now `CommandsCheckCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 16).values`.
+- `client.sessions.commands` body `commands(variant 16).command` allows `check`.
+- Breaking: `client.sessions.commands` body `commands(variant 16).command` no longer allows `select`.
+- Breaking: `client.sessions.commands` body `commands(variant 17)` was renamed from `CheckCommand` to `UploadCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 17)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 17)` is now `UploadCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 17)` is now `CommandsUploadCommand`.
+- `client.sessions.commands` body `commands(variant 17).command` allows `upload`.
+- Breaking: `client.sessions.commands` body `commands(variant 17).command` no longer allows `check`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 17).files`, which is required.
+- Breaking: `client.sessions.commands` body `commands(variant 18)` was renamed from `UploadCommand` to `DragCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 18)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 18)` is now `DragCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 18)` is now `CommandsDragCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 18).files`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 18).expect`.
+- `client.sessions.commands` body `commands(variant 18).command` allows `drag`.
+- Breaking: `client.sessions.commands` body `commands(variant 18).command` no longer allows `upload`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 18).source`, which is required.
+- Breaking: `client.sessions.commands` body `commands(variant 19)` was renamed from `DragCommand` to `UncheckCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 19)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 19)` is now `UncheckCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 19)` is now `CommandsUncheckCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 19).source`.
+- `client.sessions.commands` body `commands(variant 19).command` allows `uncheck`.
+- Breaking: `client.sessions.commands` body `commands(variant 19).command` no longer allows `drag`.
+- Added `client.sessions.commands` body `commands(variant 19).expect`.
+- Breaking: `client.sessions.commands` body `commands(variant 20)` was renamed from `UncheckCommand` to `GetCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 20)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 20)` is now `GetCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 20)` is now `CommandsGetCommand`.
+- `client.sessions.commands` body `commands(variant 20).command` allows `get`.
+- Breaking: `client.sessions.commands` body `commands(variant 20).command` no longer allows `uncheck`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 20).what`, which is required.
+- Added `client.sessions.commands` body `commands(variant 20).attribute`.
+- `client.sessions.commands` body `commands(variant 20).target` is now optional.
+- Breaking: `client.sessions.commands` body `commands(variant 21)` was renamed from `GetCommand` to `IsCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 21)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 21)` is now `IsCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 21)` is now `CommandsIsCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 21).attribute`.
+- `client.sessions.commands` body `commands(variant 21).command` allows `is`.
+- Breaking: `client.sessions.commands` body `commands(variant 21).command` no longer allows `get`.
+- Breaking: `client.sessions.commands` body `commands(variant 21).target` is now required.
+- `client.sessions.commands` body `commands(variant 21).what` allows `visible`, `enabled`, `checked`.
+- Breaking: `client.sessions.commands` body `commands(variant 21).what` no longer allows `text`, `html`, `markdown`, `value`, `attr`, `title`, `url`, `count`, `box`, `locator`.
+- Breaking: `client.sessions.commands` body `commands(variant 22)` was renamed from `IsCommand` to `WaitCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 22)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 22)` is now `WaitCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 22)` is now `CommandsWaitCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 22).what`.
+- `client.sessions.commands` body `commands(variant 22).command` allows `wait`.
+- Breaking: `client.sessions.commands` body `commands(variant 22).command` no longer allows `is`.
+- Added `client.sessions.commands` body `commands(variant 22).download`.
+- Added `client.sessions.commands` body `commands(variant 22).load`.
+- Added `client.sessions.commands` body `commands(variant 22).ms`.
+- Added `client.sessions.commands` body `commands(variant 22).state`.
+- `client.sessions.commands` body `commands(variant 22).target` is now optional.
+- Added `client.sessions.commands` body `commands(variant 22).text`.
+- Added `client.sessions.commands` body `commands(variant 22).timeout`.
+- Added `client.sessions.commands` body `commands(variant 22).url`.
+- Breaking: `client.sessions.commands` body `commands(variant 23)` was renamed from `WaitCommand` to `ScreenshotCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 23)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 23)` is now `ScreenshotCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 23)` is now `CommandsScreenshotCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).download`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).load`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).ms`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).state`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).text`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).timeout`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 23).url`.
+- `client.sessions.commands` body `commands(variant 23).command` allows `screenshot`.
+- Breaking: `client.sessions.commands` body `commands(variant 23).command` no longer allows `wait`.
+- Added `client.sessions.commands` body `commands(variant 23).format`.
+- Added `client.sessions.commands` body `commands(variant 23).fullPage`.
+- Added `client.sessions.commands` body `commands(variant 23).quality`.
+- Breaking: `client.sessions.commands` body `commands(variant 24)` was renamed from `ScreenshotCommand` to `EvalCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 24)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 24)` is now `EvalCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 24)` is now `CommandsEvalCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 24).expect`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 24).format`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 24).frame`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 24).fullPage`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 24).quality`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 24).target`.
+- `client.sessions.commands` body `commands(variant 24).command` allows `eval`.
+- Breaking: `client.sessions.commands` body `commands(variant 24).command` no longer allows `screenshot`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 24).script`, which is required.
+- Added `client.sessions.commands` body `commands(variant 24).timeout`.
+- Breaking: `client.sessions.commands` body `commands(variant 25)` was renamed from `EvalCommand` to `PdfCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 25)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 25)` is now `PdfCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 25)` is now `CommandsPdfCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 25).script`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 25).timeout`.
+- `client.sessions.commands` body `commands(variant 25).command` allows `pdf`.
+- Breaking: `client.sessions.commands` body `commands(variant 25).command` no longer allows `eval`.
+- Added `client.sessions.commands` body `commands(variant 25).landscape`.
+- Added `client.sessions.commands` body `commands(variant 25).printBackground`.
+- Breaking: `client.sessions.commands` body `commands(variant 26)` was renamed from `PdfCommand` to `ScrollCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 26)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 26)` is now `ScrollCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 26)` is now `CommandsScrollCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 26).landscape`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 26).printBackground`.
+- `client.sessions.commands` body `commands(variant 26).command` allows `scroll`.
+- Breaking: `client.sessions.commands` body `commands(variant 26).command` no longer allows `pdf`.
+- Added `client.sessions.commands` body `commands(variant 26).amount`.
+- Added `client.sessions.commands` body `commands(variant 26).direction`.
+- Added `client.sessions.commands` body `commands(variant 26).expect`.
+- Added `client.sessions.commands` body `commands(variant 26).frame`.
+- Added `client.sessions.commands` body `commands(variant 26).target`.
+- Breaking: `client.sessions.commands` body `commands(variant 27)` was renamed from `ScrollCommand` to `FindCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 27)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 27)` is now `FindCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 27)` is now `CommandsFindCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 27).amount`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 27).direction`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 27).expect`.
+- `client.sessions.commands` body `commands(variant 27).command` allows `find`.
+- Breaking: `client.sessions.commands` body `commands(variant 27).command` no longer allows `scroll`.
+- Breaking: `client.sessions.commands` body `commands(variant 27).target` is now required.
+- Updated the docs of `client.sessions.commands` body `commands(variant 27).target`.
+- Breaking: `client.sessions.commands` body `commands(variant 28)` was renamed from `FindCommand` to `TabCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 28)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 28)` is now `TabCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 28)` is now `CommandsTabCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 28).target`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 28).frame`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 28).action`, which is required.
+- `client.sessions.commands` body `commands(variant 28).command` allows `tab`.
+- Breaking: `client.sessions.commands` body `commands(variant 28).command` no longer allows `find`.
+- Added `client.sessions.commands` body `commands(variant 28).url`.
+- Breaking: `client.sessions.commands` body `commands(variant 29)` was renamed from `TabCommand` to `DialogCommand`.
+- Updated the docs of `client.sessions.commands` body `commands(variant 29)`.
+- Breaking: In Node, `client.sessions.commands` body `commands(variant 29)` is now `DialogCommand`.
+- Breaking: In Python, `client.sessions.commands` body `commands(variant 29)` is now `CommandsDialogCommand`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 29).tab`.
+- Breaking: Removed `client.sessions.commands` body `commands(variant 29).url`.
+- `client.sessions.commands` body `commands(variant 29).action` allows `accept`, `dismiss`.
+- Breaking: `client.sessions.commands` body `commands(variant 29).action` no longer allows `list`, `new`, `close`.
+- `client.sessions.commands` body `commands(variant 29).command` allows `dialog`.
+- Breaking: `client.sessions.commands` body `commands(variant 29).command` no longer allows `tab`.
+- Breaking: Added `client.sessions.commands` body `commands(variant 29).dialog`, which is required.
+- Added `client.sessions.commands` body `commands(variant 29).text`.
+- Breaking: `client.sessions.commands` body `observe.mode` no longer allows `none`.
+- Breaking: Removed `client.sessions.commands` response `execution`.
+- Updated the docs of `client.sessions.commands` response `id`.
+- Added `client.sessions.commands` response `effect`, which is required.
+- Added `client.sessions.commands` response `ran`, which is required.
+- Added `client.sessions.commands` response `replayed`, which is required.
+- Added `client.sessions.commands` response `state`, which is required.
+- Added `client.sessions.commands` response `held`.
+- Added `client.sessions.commands` response `stopped`.
+- Updated the docs of `client.sessions.create` body `blockAds`.
+- Updated the docs of `client.sessions.create` body `credentials`.
+- Updated the docs of `client.sessions.create` body `credentials`.
+- Added `client.sessions.create` body `credentials.bindings`.
+- Added `client.sessions.create` body `credentials.credentialIds`.
+- Added `client.sessions.create` body `credentials.domTrigger`.
+- Added `client.sessions.create` body `credentials.enabled`.
+- Updated the docs of `client.sessions.create` body `credentials.exactOrigin`.
+- Added `client.sessions.create` body `credentials.lookup`.
+- Updated the docs of `client.sessions.create` body `proxyUrl`.
+- Updated the docs of `client.sessions.create` body `sessionId`.
+- Updated the docs of `client.sessions.create` body `timeout`.
+- Added `client.sessions.credentials.attach`.
+- Added `client.sessions.credentials.detach`.
+- Added `client.sessions.credentials.detach_binding`.
+- Added `client.sessions.credentials.list`.
+- Added `client.sessions.credentials.replace`.
+- Added `client.vaults.create`.
+- Added `client.vaults.delete`.
+- Added `client.vaults.list`.
+- Added `client.vaults.retrieve`.
+- Added `client.vaults.update`.
+- `File.size` is now an integer.
+- `Fileslist.data[].size` is now an integer.
+- Added `Command(variant 6).button`.
+- Added `Command(variant 6).clicks`.
+- Breaking: `Command(variant 7)` was renamed from `DblclickCommand` to `HoverCommand`.
+- Updated the docs of `Command(variant 7)`.
+- Breaking: In Node, `Command(variant 7)` is now `HoverCommand`.
+- Breaking: In Python, `Command(variant 7)` is now `HoverCommand`.
+- `Command(variant 7).command` allows `hover`.
+- Breaking: `Command(variant 7).command` no longer allows `dblclick`.
+- Breaking: `Command(variant 8)` was renamed from `HoverCommand` to `FocusCommand`.
+- Updated the docs of `Command(variant 8)`.
+- Breaking: In Node, `Command(variant 8)` is now `FocusCommand`.
+- Breaking: In Python, `Command(variant 8)` is now `FocusCommand`.
+- `Command(variant 8).command` allows `focus`.
+- Breaking: `Command(variant 8).command` no longer allows `hover`.
+- Breaking: `Command(variant 9)` was renamed from `FocusCommand` to `TypeCommand`.
+- Updated the docs of `Command(variant 9)`.
+- Breaking: In Node, `Command(variant 9)` is now `TypeCommand`.
+- Breaking: In Python, `Command(variant 9)` is now `TypeCommand`.
+- `Command(variant 9).command` allows `type`.
+- Breaking: `Command(variant 9).command` no longer allows `focus`.
+- Breaking: Added `Command(variant 9).text`, which is required.
+- Added `Command(variant 9).clear`.
+- Added `Command(variant 9).delay`.
+- Breaking: `Command(variant 10)` was renamed from `TypeCommand` to `FillCommand`.
+- Updated the docs of `Command(variant 10)`.
+- Breaking: In Node, `Command(variant 10)` is now `FillCommand`.
+- Breaking: In Python, `Command(variant 10)` is now `FillCommand`.
+- Breaking: Removed `Command(variant 10).text`.
+- Breaking: Removed `Command(variant 10).clear`.
+- Breaking: Removed `Command(variant 10).delay`.
+- `Command(variant 10).command` allows `fill`.
+- Breaking: `Command(variant 10).command` no longer allows `type`.
+- Breaking: Added `Command(variant 10).value`, which is required.
+- Breaking: `Command(variant 11)` was renamed from `FillCommand` to `PressCommand`.
+- Updated the docs of `Command(variant 11)`.
+- Breaking: In Node, `Command(variant 11)` is now `PressCommand`.
+- Breaking: In Python, `Command(variant 11)` is now `PressCommand`.
+- Breaking: Removed `Command(variant 11).value`.
+- `Command(variant 11).command` allows `press`.
+- Breaking: `Command(variant 11).command` no longer allows `fill`.
+- Breaking: Added `Command(variant 11).key`, which is required.
+- `Command(variant 11).target` is now optional.
+- Breaking: `Command(variant 12)` was renamed from `PressCommand` to `KeyboardCommand`.
+- Updated the docs of `Command(variant 12)`.
+- Breaking: In Node, `Command(variant 12)` is now `KeyboardCommand`.
+- Breaking: In Python, `Command(variant 12)` is now `KeyboardCommand`.
+- Breaking: Removed `Command(variant 12).expect`.
+- Breaking: Removed `Command(variant 12).frame`.
+- Breaking: Removed `Command(variant 12).target`.
+- Breaking: Added `Command(variant 12).action`, which is required.
+- `Command(variant 12).command` allows `keyboard`.
+- Breaking: `Command(variant 12).command` no longer allows `press`.
+- Updated the docs of `Command(variant 12).key`.
+- Breaking: `Command(variant 13)` was renamed from `KeydownCommand` to `ReleaseCommand`.
+- Updated the docs of `Command(variant 13)`.
+- Breaking: In Node, `Command(variant 13)` is now `ReleaseCommand`.
+- Breaking: In Python, `Command(variant 13)` is now `ReleaseCommand`.
+- Breaking: Removed `Command(variant 13).key`.
+- `Command(variant 13).command` allows `release`.
+- Breaking: `Command(variant 13).command` no longer allows `keydown`.
+- Breaking: `Command(variant 14)` was renamed from `KeyupCommand` to `MouseCommand`.
+- Updated the docs of `Command(variant 14)`.
+- Breaking: In Node, `Command(variant 14)` is now `MouseCommand`.
+- Breaking: In Python, `Command(variant 14)` is now `MouseCommand`.
+- Breaking: Removed `Command(variant 14).key`.
+- Breaking: Added `Command(variant 14).action`, which is required.
+- `Command(variant 14).command` allows `mouse`.
+- Breaking: `Command(variant 14).command` no longer allows `keyup`.
+- Added `Command(variant 14).button`.
+- Added `Command(variant 14).clicks`.
+- Added `Command(variant 14).deltaX`.
+- Added `Command(variant 14).deltaY`.
+- Added `Command(variant 14).x`.
+- Added `Command(variant 14).y`.
+- Breaking: `Command(variant 15)` was renamed from `MouseCommand` to `SelectCommand`.
+- Updated the docs of `Command(variant 15)`.
+- Breaking: In Node, `Command(variant 15)` is now `SelectCommand`.
+- Breaking: In Python, `Command(variant 15)` is now `SelectCommand`.
+- Breaking: Removed `Command(variant 15).action`.
+- Breaking: Removed `Command(variant 15).button`.
+- Breaking: Removed `Command(variant 15).clicks`.
+- Breaking: Removed `Command(variant 15).deltaX`.
+- Breaking: Removed `Command(variant 15).deltaY`.
+- Breaking: Removed `Command(variant 15).x`.
+- Breaking: Removed `Command(variant 15).y`.
+- `Command(variant 15).command` allows `select`.
+- Breaking: `Command(variant 15).command` no longer allows `mouse`.
+- Breaking: Added `Command(variant 15).target`, which is required.
+- Breaking: Added `Command(variant 15).values`, which is required.
+- Added `Command(variant 15).expect`.
+- Added `Command(variant 15).frame`.
+- Breaking: `Command(variant 16)` was renamed from `SelectCommand` to `CheckCommand`.
+- Updated the docs of `Command(variant 16)`.
+- Breaking: In Node, `Command(variant 16)` is now `CheckCommand`.
+- Breaking: In Python, `Command(variant 16)` is now `CheckCommand`.
+- Breaking: Removed `Command(variant 16).values`.
+- `Command(variant 16).command` allows `check`.
+- Breaking: `Command(variant 16).command` no longer allows `select`.
+- Breaking: `Command(variant 17)` was renamed from `CheckCommand` to `UploadCommand`.
+- Updated the docs of `Command(variant 17)`.
+- Breaking: In Node, `Command(variant 17)` is now `UploadCommand`.
+- Breaking: In Python, `Command(variant 17)` is now `UploadCommand`.
+- `Command(variant 17).command` allows `upload`.
+- Breaking: `Command(variant 17).command` no longer allows `check`.
+- Breaking: Added `Command(variant 17).files`, which is required.
+- Breaking: `Command(variant 18)` was renamed from `UploadCommand` to `DragCommand`.
+- Updated the docs of `Command(variant 18)`.
+- Breaking: In Node, `Command(variant 18)` is now `DragCommand`.
+- Breaking: In Python, `Command(variant 18)` is now `DragCommand`.
+- Breaking: Removed `Command(variant 18).files`.
+- Breaking: Removed `Command(variant 18).expect`.
+- `Command(variant 18).command` allows `drag`.
+- Breaking: `Command(variant 18).command` no longer allows `upload`.
+- Breaking: Added `Command(variant 18).source`, which is required.
+- Breaking: `Command(variant 19)` was renamed from `DragCommand` to `UncheckCommand`.
+- Updated the docs of `Command(variant 19)`.
+- Breaking: In Node, `Command(variant 19)` is now `UncheckCommand`.
+- Breaking: In Python, `Command(variant 19)` is now `UncheckCommand`.
+- Breaking: Removed `Command(variant 19).source`.
+- `Command(variant 19).command` allows `uncheck`.
+- Breaking: `Command(variant 19).command` no longer allows `drag`.
+- Added `Command(variant 19).expect`.
+- Breaking: `Command(variant 20)` was renamed from `UncheckCommand` to `GetCommand`.
+- Updated the docs of `Command(variant 20)`.
+- Breaking: In Node, `Command(variant 20)` is now `GetCommand`.
+- Breaking: In Python, `Command(variant 20)` is now `GetCommand`.
+- `Command(variant 20).command` allows `get`.
+- Breaking: `Command(variant 20).command` no longer allows `uncheck`.
+- Breaking: Added `Command(variant 20).what`, which is required.
+- Added `Command(variant 20).attribute`.
+- `Command(variant 20).target` is now optional.
+- Breaking: `Command(variant 21)` was renamed from `GetCommand` to `IsCommand`.
+- Updated the docs of `Command(variant 21)`.
+- Breaking: In Node, `Command(variant 21)` is now `IsCommand`.
+- Breaking: In Python, `Command(variant 21)` is now `IsCommand`.
+- Breaking: Removed `Command(variant 21).attribute`.
+- `Command(variant 21).command` allows `is`.
+- Breaking: `Command(variant 21).command` no longer allows `get`.
+- Breaking: `Command(variant 21).target` is now required.
+- `Command(variant 21).what` allows `visible`, `enabled`, `checked`.
+- Breaking: `Command(variant 21).what` no longer allows `text`, `html`, `markdown`, `value`, `attr`, `title`, `url`, `count`, `box`, `locator`.
+- Breaking: `Command(variant 22)` was renamed from `IsCommand` to `WaitCommand`.
+- Updated the docs of `Command(variant 22)`.
+- Breaking: In Node, `Command(variant 22)` is now `WaitCommand`.
+- Breaking: In Python, `Command(variant 22)` is now `WaitCommand`.
+- Breaking: Removed `Command(variant 22).what`.
+- `Command(variant 22).command` allows `wait`.
+- Breaking: `Command(variant 22).command` no longer allows `is`.
+- Added `Command(variant 22).download`.
+- Added `Command(variant 22).load`.
+- Added `Command(variant 22).ms`.
+- Added `Command(variant 22).state`.
+- `Command(variant 22).target` is now optional.
+- Added `Command(variant 22).text`.
+- Added `Command(variant 22).timeout`.
+- Added `Command(variant 22).url`.
+- Breaking: `Command(variant 23)` was renamed from `WaitCommand` to `ScreenshotCommand`.
+- Updated the docs of `Command(variant 23)`.
+- Breaking: In Node, `Command(variant 23)` is now `ScreenshotCommand`.
+- Breaking: In Python, `Command(variant 23)` is now `ScreenshotCommand`.
+- Breaking: Removed `Command(variant 23).download`.
+- Breaking: Removed `Command(variant 23).load`.
+- Breaking: Removed `Command(variant 23).ms`.
+- Breaking: Removed `Command(variant 23).state`.
+- Breaking: Removed `Command(variant 23).text`.
+- Breaking: Removed `Command(variant 23).timeout`.
+- Breaking: Removed `Command(variant 23).url`.
+- `Command(variant 23).command` allows `screenshot`.
+- Breaking: `Command(variant 23).command` no longer allows `wait`.
+- Added `Command(variant 23).format`.
+- Added `Command(variant 23).fullPage`.
+- Added `Command(variant 23).quality`.
+- Breaking: `Command(variant 24)` was renamed from `ScreenshotCommand` to `EvalCommand`.
+- Updated the docs of `Command(variant 24)`.
+- Breaking: In Node, `Command(variant 24)` is now `EvalCommand`.
+- Breaking: In Python, `Command(variant 24)` is now `EvalCommand`.
+- Breaking: Removed `Command(variant 24).expect`.
+- Breaking: Removed `Command(variant 24).format`.
+- Breaking: Removed `Command(variant 24).frame`.
+- Breaking: Removed `Command(variant 24).fullPage`.
+- Breaking: Removed `Command(variant 24).quality`.
+- Breaking: Removed `Command(variant 24).target`.
+- `Command(variant 24).command` allows `eval`.
+- Breaking: `Command(variant 24).command` no longer allows `screenshot`.
+- Breaking: Added `Command(variant 24).script`, which is required.
+- Added `Command(variant 24).timeout`.
+- Breaking: `Command(variant 25)` was renamed from `EvalCommand` to `PdfCommand`.
+- Updated the docs of `Command(variant 25)`.
+- Breaking: In Node, `Command(variant 25)` is now `PdfCommand`.
+- Breaking: In Python, `Command(variant 25)` is now `PdfCommand`.
+- Breaking: Removed `Command(variant 25).script`.
+- Breaking: Removed `Command(variant 25).timeout`.
+- `Command(variant 25).command` allows `pdf`.
+- Breaking: `Command(variant 25).command` no longer allows `eval`.
+- Added `Command(variant 25).landscape`.
+- Added `Command(variant 25).printBackground`.
+- Breaking: `Command(variant 26)` was renamed from `PdfCommand` to `ScrollCommand`.
+- Updated the docs of `Command(variant 26)`.
+- Breaking: In Node, `Command(variant 26)` is now `ScrollCommand`.
+- Breaking: In Python, `Command(variant 26)` is now `ScrollCommand`.
+- Breaking: Removed `Command(variant 26).landscape`.
+- Breaking: Removed `Command(variant 26).printBackground`.
+- `Command(variant 26).command` allows `scroll`.
+- Breaking: `Command(variant 26).command` no longer allows `pdf`.
+- Added `Command(variant 26).amount`.
+- Added `Command(variant 26).direction`.
+- Added `Command(variant 26).expect`.
+- Added `Command(variant 26).frame`.
+- Added `Command(variant 26).target`.
+- Breaking: `Command(variant 27)` was renamed from `ScrollCommand` to `FindCommand`.
+- Updated the docs of `Command(variant 27)`.
+- Breaking: In Node, `Command(variant 27)` is now `FindCommand`.
+- Breaking: In Python, `Command(variant 27)` is now `FindCommand`.
+- Breaking: Removed `Command(variant 27).amount`.
+- Breaking: Removed `Command(variant 27).direction`.
+- Breaking: Removed `Command(variant 27).expect`.
+- `Command(variant 27).command` allows `find`.
+- Breaking: `Command(variant 27).command` no longer allows `scroll`.
+- Breaking: `Command(variant 27).target` is now required.
+- Updated the docs of `Command(variant 27).target`.
+- Breaking: `Command(variant 28)` was renamed from `FindCommand` to `TabCommand`.
+- Updated the docs of `Command(variant 28)`.
+- Breaking: In Node, `Command(variant 28)` is now `TabCommand`.
+- Breaking: In Python, `Command(variant 28)` is now `TabCommand`.
+- Breaking: Removed `Command(variant 28).target`.
+- Breaking: Removed `Command(variant 28).frame`.
+- Breaking: Added `Command(variant 28).action`, which is required.
+- `Command(variant 28).command` allows `tab`.
+- Breaking: `Command(variant 28).command` no longer allows `find`.
+- Added `Command(variant 28).url`.
+- Breaking: `Command(variant 29)` was renamed from `TabCommand` to `DialogCommand`.
+- Updated the docs of `Command(variant 29)`.
+- Breaking: In Node, `Command(variant 29)` is now `DialogCommand`.
+- Breaking: In Python, `Command(variant 29)` is now `DialogCommand`.
+- Breaking: Removed `Command(variant 29).tab`.
+- Breaking: Removed `Command(variant 29).url`.
+- `Command(variant 29).action` allows `accept`, `dismiss`.
+- Breaking: `Command(variant 29).action` no longer allows `list`, `new`, `close`.
+- `Command(variant 29).command` allows `dialog`.
+- Breaking: `Command(variant 29).command` no longer allows `tab`.
+- Breaking: Added `Command(variant 29).dialog`, which is required.
+- Added `Command(variant 29).text`.
+- Added model `CommandHeld`.
+- Added `CommandResult(variant 1).loading`.
+- Added `CommandResult(variant 2).loading`.
+- Added `CommandResult(variant 3).loading`.
+- Added `CommandResult(variant 4).loading`.
+- Updated the docs of `CommandResult(variant 6).loading`.
+- Added `CommandResult(variant 6).opened`.
+- Breaking: `CommandResult(variant 7)` was renamed from `DblclickResult` to `HoverResult`.
+- Updated the docs of `CommandResult(variant 7)`.
+- Breaking: In Node, `CommandResult(variant 7)` is now `HoverResult`.
+- Breaking: In Python, `CommandResult(variant 7)` is now `HoverResult`.
+- Breaking: Removed `CommandResult(variant 7).loading`.
+- `CommandResult(variant 7).command` allows `hover`.
+- `CommandResult(variant 7).command` no longer allows `dblclick`.
+- Breaking: `CommandResult(variant 8)` was renamed from `HoverResult` to `FocusResult`.
+- Updated the docs of `CommandResult(variant 8)`.
+- Breaking: In Node, `CommandResult(variant 8)` is now `FocusResult`.
+- Breaking: In Python, `CommandResult(variant 8)` is now `FocusResult`.
+- Breaking: Removed `CommandResult(variant 8).dialog`.
+- `CommandResult(variant 8).command` allows `focus`.
+- `CommandResult(variant 8).command` no longer allows `hover`.
+- Breaking: `CommandResult(variant 9)` was renamed from `FocusResult` to `TypeResult`.
+- Updated the docs of `CommandResult(variant 9)`.
+- Breaking: In Node, `CommandResult(variant 9)` is now `TypeResult`.
+- Breaking: In Python, `CommandResult(variant 9)` is now `TypeResult`.
+- `CommandResult(variant 9).command` allows `type`.
+- `CommandResult(variant 9).command` no longer allows `focus`.
+- Added `CommandResult(variant 9).dialog`.
+- Added `CommandResult(variant 9).loading`.
+- Added `CommandResult(variant 9).opened`.
+- Breaking: `CommandResult(variant 10)` was renamed from `TypeResult` to `FillResult`.
+- Updated the docs of `CommandResult(variant 10)`.
+- Breaking: In Node, `CommandResult(variant 10)` is now `FillResult`.
+- Breaking: In Python, `CommandResult(variant 10)` is now `FillResult`.
+- `CommandResult(variant 10).command` allows `fill`.
+- `CommandResult(variant 10).command` no longer allows `type`.
+- Updated the docs of `CommandResult(variant 10).loading`.
+- Added `CommandResult(variant 10).opened`.
+- Breaking: `CommandResult(variant 11)` was renamed from `FillResult` to `PressResult`.
+- Updated the docs of `CommandResult(variant 11)`.
+- Breaking: In Node, `CommandResult(variant 11)` is now `PressResult`.
+- Breaking: In Python, `CommandResult(variant 11)` is now `PressResult`.
+- `CommandResult(variant 11).command` allows `press`.
+- `CommandResult(variant 11).command` no longer allows `fill`.
+- Added `CommandResult(variant 11).answered`.
+- Updated the docs of `CommandResult(variant 11).loading`.
+- Added `CommandResult(variant 11).opened`.
+- Breaking: `CommandResult(variant 12)` was renamed from `PressResult` to `KeyboardResult`.
+- Updated the docs of `CommandResult(variant 12)`.
+- Breaking: In Node, `CommandResult(variant 12)` is now `KeyboardResult`.
+- Breaking: In Python, `CommandResult(variant 12)` is now `KeyboardResult`.
+- `CommandResult(variant 12).command` allows `keyboard`.
+- `CommandResult(variant 12).command` no longer allows `press`.
+- Updated the docs of `CommandResult(variant 12).loading`.
+- Added `CommandResult(variant 12).opened`.
+- Breaking: `CommandResult(variant 13)` was renamed from `KeydownResult` to `MouseResult`.
+- Updated the docs of `CommandResult(variant 13)`.
+- Breaking: In Node, `CommandResult(variant 13)` is now `MouseResult`.
+- Breaking: In Python, `CommandResult(variant 13)` is now `MouseResult`.
+- `CommandResult(variant 13).command` allows `mouse`.
+- `CommandResult(variant 13).command` no longer allows `keydown`.
+- Updated the docs of `CommandResult(variant 13).loading`.
+- Added `CommandResult(variant 13).opened`.
+- Breaking: `CommandResult(variant 14)` was renamed from `KeyupResult` to `ReleaseResult`.
+- Updated the docs of `CommandResult(variant 14)`.
+- Breaking: In Node, `CommandResult(variant 14)` is now `ReleaseResult`.
+- Breaking: In Python, `CommandResult(variant 14)` is now `ReleaseResult`.
+- `CommandResult(variant 14).command` allows `release`.
+- `CommandResult(variant 14).command` no longer allows `keyup`.
+- Added `CommandResult(variant 14).button`.
+- Added `CommandResult(variant 14).keys`.
+- Updated the docs of `CommandResult(variant 14).loading`.
+- Added `CommandResult(variant 14).opened`.
+- Breaking: `CommandResult(variant 15)` was renamed from `MouseResult` to `SelectResult`.
+- Updated the docs of `CommandResult(variant 15)`.
+- Breaking: In Node, `CommandResult(variant 15)` is now `SelectResult`.
+- Breaking: In Python, `CommandResult(variant 15)` is now `SelectResult`.
+- `CommandResult(variant 15).command` allows `select`.
+- `CommandResult(variant 15).command` no longer allows `mouse`.
+- Updated the docs of `CommandResult(variant 15).loading`.
+- Added `CommandResult(variant 15).opened`.
+- Added `CommandResult(variant 15).selected`.
+- Breaking: `CommandResult(variant 16)` was renamed from `SelectResult` to `CheckResult`.
+- Updated the docs of `CommandResult(variant 16)`.
+- Breaking: In Node, `CommandResult(variant 16)` is now `CheckResult`.
+- Breaking: In Python, `CommandResult(variant 16)` is now `CheckResult`.
+- Breaking: Removed `CommandResult(variant 16).selected`.
+- `CommandResult(variant 16).command` allows `check`.
+- `CommandResult(variant 16).command` no longer allows `select`.
+- Added `CommandResult(variant 16).checked`.
+- Updated the docs of `CommandResult(variant 16).loading`.
+- Added `CommandResult(variant 16).opened`.
+- Breaking: `CommandResult(variant 17)` was renamed from `CheckResult` to `UncheckResult`.
+- Updated the docs of `CommandResult(variant 17)`.
+- Breaking: In Node, `CommandResult(variant 17)` is now `UncheckResult`.
+- Breaking: In Python, `CommandResult(variant 17)` is now `UncheckResult`.
+- `CommandResult(variant 17).command` allows `uncheck`.
+- `CommandResult(variant 17).command` no longer allows `check`.
+- Updated the docs of `CommandResult(variant 17).loading`.
+- Added `CommandResult(variant 17).opened`.
+- Breaking: `CommandResult(variant 18)` was renamed from `UncheckResult` to `UploadResult`.
+- Updated the docs of `CommandResult(variant 18)`.
+- Breaking: In Node, `CommandResult(variant 18)` is now `UploadResult`.
+- Breaking: In Python, `CommandResult(variant 18)` is now `UploadResult`.
+- Breaking: Removed `CommandResult(variant 18).checked`.
+- `CommandResult(variant 18).command` allows `upload`.
+- `CommandResult(variant 18).command` no longer allows `uncheck`.
+- Added `CommandResult(variant 18).files`.
+- Updated the docs of `CommandResult(variant 18).loading`.
+- Added `CommandResult(variant 18).opened`.
+- Breaking: `CommandResult(variant 19)` was renamed from `UploadResult` to `DragResult`.
+- Updated the docs of `CommandResult(variant 19)`.
+- Breaking: In Node, `CommandResult(variant 19)` is now `DragResult`.
+- Breaking: In Python, `CommandResult(variant 19)` is now `DragResult`.
+- Breaking: Removed `CommandResult(variant 19).files`.
+- `CommandResult(variant 19).command` allows `drag`.
+- `CommandResult(variant 19).command` no longer allows `upload`.
+- Updated the docs of `CommandResult(variant 19).loading`.
+- Added `CommandResult(variant 19).opened`.
+- Breaking: `CommandResult(variant 20)` was renamed from `DragResult` to `GetResult`.
+- Updated the docs of `CommandResult(variant 20)`.
+- Breaking: In Node, `CommandResult(variant 20)` is now `GetResult`.
+- Breaking: In Python, `CommandResult(variant 20)` is now `GetResult`.
+- Breaking: Removed `CommandResult(variant 20).dialog`.
+- Breaking: Removed `CommandResult(variant 20).loading`.
+- `CommandResult(variant 20).command` allows `get`.
+- `CommandResult(variant 20).command` no longer allows `drag`.
+- Added `CommandResult(variant 20).masked`.
+- Added `CommandResult(variant 20).value`.
+- Added `CommandResult(variant 20).what`.
+- Breaking: `CommandResult(variant 21)` was renamed from `GetResult` to `IsResult`.
+- Updated the docs of `CommandResult(variant 21)`.
+- Breaking: In Node, `CommandResult(variant 21)` is now `IsResult`.
+- Breaking: In Python, `CommandResult(variant 21)` is now `IsResult`.
+- Breaking: Removed `CommandResult(variant 21).masked`.
+- `CommandResult(variant 21).command` allows `is`.
+- `CommandResult(variant 21).command` no longer allows `get`.
+- Updated the docs of `CommandResult(variant 21).value`.
+- `CommandResult(variant 21).value` is now a boolean.
+- Breaking: `CommandResult(variant 22)` was renamed from `IsResult` to `WaitResult`.
+- Updated the docs of `CommandResult(variant 22)`.
+- Breaking: In Node, `CommandResult(variant 22)` is now `WaitResult`.
+- Breaking: In Python, `CommandResult(variant 22)` is now `WaitResult`.
+- Breaking: Removed `CommandResult(variant 22).value`.
+- `CommandResult(variant 22).command` allows `wait`.
+- `CommandResult(variant 22).command` no longer allows `is`.
+- Added `CommandResult(variant 22).bytes`.
+- Added `CommandResult(variant 22).file`.
+- Added `CommandResult(variant 22).waited`.
+- Breaking: `CommandResult(variant 23)` was renamed from `WaitResult` to `ScreenshotResult`.
+- Updated the docs of `CommandResult(variant 23)`.
+- Breaking: In Node, `CommandResult(variant 23)` is now `ScreenshotResult`.
+- Breaking: In Python, `CommandResult(variant 23)` is now `ScreenshotResult`.
+- Breaking: Removed `CommandResult(variant 23).bytes`.
+- Breaking: Removed `CommandResult(variant 23).file`.
+- Breaking: Removed `CommandResult(variant 23).waited`.
+- `CommandResult(variant 23).command` allows `screenshot`.
+- `CommandResult(variant 23).command` no longer allows `wait`.
+- Added `CommandResult(variant 23).data`.
+- Added `CommandResult(variant 23).format`.
+- Breaking: `CommandResult(variant 24)` was renamed from `ScreenshotResult` to `EvalResult`.
+- Updated the docs of `CommandResult(variant 24)`.
+- Breaking: In Node, `CommandResult(variant 24)` is now `EvalResult`.
+- Breaking: In Python, `CommandResult(variant 24)` is now `EvalResult`.
+- Breaking: Removed `CommandResult(variant 24).data`.
+- Breaking: Removed `CommandResult(variant 24).format`.
+- `CommandResult(variant 24).command` allows `eval`.
+- `CommandResult(variant 24).command` no longer allows `screenshot`.
+- Added `CommandResult(variant 24).dialog`.
+- Added `CommandResult(variant 24).loading`.
+- Added `CommandResult(variant 24).opened`.
+- Added `CommandResult(variant 24).value`.
+- Breaking: `CommandResult(variant 25)` was renamed from `EvalResult` to `PdfResult`.
+- Updated the docs of `CommandResult(variant 25)`.
+- Breaking: In Node, `CommandResult(variant 25)` is now `PdfResult`.
+- Breaking: In Python, `CommandResult(variant 25)` is now `PdfResult`.
+- Breaking: Removed `CommandResult(variant 25).dialog`.
+- Breaking: Removed `CommandResult(variant 25).loading`.
+- Breaking: Removed `CommandResult(variant 25).value`.
+- `CommandResult(variant 25).command` allows `pdf`.
+- `CommandResult(variant 25).command` no longer allows `eval`.
+- Added `CommandResult(variant 25).data`.
+- Added `CommandResult(variant 25).format`.
+- Breaking: `CommandResult(variant 26)` was renamed from `PdfResult` to `ScrollResult`.
+- Updated the docs of `CommandResult(variant 26)`.
+- Breaking: In Node, `CommandResult(variant 26)` is now `ScrollResult`.
+- Breaking: In Python, `CommandResult(variant 26)` is now `ScrollResult`.
+- Breaking: Removed `CommandResult(variant 26).data`.
+- Breaking: Removed `CommandResult(variant 26).format`.
+- `CommandResult(variant 26).command` allows `scroll`.
+- `CommandResult(variant 26).command` no longer allows `pdf`.
+- Added `CommandResult(variant 26).moved`.
+- Added `CommandResult(variant 26).x`.
+- Added `CommandResult(variant 26).y`.
+- Breaking: `CommandResult(variant 27)` was renamed from `ScrollResult` to `FindResult`.
+- Updated the docs of `CommandResult(variant 27)`.
+- Breaking: In Node, `CommandResult(variant 27)` is now `FindResult`.
+- Breaking: In Python, `CommandResult(variant 27)` is now `FindResult`.
+- Breaking: Removed `CommandResult(variant 27).moved`.
+- Breaking: Removed `CommandResult(variant 27).x`.
+- Breaking: Removed `CommandResult(variant 27).y`.
+- `CommandResult(variant 27).command` allows `find`.
+- `CommandResult(variant 27).command` no longer allows `scroll`.
+- Added `CommandResult(variant 27).count`.
+- Added `CommandResult(variant 27).matches`.
+- Breaking: `CommandResult(variant 28)` was renamed from `FindResult` to `TabResult`.
+- Updated the docs of `CommandResult(variant 28)`.
+- Breaking: In Node, `CommandResult(variant 28)` is now `TabResult`.
+- Breaking: In Python, `CommandResult(variant 28)` is now `TabResult`.
+- Breaking: Removed `CommandResult(variant 28).count`.
+- Breaking: Removed `CommandResult(variant 28).matches`.
+- `CommandResult(variant 28).command` allows `tab`.
+- `CommandResult(variant 28).command` no longer allows `find`.
+- Added `CommandResult(variant 28).loading`.
+- Added `CommandResult(variant 28).tab`.
+- Added `CommandResult(variant 28).tabs`.
+- Breaking: `CommandResult(variant 29)` was renamed from `TabResult` to `DialogResult`.
+- Updated the docs of `CommandResult(variant 29)`.
+- Breaking: In Node, `CommandResult(variant 29)` is now `DialogResult`.
+- Breaking: In Python, `CommandResult(variant 29)` is now `DialogResult`.
+- Breaking: Removed `CommandResult(variant 29).tab`.
+- Breaking: Removed `CommandResult(variant 29).tabs`.
+- `CommandResult(variant 29).command` allows `dialog`.
+- `CommandResult(variant 29).command` no longer allows `tab`.
+- Added `CommandResult(variant 29).dialog`.
+- Added `CommandResult(variant 29).loading`.
+- Added `CommandResult(variant 29).opened`.
+- Added model `SessionCredentials`.
+- Added model `Vault`.
+- Added model `VaultList`.
+- Updated the generator and the runtimes.
+
 ## 0.23.0 (2026-11-10)
 
 - Breaking: the SDKs switch to the new forms of the commands API below. Browsers still accept the old `status`, `cancel`, `find` and `eventsAfter` forms for now, so older SDKs keep working, and they mark those responses with `x-steel-deprecated`.

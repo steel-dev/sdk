@@ -51,6 +51,8 @@ import dev.steel.api.services.blocking.sessions.CaptchaService
 import dev.steel.api.services.blocking.sessions.CaptchaServiceImpl
 import dev.steel.api.services.blocking.sessions.CommandExecutionService
 import dev.steel.api.services.blocking.sessions.CommandExecutionServiceImpl
+import dev.steel.api.services.blocking.sessions.CredentialService
+import dev.steel.api.services.blocking.sessions.CredentialServiceImpl
 import dev.steel.api.services.blocking.sessions.FileService
 import dev.steel.api.services.blocking.sessions.FileServiceImpl
 import java.util.function.Consumer
@@ -69,6 +71,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
         CommandExecutionServiceImpl(clientOptions)
     }
 
+    private val credentials: CredentialService by lazy { CredentialServiceImpl(clientOptions) }
+
     private val files: FileService by lazy { FileServiceImpl(clientOptions) }
 
     override fun withRawResponse(): SessionService.WithRawResponse = withRawResponse
@@ -79,6 +83,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
     override fun captchas(): CaptchaService = captchas
 
     override fun commandExecutions(): CommandExecutionService = commandExecutions
+
+    override fun credentials(): CredentialService = credentials
 
     override fun files(): FileService = files
 
@@ -176,6 +182,10 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
             CommandExecutionServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val credentials: CredentialService.WithRawResponse by lazy {
+            CredentialServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val files: FileService.WithRawResponse by lazy {
             FileServiceImpl.WithRawResponseImpl(clientOptions)
         }
@@ -191,6 +201,8 @@ class SessionServiceImpl internal constructor(private val clientOptions: ClientO
 
         override fun commandExecutions(): CommandExecutionService.WithRawResponse =
             commandExecutions
+
+        override fun credentials(): CredentialService.WithRawResponse = credentials
 
         override fun files(): FileService.WithRawResponse = files
 

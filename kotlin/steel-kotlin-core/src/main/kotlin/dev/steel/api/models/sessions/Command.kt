@@ -37,14 +37,13 @@ private constructor(
     private val reload: Reload? = null,
     private val snapshot: Snapshot? = null,
     private val click: Click? = null,
-    private val dblclick: Dblclick? = null,
     private val hover: Hover? = null,
     private val focus: Focus? = null,
     private val type: Type? = null,
     private val fill: Fill? = null,
     private val press: Press? = null,
-    private val keydown: Keydown? = null,
-    private val keyup: Keyup? = null,
+    private val keyboard: Keyboard? = null,
+    private val release: Release? = null,
     private val mouse: Mouse? = null,
     private val select: Select? = null,
     private val check: Check? = null,
@@ -60,6 +59,7 @@ private constructor(
     private val scroll: Scroll? = null,
     private val find: Find? = null,
     private val tab: Tab? = null,
+    private val dialog: Dialog? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -75,8 +75,6 @@ private constructor(
 
     fun click(): Click? = click
 
-    fun dblclick(): Dblclick? = dblclick
-
     fun hover(): Hover? = hover
 
     fun focus(): Focus? = focus
@@ -87,9 +85,9 @@ private constructor(
 
     fun press(): Press? = press
 
-    fun keydown(): Keydown? = keydown
+    fun keyboard(): Keyboard? = keyboard
 
-    fun keyup(): Keyup? = keyup
+    fun release(): Release? = release
 
     fun mouse(): Mouse? = mouse
 
@@ -121,6 +119,8 @@ private constructor(
 
     fun tab(): Tab? = tab
 
+    fun dialog(): Dialog? = dialog
+
     fun isNavigate(): Boolean = navigate != null
 
     fun isBack(): Boolean = back != null
@@ -133,8 +133,6 @@ private constructor(
 
     fun isClick(): Boolean = click != null
 
-    fun isDblclick(): Boolean = dblclick != null
-
     fun isHover(): Boolean = hover != null
 
     fun isFocus(): Boolean = focus != null
@@ -145,9 +143,9 @@ private constructor(
 
     fun isPress(): Boolean = press != null
 
-    fun isKeydown(): Boolean = keydown != null
+    fun isKeyboard(): Boolean = keyboard != null
 
-    fun isKeyup(): Boolean = keyup != null
+    fun isRelease(): Boolean = release != null
 
     fun isMouse(): Boolean = mouse != null
 
@@ -179,6 +177,8 @@ private constructor(
 
     fun isTab(): Boolean = tab != null
 
+    fun isDialog(): Boolean = dialog != null
+
     fun asNavigate(): Navigate = navigate.getOrThrow("navigate")
 
     fun asBack(): Back = back.getOrThrow("back")
@@ -191,8 +191,6 @@ private constructor(
 
     fun asClick(): Click = click.getOrThrow("click")
 
-    fun asDblclick(): Dblclick = dblclick.getOrThrow("dblclick")
-
     fun asHover(): Hover = hover.getOrThrow("hover")
 
     fun asFocus(): Focus = focus.getOrThrow("focus")
@@ -203,9 +201,9 @@ private constructor(
 
     fun asPress(): Press = press.getOrThrow("press")
 
-    fun asKeydown(): Keydown = keydown.getOrThrow("keydown")
+    fun asKeyboard(): Keyboard = keyboard.getOrThrow("keyboard")
 
-    fun asKeyup(): Keyup = keyup.getOrThrow("keyup")
+    fun asRelease(): Release = release.getOrThrow("release")
 
     fun asMouse(): Mouse = mouse.getOrThrow("mouse")
 
@@ -237,6 +235,8 @@ private constructor(
 
     fun asTab(): Tab = tab.getOrThrow("tab")
 
+    fun asDialog(): Dialog = dialog.getOrThrow("dialog")
+
     fun _json(): JsonValue? = _json
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -247,14 +247,13 @@ private constructor(
             reload != null -> visitor.visitReload(reload)
             snapshot != null -> visitor.visitSnapshot(snapshot)
             click != null -> visitor.visitClick(click)
-            dblclick != null -> visitor.visitDblclick(dblclick)
             hover != null -> visitor.visitHover(hover)
             focus != null -> visitor.visitFocus(focus)
             type != null -> visitor.visitType(type)
             fill != null -> visitor.visitFill(fill)
             press != null -> visitor.visitPress(press)
-            keydown != null -> visitor.visitKeydown(keydown)
-            keyup != null -> visitor.visitKeyup(keyup)
+            keyboard != null -> visitor.visitKeyboard(keyboard)
+            release != null -> visitor.visitRelease(release)
             mouse != null -> visitor.visitMouse(mouse)
             select != null -> visitor.visitSelect(select)
             check != null -> visitor.visitCheck(check)
@@ -270,6 +269,7 @@ private constructor(
             scroll != null -> visitor.visitScroll(scroll)
             find != null -> visitor.visitFind(find)
             tab != null -> visitor.visitTab(tab)
+            dialog != null -> visitor.visitDialog(dialog)
             else -> visitor.unknown(_json)
         }
 
@@ -314,10 +314,6 @@ private constructor(
                     click.validate()
                 }
 
-                override fun visitDblclick(dblclick: Dblclick) {
-                    dblclick.validate()
-                }
-
                 override fun visitHover(hover: Hover) {
                     hover.validate()
                 }
@@ -338,12 +334,12 @@ private constructor(
                     press.validate()
                 }
 
-                override fun visitKeydown(keydown: Keydown) {
-                    keydown.validate()
+                override fun visitKeyboard(keyboard: Keyboard) {
+                    keyboard.validate()
                 }
 
-                override fun visitKeyup(keyup: Keyup) {
-                    keyup.validate()
+                override fun visitRelease(release: Release) {
+                    release.validate()
                 }
 
                 override fun visitMouse(mouse: Mouse) {
@@ -405,6 +401,10 @@ private constructor(
                 override fun visitTab(tab: Tab) {
                     tab.validate()
                 }
+
+                override fun visitDialog(dialog: Dialog) {
+                    dialog.validate()
+                }
             }
         )
         validated = true
@@ -426,8 +426,6 @@ private constructor(
 
                 override fun visitClick(click: Click) = click.validity()
 
-                override fun visitDblclick(dblclick: Dblclick) = dblclick.validity()
-
                 override fun visitHover(hover: Hover) = hover.validity()
 
                 override fun visitFocus(focus: Focus) = focus.validity()
@@ -438,9 +436,9 @@ private constructor(
 
                 override fun visitPress(press: Press) = press.validity()
 
-                override fun visitKeydown(keydown: Keydown) = keydown.validity()
+                override fun visitKeyboard(keyboard: Keyboard) = keyboard.validity()
 
-                override fun visitKeyup(keyup: Keyup) = keyup.validity()
+                override fun visitRelease(release: Release) = release.validity()
 
                 override fun visitMouse(mouse: Mouse) = mouse.validity()
 
@@ -472,6 +470,8 @@ private constructor(
 
                 override fun visitTab(tab: Tab) = tab.validity()
 
+                override fun visitDialog(dialog: Dialog) = dialog.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -488,14 +488,13 @@ private constructor(
             this.reload == other.reload &&
             this.snapshot == other.snapshot &&
             this.click == other.click &&
-            this.dblclick == other.dblclick &&
             this.hover == other.hover &&
             this.focus == other.focus &&
             this.type == other.type &&
             this.fill == other.fill &&
             this.press == other.press &&
-            this.keydown == other.keydown &&
-            this.keyup == other.keyup &&
+            this.keyboard == other.keyboard &&
+            this.release == other.release &&
             this.mouse == other.mouse &&
             this.select == other.select &&
             this.check == other.check &&
@@ -510,7 +509,8 @@ private constructor(
             this.pdf == other.pdf &&
             this.scroll == other.scroll &&
             this.find == other.find &&
-            this.tab == other.tab
+            this.tab == other.tab &&
+            this.dialog == other.dialog
     }
 
     override fun hashCode(): Int =
@@ -521,14 +521,13 @@ private constructor(
             reload,
             snapshot,
             click,
-            dblclick,
             hover,
             focus,
             type,
             fill,
             press,
-            keydown,
-            keyup,
+            keyboard,
+            release,
             mouse,
             select,
             check,
@@ -544,6 +543,7 @@ private constructor(
             scroll,
             find,
             tab,
+            dialog,
         )
 
     override fun toString(): String =
@@ -554,14 +554,13 @@ private constructor(
             reload != null -> "Command{reload=$reload}"
             snapshot != null -> "Command{snapshot=$snapshot}"
             click != null -> "Command{click=$click}"
-            dblclick != null -> "Command{dblclick=$dblclick}"
             hover != null -> "Command{hover=$hover}"
             focus != null -> "Command{focus=$focus}"
             type != null -> "Command{type=$type}"
             fill != null -> "Command{fill=$fill}"
             press != null -> "Command{press=$press}"
-            keydown != null -> "Command{keydown=$keydown}"
-            keyup != null -> "Command{keyup=$keyup}"
+            keyboard != null -> "Command{keyboard=$keyboard}"
+            release != null -> "Command{release=$release}"
             mouse != null -> "Command{mouse=$mouse}"
             select != null -> "Command{select=$select}"
             check != null -> "Command{check=$check}"
@@ -577,6 +576,7 @@ private constructor(
             scroll != null -> "Command{scroll=$scroll}"
             find != null -> "Command{find=$find}"
             tab != null -> "Command{tab=$tab}"
+            dialog != null -> "Command{dialog=$dialog}"
             _json != null -> "Command{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid Command")
         }
@@ -595,8 +595,6 @@ private constructor(
 
         @JvmStatic fun ofClick(click: Click) = Command(click = click)
 
-        @JvmStatic fun ofDblclick(dblclick: Dblclick) = Command(dblclick = dblclick)
-
         @JvmStatic fun ofHover(hover: Hover) = Command(hover = hover)
 
         @JvmStatic fun ofFocus(focus: Focus) = Command(focus = focus)
@@ -607,9 +605,9 @@ private constructor(
 
         @JvmStatic fun ofPress(press: Press) = Command(press = press)
 
-        @JvmStatic fun ofKeydown(keydown: Keydown) = Command(keydown = keydown)
+        @JvmStatic fun ofKeyboard(keyboard: Keyboard) = Command(keyboard = keyboard)
 
-        @JvmStatic fun ofKeyup(keyup: Keyup) = Command(keyup = keyup)
+        @JvmStatic fun ofRelease(release: Release) = Command(release = release)
 
         @JvmStatic fun ofMouse(mouse: Mouse) = Command(mouse = mouse)
 
@@ -640,6 +638,8 @@ private constructor(
         @JvmStatic fun ofFind(find: Find) = Command(find = find)
 
         @JvmStatic fun ofTab(tab: Tab) = Command(tab = tab)
+
+        @JvmStatic fun ofDialog(dialog: Dialog) = Command(dialog = dialog)
     }
 
     interface Visitor<out T> {
@@ -656,8 +656,6 @@ private constructor(
 
         fun visitClick(click: Click): T
 
-        fun visitDblclick(dblclick: Dblclick): T
-
         fun visitHover(hover: Hover): T
 
         fun visitFocus(focus: Focus): T
@@ -668,9 +666,9 @@ private constructor(
 
         fun visitPress(press: Press): T
 
-        fun visitKeydown(keydown: Keydown): T
+        fun visitKeyboard(keyboard: Keyboard): T
 
-        fun visitKeyup(keyup: Keyup): T
+        fun visitRelease(release: Release): T
 
         fun visitMouse(mouse: Mouse): T
 
@@ -702,6 +700,8 @@ private constructor(
 
         fun visitTab(tab: Tab): T
 
+        fun visitDialog(dialog: Dialog): T
+
         fun unknown(json: JsonValue?): T {
             throw SteelInvalidDataException("Unknown Command: $json")
         }
@@ -731,9 +731,6 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Click>())?.let {
                             Command(click = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<Dblclick>())?.let {
-                            Command(dblclick = it, _json = json)
-                        },
                         tryDeserialize(node, jacksonTypeRef<Hover>())?.let {
                             Command(hover = it, _json = json)
                         },
@@ -749,11 +746,11 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Press>())?.let {
                             Command(press = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<Keydown>())?.let {
-                            Command(keydown = it, _json = json)
+                        tryDeserialize(node, jacksonTypeRef<Keyboard>())?.let {
+                            Command(keyboard = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<Keyup>())?.let {
-                            Command(keyup = it, _json = json)
+                        tryDeserialize(node, jacksonTypeRef<Release>())?.let {
+                            Command(release = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<Mouse>())?.let {
                             Command(mouse = it, _json = json)
@@ -800,6 +797,9 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Tab>())?.let {
                             Command(tab = it, _json = json)
                         },
+                        tryDeserialize(node, jacksonTypeRef<Dialog>())?.let {
+                            Command(dialog = it, _json = json)
+                        },
                     )
                     .filterNotNull()
                     .allMaxBy { it.validity() }
@@ -826,14 +826,13 @@ private constructor(
                 value.reload != null -> generator.writeObject(value.reload)
                 value.snapshot != null -> generator.writeObject(value.snapshot)
                 value.click != null -> generator.writeObject(value.click)
-                value.dblclick != null -> generator.writeObject(value.dblclick)
                 value.hover != null -> generator.writeObject(value.hover)
                 value.focus != null -> generator.writeObject(value.focus)
                 value.type != null -> generator.writeObject(value.type)
                 value.fill != null -> generator.writeObject(value.fill)
                 value.press != null -> generator.writeObject(value.press)
-                value.keydown != null -> generator.writeObject(value.keydown)
-                value.keyup != null -> generator.writeObject(value.keyup)
+                value.keyboard != null -> generator.writeObject(value.keyboard)
+                value.release != null -> generator.writeObject(value.release)
                 value.mouse != null -> generator.writeObject(value.mouse)
                 value.select != null -> generator.writeObject(value.select)
                 value.check != null -> generator.writeObject(value.check)
@@ -849,6 +848,7 @@ private constructor(
                 value.scroll != null -> generator.writeObject(value.scroll)
                 value.find != null -> generator.writeObject(value.find)
                 value.tab != null -> generator.writeObject(value.tab)
+                value.dialog != null -> generator.writeObject(value.dialog)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid Command")
             }
@@ -1620,6 +1620,8 @@ private constructor(
     private constructor(
         private val command: JsonValue,
         private val target: JsonField<CommandTarget>,
+        private val button: JsonField<Command.Click.Button>,
+        private val clicks: JsonField<Long>,
         private val expect: JsonField<CommandExpectation>,
         private val frame: JsonField<CommandFrame>,
         private val tab: JsonField<String>,
@@ -1632,6 +1634,10 @@ private constructor(
             @JsonProperty("target")
             @ExcludeMissing
             target: JsonField<CommandTarget> = JsonMissing.of(),
+            @JsonProperty("button")
+            @ExcludeMissing
+            button: JsonField<Command.Click.Button> = JsonMissing.of(),
+            @JsonProperty("clicks") @ExcludeMissing clicks: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("expect")
             @ExcludeMissing
             expect: JsonField<CommandExpectation> = JsonMissing.of(),
@@ -1639,10 +1645,16 @@ private constructor(
             @ExcludeMissing
             frame: JsonField<CommandFrame> = JsonMissing.of(),
             @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-        ) : this(command, target, expect, frame, tab, mutableMapOf())
+        ) : this(command, target, button, clicks, expect, frame, tab, mutableMapOf())
 
         /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
         fun target(): CommandTarget = target.getRequired("target")
+
+        /** left by default. */
+        fun button(): Command.Click.Button? = button.getNullable("button")
+
+        /** 2 makes a double click and 3 a triple click. 1 by default. */
+        fun clicks(): Long? = clicks.getNullable("clicks")
 
         /** Fails the command when the element does not have this role or name. */
         fun expect(): CommandExpectation? = expect.getNullable("expect")
@@ -1657,6 +1669,12 @@ private constructor(
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
         @JsonProperty("target") @ExcludeMissing fun _target(): JsonField<CommandTarget> = target
+
+        @JsonProperty("button")
+        @ExcludeMissing
+        fun _button(): JsonField<Command.Click.Button> = button
+
+        @JsonProperty("clicks") @ExcludeMissing fun _clicks(): JsonField<Long> = clicks
 
         @JsonProperty("expect")
         @ExcludeMissing
@@ -1689,6 +1707,8 @@ private constructor(
 
             private var command: JsonValue = JsonValue.from("click")
             private var target: JsonField<CommandTarget>? = null
+            private var button: JsonField<Command.Click.Button> = JsonMissing.of()
+            private var clicks: JsonField<Long> = JsonMissing.of()
             private var expect: JsonField<CommandExpectation> = JsonMissing.of()
             private var frame: JsonField<CommandFrame> = JsonMissing.of()
             private var tab: JsonField<String> = JsonMissing.of()
@@ -1698,6 +1718,8 @@ private constructor(
             internal fun from(click: Click) = apply {
                 this.command = click.command
                 this.target = click.target
+                this.button = click.button
+                this.clicks = click.clicks
                 this.expect = click.expect
                 this.frame = click.frame
                 this.tab = click.tab
@@ -1718,6 +1740,18 @@ private constructor(
             /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
             fun target(commandLocator: CommandLocator) =
                 target(CommandTarget.ofCommandLocator(commandLocator))
+
+            /** left by default. */
+            fun button(button: Command.Click.Button) = button(JsonField.of(button))
+
+            /** left by default. */
+            fun button(button: JsonField<Command.Click.Button>) = apply { this.button = button }
+
+            /** 2 makes a double click and 3 a triple click. 1 by default. */
+            fun clicks(clicks: Long) = clicks(JsonField.of(clicks))
+
+            /** 2 makes a double click and 3 a triple click. 1 by default. */
+            fun clicks(clicks: JsonField<Long>) = apply { this.clicks = clicks }
 
             /** Fails the command when the element does not have this role or name. */
             fun expect(expect: CommandExpectation) = expect(JsonField.of(expect))
@@ -1771,6 +1805,8 @@ private constructor(
                 Click(
                     command,
                     checkRequired("target", target),
+                    button,
+                    clicks,
                     expect,
                     frame,
                     tab,
@@ -1799,6 +1835,8 @@ private constructor(
                 }
             }
             target().validate()
+            button()?.let { it.validate() }
+            clicks()
             expect()?.let { it.validate() }
             frame()?.let { it.validate() }
             tab()
@@ -1809,9 +1847,94 @@ private constructor(
         internal fun validity(): Int =
             (command.let { if (it == JsonValue.from("click")) 1 else 0 }) +
                 (target.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (button.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (clicks.asKnown().isPresent) 1 else 0) +
                 (expect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (frame.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (tab.asKnown().isPresent) 1 else 0)
+
+        class Button @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LEFT = of("left")
+
+                @JvmField val RIGHT = of("right")
+
+                @JvmField val MIDDLE = of("middle")
+
+                @JvmStatic fun of(value: String) = Button(JsonField.of(value))
+            }
+
+            enum class Known {
+                LEFT,
+                RIGHT,
+                MIDDLE,
+            }
+
+            enum class Value {
+                LEFT,
+                RIGHT,
+                MIDDLE,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    LEFT -> Value.LEFT
+                    RIGHT -> Value.RIGHT
+                    MIDDLE -> Value.MIDDLE
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    LEFT -> Known.LEFT
+                    RIGHT -> Known.RIGHT
+                    MIDDLE -> Known.MIDDLE
+                    else -> throw SteelInvalidDataException("Unknown Button: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Button = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Button && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -1821,6 +1944,8 @@ private constructor(
             return other is Click &&
                 this.command == other.command &&
                 this.target == other.target &&
+                this.button == other.button &&
+                this.clicks == other.clicks &&
                 this.expect == other.expect &&
                 this.frame == other.frame &&
                 this.tab == other.tab &&
@@ -1828,236 +1953,13 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, target, expect, frame, tab, additionalProperties)
+            Objects.hash(command, target, button, clicks, expect, frame, tab, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Click{command=$command, target=$target, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
-    }
-
-    /** Double-clicks the element with the mouse. */
-    class Dblclick
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val command: JsonValue,
-        private val target: JsonField<CommandTarget>,
-        private val expect: JsonField<CommandExpectation>,
-        private val frame: JsonField<CommandFrame>,
-        private val tab: JsonField<String>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("target")
-            @ExcludeMissing
-            target: JsonField<CommandTarget> = JsonMissing.of(),
-            @JsonProperty("expect")
-            @ExcludeMissing
-            expect: JsonField<CommandExpectation> = JsonMissing.of(),
-            @JsonProperty("frame")
-            @ExcludeMissing
-            frame: JsonField<CommandFrame> = JsonMissing.of(),
-            @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-        ) : this(command, target, expect, frame, tab, mutableMapOf())
-
-        /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-        fun target(): CommandTarget = target.getRequired("target")
-
-        /** Fails the command when the element does not have this role or name. */
-        fun expect(): CommandExpectation? = expect.getNullable("expect")
-
-        /** The iframe to look in. List nested iframes from the outside in. */
-        fun frame(): CommandFrame? = frame.getNullable("frame")
-
-        /** A tab id such as t2. A command on a ref does not need it. */
-        fun tab(): String? = tab.getNullable("tab")
-
-        /** Expected to always return `JsonValue.from("dblclick")`. It is set by default. */
-        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("target") @ExcludeMissing fun _target(): JsonField<CommandTarget> = target
-
-        @JsonProperty("expect")
-        @ExcludeMissing
-        fun _expect(): JsonField<CommandExpectation> = expect
-
-        @JsonProperty("frame") @ExcludeMissing fun _frame(): JsonField<CommandFrame> = frame
-
-        @JsonProperty("tab") @ExcludeMissing fun _tab(): JsonField<String> = tab
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Dblclick]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Dblclick]. */
-        class Builder internal constructor() {
-
-            private var command: JsonValue = JsonValue.from("dblclick")
-            private var target: JsonField<CommandTarget>? = null
-            private var expect: JsonField<CommandExpectation> = JsonMissing.of()
-            private var frame: JsonField<CommandFrame> = JsonMissing.of()
-            private var tab: JsonField<String> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(dblclick: Dblclick) = apply {
-                this.command = dblclick.command
-                this.target = dblclick.target
-                this.expect = dblclick.expect
-                this.frame = dblclick.frame
-                this.tab = dblclick.tab
-                this.additionalProperties = dblclick.additionalProperties.toMutableMap()
-            }
-
-            fun command(command: JsonValue) = apply { this.command = command }
-
-            /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-            fun target(target: CommandTarget) = target(JsonField.of(target))
-
-            /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-            fun target(target: JsonField<CommandTarget>) = apply { this.target = target }
-
-            /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-            fun target(string: String) = target(CommandTarget.ofString(string))
-
-            /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-            fun target(commandLocator: CommandLocator) =
-                target(CommandTarget.ofCommandLocator(commandLocator))
-
-            /** Fails the command when the element does not have this role or name. */
-            fun expect(expect: CommandExpectation) = expect(JsonField.of(expect))
-
-            /** Fails the command when the element does not have this role or name. */
-            fun expect(expect: JsonField<CommandExpectation>) = apply { this.expect = expect }
-
-            /** The iframe to look in. List nested iframes from the outside in. */
-            fun frame(frame: CommandFrame) = frame(JsonField.of(frame))
-
-            /** The iframe to look in. List nested iframes from the outside in. */
-            fun frame(frame: JsonField<CommandFrame>) = apply { this.frame = frame }
-
-            /** The iframe to look in. List nested iframes from the outside in. */
-            fun frame(string: String) = frame(CommandFrame.ofString(string))
-
-            /** The iframe to look in. List nested iframes from the outside in. */
-            fun frame(commandLocator: CommandLocator) =
-                frame(CommandFrame.ofCommandLocator(commandLocator))
-
-            /** The iframe to look in. List nested iframes from the outside in. */
-            fun frame(unionMember2: List<CommandTarget>) =
-                frame(CommandFrame.ofUnionMember2(unionMember2))
-
-            /** A tab id such as t2. A command on a ref does not need it. */
-            fun tab(tab: String) = tab(JsonField.of(tab))
-
-            /** A tab id such as t2. A command on a ref does not need it. */
-            fun tab(tab: JsonField<String>) = apply { this.tab = tab }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Dblclick =
-                Dblclick(
-                    command,
-                    checkRequired("target", target),
-                    expect,
-                    frame,
-                    tab,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Dblclick = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _command().let {
-                if (it != JsonValue.from("dblclick")) {
-                    throw SteelInvalidDataException("'command' is invalid, received $it")
-                }
-            }
-            target().validate()
-            expect()?.let { it.validate() }
-            frame()?.let { it.validate() }
-            tab()
-            validated = true
-        }
-
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("dblclick")) 1 else 0 }) +
-                (target.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (expect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (frame.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (tab.asKnown().isPresent) 1 else 0)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Dblclick &&
-                this.command == other.command &&
-                this.target == other.target &&
-                this.expect == other.expect &&
-                this.frame == other.frame &&
-                this.tab == other.tab &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(command, target, expect, frame, tab, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Dblclick{command=$command, target=$target, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
+            "Click{command=$command, target=$target, button=$button, clicks=$clicks, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
     }
 
     /** Moves the mouse onto the element. */
@@ -3032,7 +2934,10 @@ private constructor(
             "Fill{command=$command, target=$target, value=$value, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
     }
 
-    /** Presses a key, such as Enter, or a combination such as Control+a. */
+    /**
+     * Presses a key, such as Enter, or a combination such as Control+a. On a tab with an open
+     * dialog, Enter without a target accepts the dialog and Escape dismisses it.
+     */
     class Press
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
@@ -3271,10 +3176,11 @@ private constructor(
             "Press{command=$command, key=$key, expect=$expect, frame=$frame, tab=$tab, target=$target, additionalProperties=$additionalProperties}"
     }
 
-    /** Holds a key down until its keyup. */
-    class Keydown
+    /** Holds a key down, or lets go of a key held down. */
+    class Keyboard
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val action: JsonField<Command.Keyboard.Action>,
         private val command: JsonValue,
         private val key: JsonField<String>,
         private val tab: JsonField<String>,
@@ -3283,17 +3189,27 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("action")
+            @ExcludeMissing
+            action: JsonField<Command.Keyboard.Action> = JsonMissing.of(),
             @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
             @JsonProperty("key") @ExcludeMissing key: JsonField<String> = JsonMissing.of(),
             @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-        ) : this(command, key, tab, mutableMapOf())
+        ) : this(action, command, key, tab, mutableMapOf())
 
+        fun action(): Command.Keyboard.Action = action.getRequired("action")
+
+        /** One key, not a combination such as Control+a. */
         fun key(): String = key.getRequired("key")
 
         /** A tab id such as t2. A command on a ref does not need it. */
         fun tab(): String? = tab.getNullable("tab")
 
-        /** Expected to always return `JsonValue.from("keydown")`. It is set by default. */
+        @JsonProperty("action")
+        @ExcludeMissing
+        fun _action(): JsonField<Command.Keyboard.Action> = action
+
+        /** Expected to always return `JsonValue.from("keyboard")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
         @JsonProperty("key") @ExcludeMissing fun _key(): JsonField<String> = key
@@ -3314,30 +3230,38 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Keydown]. */
+            /** Returns a mutable builder for constructing an instance of [Keyboard]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [Keydown]. */
+        /** A builder for [Keyboard]. */
         class Builder internal constructor() {
 
-            private var command: JsonValue = JsonValue.from("keydown")
+            private var action: JsonField<Command.Keyboard.Action>? = null
+            private var command: JsonValue = JsonValue.from("keyboard")
             private var key: JsonField<String>? = null
             private var tab: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(keydown: Keydown) = apply {
-                this.command = keydown.command
-                this.key = keydown.key
-                this.tab = keydown.tab
-                this.additionalProperties = keydown.additionalProperties.toMutableMap()
+            internal fun from(keyboard: Keyboard) = apply {
+                this.action = keyboard.action
+                this.command = keyboard.command
+                this.key = keyboard.key
+                this.tab = keyboard.tab
+                this.additionalProperties = keyboard.additionalProperties.toMutableMap()
             }
+
+            fun action(action: Command.Keyboard.Action) = action(JsonField.of(action))
+
+            fun action(action: JsonField<Command.Keyboard.Action>) = apply { this.action = action }
 
             fun command(command: JsonValue) = apply { this.command = command }
 
+            /** One key, not a combination such as Control+a. */
             fun key(key: String) = key(JsonField.of(key))
 
+            /** One key, not a combination such as Control+a. */
             fun key(key: JsonField<String>) = apply { this.key = key }
 
             /** A tab id such as t2. A command on a ref does not need it. */
@@ -3365,8 +3289,9 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Keydown =
-                Keydown(
+            fun build(): Keyboard =
+                Keyboard(
+                    checkRequired("action", action),
                     command,
                     checkRequired("key", key),
                     tab,
@@ -3384,13 +3309,14 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Keydown = apply {
+        fun validate(): Keyboard = apply {
             if (validated) {
                 return@apply
             }
 
+            action().validate()
             _command().let {
-                if (it != JsonValue.from("keydown")) {
+                if (it != JsonValue.from("keyboard")) {
                     throw SteelInvalidDataException("'command' is invalid, received $it")
                 }
             }
@@ -3401,36 +3327,116 @@ private constructor(
 
         @JvmSynthetic
         internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("keydown")) 1 else 0 }) +
+            (action.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (command.let { if (it == JsonValue.from("keyboard")) 1 else 0 }) +
                 (if (key.asKnown().isPresent) 1 else 0) +
                 (if (tab.asKnown().isPresent) 1 else 0)
+
+        class Action @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val DOWN = of("down")
+
+                @JvmField val UP = of("up")
+
+                @JvmStatic fun of(value: String) = Action(JsonField.of(value))
+            }
+
+            enum class Known {
+                DOWN,
+                UP,
+            }
+
+            enum class Value {
+                DOWN,
+                UP,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    DOWN -> Value.DOWN
+                    UP -> Value.UP
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    DOWN -> Known.DOWN
+                    UP -> Known.UP
+                    else -> throw SteelInvalidDataException("Unknown Action: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Action = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Action && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
             }
 
-            return other is Keydown &&
+            return other is Keyboard &&
+                this.action == other.action &&
                 this.command == other.command &&
                 this.key == other.key &&
                 this.tab == other.tab &&
                 this.additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(command, key, tab, additionalProperties) }
+        private val hashCode: Int by lazy {
+            Objects.hash(action, command, key, tab, additionalProperties)
+        }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Keydown{command=$command, key=$key, tab=$tab, additionalProperties=$additionalProperties}"
+            "Keyboard{action=$action, command=$command, key=$key, tab=$tab, additionalProperties=$additionalProperties}"
     }
 
-    /** Lets go of a key held with keydown. */
-    class Keyup
+    /** Lets go of every key and mouse button held on the tab. */
+    class Release
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val command: JsonValue,
-        private val key: JsonField<String>,
         private val tab: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -3438,19 +3444,14 @@ private constructor(
         @JsonCreator
         private constructor(
             @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("key") @ExcludeMissing key: JsonField<String> = JsonMissing.of(),
             @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-        ) : this(command, key, tab, mutableMapOf())
-
-        fun key(): String = key.getRequired("key")
+        ) : this(command, tab, mutableMapOf())
 
         /** A tab id such as t2. A command on a ref does not need it. */
         fun tab(): String? = tab.getNullable("tab")
 
-        /** Expected to always return `JsonValue.from("keyup")`. It is set by default. */
+        /** Expected to always return `JsonValue.from("release")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("key") @ExcludeMissing fun _key(): JsonField<String> = key
 
         @JsonProperty("tab") @ExcludeMissing fun _tab(): JsonField<String> = tab
 
@@ -3468,31 +3469,25 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Keyup]. */
+            /** Returns a mutable builder for constructing an instance of [Release]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [Keyup]. */
+        /** A builder for [Release]. */
         class Builder internal constructor() {
 
-            private var command: JsonValue = JsonValue.from("keyup")
-            private var key: JsonField<String>? = null
+            private var command: JsonValue = JsonValue.from("release")
             private var tab: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(keyup: Keyup) = apply {
-                this.command = keyup.command
-                this.key = keyup.key
-                this.tab = keyup.tab
-                this.additionalProperties = keyup.additionalProperties.toMutableMap()
+            internal fun from(release: Release) = apply {
+                this.command = release.command
+                this.tab = release.tab
+                this.additionalProperties = release.additionalProperties.toMutableMap()
             }
 
             fun command(command: JsonValue) = apply { this.command = command }
-
-            fun key(key: String) = key(JsonField.of(key))
-
-            fun key(key: JsonField<String>) = apply { this.key = key }
 
             /** A tab id such as t2. A command on a ref does not need it. */
             fun tab(tab: String) = tab(JsonField.of(tab))
@@ -3519,8 +3514,7 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Keyup =
-                Keyup(command, checkRequired("key", key), tab, additionalProperties.toMutableMap())
+            fun build(): Release = Release(command, tab, additionalProperties.toMutableMap())
         }
 
         fun isValid(): Boolean =
@@ -3533,25 +3527,23 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Keyup = apply {
+        fun validate(): Release = apply {
             if (validated) {
                 return@apply
             }
 
             _command().let {
-                if (it != JsonValue.from("keyup")) {
+                if (it != JsonValue.from("release")) {
                     throw SteelInvalidDataException("'command' is invalid, received $it")
                 }
             }
-            key()
             tab()
             validated = true
         }
 
         @JvmSynthetic
         internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("keyup")) 1 else 0 }) +
-                (if (key.asKnown().isPresent) 1 else 0) +
+            (command.let { if (it == JsonValue.from("release")) 1 else 0 }) +
                 (if (tab.asKnown().isPresent) 1 else 0)
 
         override fun equals(other: Any?): Boolean {
@@ -3559,19 +3551,18 @@ private constructor(
                 return true
             }
 
-            return other is Keyup &&
+            return other is Release &&
                 this.command == other.command &&
-                this.key == other.key &&
                 this.tab == other.tab &&
                 this.additionalProperties == other.additionalProperties
         }
 
-        private val hashCode: Int by lazy { Objects.hash(command, key, tab, additionalProperties) }
+        private val hashCode: Int by lazy { Objects.hash(command, tab, additionalProperties) }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Keyup{command=$command, key=$key, tab=$tab, additionalProperties=$additionalProperties}"
+            "Release{command=$command, tab=$tab, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -3583,7 +3574,7 @@ private constructor(
     private constructor(
         private val action: JsonField<Command.Mouse.Action>,
         private val command: JsonValue,
-        private val button: JsonField<Button>,
+        private val button: JsonField<Command.Mouse.Button>,
         private val clicks: JsonField<Long>,
         private val deltaX: JsonField<Double>,
         private val deltaY: JsonField<Double>,
@@ -3599,7 +3590,9 @@ private constructor(
             @ExcludeMissing
             action: JsonField<Command.Mouse.Action> = JsonMissing.of(),
             @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("button") @ExcludeMissing button: JsonField<Button> = JsonMissing.of(),
+            @JsonProperty("button")
+            @ExcludeMissing
+            button: JsonField<Command.Mouse.Button> = JsonMissing.of(),
             @JsonProperty("clicks") @ExcludeMissing clicks: JsonField<Long> = JsonMissing.of(),
             @JsonProperty("deltaX") @ExcludeMissing deltaX: JsonField<Double> = JsonMissing.of(),
             @JsonProperty("deltaY") @ExcludeMissing deltaY: JsonField<Double> = JsonMissing.of(),
@@ -3610,7 +3603,7 @@ private constructor(
 
         fun action(): Command.Mouse.Action = action.getRequired("action")
 
-        fun button(): Button? = button.getNullable("button")
+        fun button(): Command.Mouse.Button? = button.getNullable("button")
 
         fun clicks(): Long? = clicks.getNullable("clicks")
 
@@ -3632,7 +3625,9 @@ private constructor(
         /** Expected to always return `JsonValue.from("mouse")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
-        @JsonProperty("button") @ExcludeMissing fun _button(): JsonField<Button> = button
+        @JsonProperty("button")
+        @ExcludeMissing
+        fun _button(): JsonField<Command.Mouse.Button> = button
 
         @JsonProperty("clicks") @ExcludeMissing fun _clicks(): JsonField<Long> = clicks
 
@@ -3669,7 +3664,7 @@ private constructor(
 
             private var action: JsonField<Command.Mouse.Action>? = null
             private var command: JsonValue = JsonValue.from("mouse")
-            private var button: JsonField<Button> = JsonMissing.of()
+            private var button: JsonField<Command.Mouse.Button> = JsonMissing.of()
             private var clicks: JsonField<Long> = JsonMissing.of()
             private var deltaX: JsonField<Double> = JsonMissing.of()
             private var deltaY: JsonField<Double> = JsonMissing.of()
@@ -3698,9 +3693,9 @@ private constructor(
 
             fun command(command: JsonValue) = apply { this.command = command }
 
-            fun button(button: Button) = button(JsonField.of(button))
+            fun button(button: Command.Mouse.Button) = button(JsonField.of(button))
 
-            fun button(button: JsonField<Button>) = apply { this.button = button }
+            fun button(button: JsonField<Command.Mouse.Button>) = apply { this.button = button }
 
             fun clicks(clicks: Long) = clicks(JsonField.of(clicks))
 
@@ -7118,6 +7113,10 @@ private constructor(
             @JsonProperty("timeout") @ExcludeMissing timeout: JsonField<Long> = JsonMissing.of(),
         ) : this(command, script, tab, timeout, mutableMapOf())
 
+        /**
+         * An expression, or an async function body that gives its value with return. A promise
+         * result is awaited.
+         */
         fun script(): String = script.getRequired("script")
 
         /** A tab id such as t2. A command on a ref does not need it. */
@@ -7173,8 +7172,16 @@ private constructor(
 
             fun command(command: JsonValue) = apply { this.command = command }
 
+            /**
+             * An expression, or an async function body that gives its value with return. A promise
+             * result is awaited.
+             */
             fun script(script: String) = script(JsonField.of(script))
 
+            /**
+             * An expression, or an async function body that gives its value with return. A promise
+             * result is awaited.
+             */
             fun script(script: JsonField<String>) = apply { this.script = script }
 
             /** A tab id such as t2. A command on a ref does not need it. */
@@ -8269,5 +8276,273 @@ private constructor(
 
         override fun toString() =
             "Tab{action=$action, command=$command, tab=$tab, url=$url, additionalProperties=$additionalProperties}"
+    }
+
+    /**
+     * Answers an open dialog. It never sends a key to the page, and fails if the dialog is not
+     * open.
+     */
+    class Dialog
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val action: JsonField<Command.Dialog.Action>,
+        private val command: JsonValue,
+        private val dialog: JsonField<String>,
+        private val text: JsonField<String>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("action")
+            @ExcludeMissing
+            action: JsonField<Command.Dialog.Action> = JsonMissing.of(),
+            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
+            @JsonProperty("dialog") @ExcludeMissing dialog: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+        ) : this(action, command, dialog, text, mutableMapOf())
+
+        fun action(): Command.Dialog.Action = action.getRequired("action")
+
+        /** The id of the dialog, such as d-3, from dialog in a response. */
+        fun dialog(): String = dialog.getRequired("dialog")
+
+        /**
+         * The answer to a prompt. Works only with accept. A prompt gets its default text without
+         * it.
+         */
+        fun text(): String? = text.getNullable("text")
+
+        @JsonProperty("action")
+        @ExcludeMissing
+        fun _action(): JsonField<Command.Dialog.Action> = action
+
+        /** Expected to always return `JsonValue.from("dialog")`. It is set by default. */
+        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
+
+        @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<String> = dialog
+
+        @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Dialog]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Dialog]. */
+        class Builder internal constructor() {
+
+            private var action: JsonField<Command.Dialog.Action>? = null
+            private var command: JsonValue = JsonValue.from("dialog")
+            private var dialog: JsonField<String>? = null
+            private var text: JsonField<String> = JsonMissing.of()
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(dialog: Dialog) = apply {
+                this.action = dialog.action
+                this.command = dialog.command
+                this.dialog = dialog.dialog
+                this.text = dialog.text
+                this.additionalProperties = dialog.additionalProperties.toMutableMap()
+            }
+
+            fun action(action: Command.Dialog.Action) = action(JsonField.of(action))
+
+            fun action(action: JsonField<Command.Dialog.Action>) = apply { this.action = action }
+
+            fun command(command: JsonValue) = apply { this.command = command }
+
+            /** The id of the dialog, such as d-3, from dialog in a response. */
+            fun dialog(dialog: String) = dialog(JsonField.of(dialog))
+
+            /** The id of the dialog, such as d-3, from dialog in a response. */
+            fun dialog(dialog: JsonField<String>) = apply { this.dialog = dialog }
+
+            /**
+             * The answer to a prompt. Works only with accept. A prompt gets its default text
+             * without it.
+             */
+            fun text(text: String) = text(JsonField.of(text))
+
+            /**
+             * The answer to a prompt. Works only with accept. A prompt gets its default text
+             * without it.
+             */
+            fun text(text: JsonField<String>) = apply { this.text = text }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): Dialog =
+                Dialog(
+                    checkRequired("action", action),
+                    command,
+                    checkRequired("dialog", dialog),
+                    text,
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: SteelInvalidDataException) {
+                false
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Dialog = apply {
+            if (validated) {
+                return@apply
+            }
+
+            action().validate()
+            _command().let {
+                if (it != JsonValue.from("dialog")) {
+                    throw SteelInvalidDataException("'command' is invalid, received $it")
+                }
+            }
+            dialog()
+            text()
+            validated = true
+        }
+
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (action.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (command.let { if (it == JsonValue.from("dialog")) 1 else 0 }) +
+                (if (dialog.asKnown().isPresent) 1 else 0) +
+                (if (text.asKnown().isPresent) 1 else 0)
+
+        class Action @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val ACCEPT = of("accept")
+
+                @JvmField val DISMISS = of("dismiss")
+
+                @JvmStatic fun of(value: String) = Action(JsonField.of(value))
+            }
+
+            enum class Known {
+                ACCEPT,
+                DISMISS,
+            }
+
+            enum class Value {
+                ACCEPT,
+                DISMISS,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    ACCEPT -> Value.ACCEPT
+                    DISMISS -> Value.DISMISS
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    ACCEPT -> Known.ACCEPT
+                    DISMISS -> Known.DISMISS
+                    else -> throw SteelInvalidDataException("Unknown Action: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Action = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Action && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Dialog &&
+                this.action == other.action &&
+                this.command == other.command &&
+                this.dialog == other.dialog &&
+                this.text == other.text &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(action, command, dialog, text, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Dialog{action=$action, command=$command, dialog=$dialog, text=$text, additionalProperties=$additionalProperties}"
     }
 }

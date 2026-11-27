@@ -78,6 +78,7 @@ Types:
 - <code><a href="./src/resources/profiles.ts">ProfileCreateResponse</a></code>
 - <code><a href="./src/resources/profiles.ts">ProfileUpdateResponse</a></code>
 - <code><a href="./src/resources/profiles.ts">ProfileListResponse</a></code>
+- <code><a href="./src/resources/profiles.ts">ProfileDeleteResponse</a></code>
 - <code><a href="./src/resources/profiles.ts">ProfileGetResponse</a></code>
 
 Methods:
@@ -85,6 +86,7 @@ Methods:
 - <code title="post /v1/profiles">client.profiles.<a href="./src/resources/profiles.ts">create</a>({ ...params }) -> ProfileCreateResponse</code>
 - <code title="patch /v1/profiles/{id}">client.profiles.<a href="./src/resources/profiles.ts">update</a>(id, { ...params }) -> ProfileUpdateResponse</code>
 - <code title="get /v1/profiles">client.profiles.<a href="./src/resources/profiles.ts">list</a>({ ...params }) -> ProfileListResponse</code>
+- <code title="delete /v1/profiles/{id}">client.profiles.<a href="./src/resources/profiles.ts">delete</a>(id, { ...params }) -> ProfileDeleteResponse</code>
 - <code title="get /v1/profiles/{id}">client.profiles.<a href="./src/resources/profiles.ts">get</a>(id, { ...params }) -> ProfileGetResponse</code>
 
 # Projects
@@ -99,6 +101,24 @@ Methods:
 - <code title="get /v1/projects/{id}">client.projects.<a href="./src/resources/projects.ts">retrieve</a>(id) -> Project</code>
 - <code title="get /v1/projects">client.projects.<a href="./src/resources/projects.ts">list</a>() -> ProjectsList</code>
 
+# SecretConnections
+
+Types:
+
+- <code><a href="./src/resources/secret-connections.ts">SecretConnectionCreateResponse</a></code>
+- <code><a href="./src/resources/secret-connections.ts">SecretConnectionRetrieveResponse</a></code>
+- <code><a href="./src/resources/secret-connections.ts">SecretConnectionUpdateResponse</a></code>
+- <code><a href="./src/resources/secret-connections.ts">SecretConnectionListResponse</a></code>
+
+Methods:
+
+- <code title="post /v1/secret-connections">client.secretConnections.<a href="./src/resources/secret-connections.ts">create</a>({ ...params }) -> SecretConnectionCreateResponse</code>
+- <code title="get /v1/secret-connections/{id}">client.secretConnections.<a href="./src/resources/secret-connections.ts">retrieve</a>(id, { ...params }) -> SecretConnectionRetrieveResponse</code>
+- <code title="patch /v1/secret-connections/{id}">client.secretConnections.<a href="./src/resources/secret-connections.ts">update</a>(id, { ...params }) -> SecretConnectionUpdateResponse</code>
+- <code title="get /v1/secret-connections">client.secretConnections.<a href="./src/resources/secret-connections.ts">list</a>({ ...params }) -> SecretConnectionListResponse</code>
+- <code title="delete /v1/secret-connections/{id}">client.secretConnections.<a href="./src/resources/secret-connections.ts">delete</a>(id, { ...params }) -> void</code>
+- <code title="post /v1/secret-connections/{id}/test">client.secretConnections.<a href="./src/resources/secret-connections.ts">test</a>(id, { ...params }) -> void</code>
+
 # Sessions
 
 Types:
@@ -108,11 +128,13 @@ Types:
 - <code><a href="./src/resources/sessions/sessions.ts">CommandErrorInfo</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandExpectation</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandFrame</a></code>
+- <code><a href="./src/resources/sessions/sessions.ts">CommandHeld</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandLocator</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandResult</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">CommandTarget</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">Session</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">SessionContext</a></code>
+- <code><a href="./src/resources/sessions/sessions.ts">SessionCredentials</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">Sessionslist</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">SessionAgentTracesResponse</a></code>
 - <code><a href="./src/resources/sessions/sessions.ts">SessionCommandsResponse</a></code>
@@ -173,6 +195,16 @@ Methods:
 - <code title="get /v1/sessions/{sessionId}/commands/executions/{executionId}">client.sessions.commandExecutions.<a href="./src/resources/sessions/command-executions.ts">retrieve</a>(sessionId, executionId) -> CommandExecutionRetrieveResponse</code>
 - <code title="post /v1/sessions/{sessionId}/commands/executions/{executionId}/cancel">client.sessions.commandExecutions.<a href="./src/resources/sessions/command-executions.ts">cancel</a>(sessionId, executionId) -> CommandExecutionCancelResponse</code>
 
+## Credentials
+
+Methods:
+
+- <code title="get /v1/sessions/{id}/credentials">client.sessions.credentials.<a href="./src/resources/sessions/credentials.ts">list</a>(id) -> SessionCredentials</code>
+- <code title="post /v1/sessions/{id}/credentials">client.sessions.credentials.<a href="./src/resources/sessions/credentials.ts">attach</a>(id, { ...params }) -> SessionCredentials</code>
+- <code title="delete /v1/sessions/{id}/credentials/{credentialId}">client.sessions.credentials.<a href="./src/resources/sessions/credentials.ts">detach</a>(id, credentialId) -> SessionCredentials</code>
+- <code title="delete /v1/sessions/{id}/credentials/bindings">client.sessions.credentials.<a href="./src/resources/sessions/credentials.ts">detachBinding</a>(id, { ...params }) -> SessionCredentials</code>
+- <code title="put /v1/sessions/{id}/credentials">client.sessions.credentials.<a href="./src/resources/sessions/credentials.ts">replace</a>(id, { ...params }) -> SessionCredentials</code>
+
 ## Files
 
 Methods:
@@ -183,3 +215,18 @@ Methods:
 - <code title="get /v1/sessions/{sessionId}/files/{path}">client.sessions.files.<a href="./src/resources/sessions/files.ts">download</a>(sessionId, path\_) -> Response</code>
 - <code title="get /v1/sessions/{sessionId}/files.zip">client.sessions.files.<a href="./src/resources/sessions/files.ts">downloadArchive</a>(sessionId) -> Response</code>
 - <code title="post /v1/sessions/{sessionId}/files">client.sessions.files.<a href="./src/resources/sessions/files.ts">upload</a>(sessionId, { ...params }) -> File</code>
+
+# Vaults
+
+Types:
+
+- <code><a href="./src/resources/vaults.ts">Vault</a></code>
+- <code><a href="./src/resources/vaults.ts">VaultList</a></code>
+
+Methods:
+
+- <code title="post /v1/vaults">client.vaults.<a href="./src/resources/vaults.ts">create</a>({ ...params }) -> Vault</code>
+- <code title="get /v1/vaults/{id}">client.vaults.<a href="./src/resources/vaults.ts">retrieve</a>(id, { ...params }) -> Vault</code>
+- <code title="patch /v1/vaults/{id}">client.vaults.<a href="./src/resources/vaults.ts">update</a>(id, { ...params }) -> Vault</code>
+- <code title="get /v1/vaults">client.vaults.<a href="./src/resources/vaults.ts">list</a>({ ...params }) -> VaultList</code>
+- <code title="delete /v1/vaults/{id}">client.vaults.<a href="./src/resources/vaults.ts">delete</a>(id, { ...params }) -> void</code>

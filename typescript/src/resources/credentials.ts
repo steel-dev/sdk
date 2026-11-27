@@ -71,6 +71,13 @@ export interface CredentialCreateResponse {
   updatedAt: string;
 
   /**
+   * Canonical http(s) origins, besides `origin`, this credential may be filled on,
+   * such as its login host or identity provider (e.g. `https://login.example.com`).
+   * Only the credential's origin and these ever match a page, exactly; at most 20.
+   */
+  additionalOrigins?: Array<string>;
+
+  /**
    * Label for the credential
    */
   label?: string;
@@ -96,6 +103,13 @@ export interface CredentialUpdateResponse {
    * Date and time the credential was last updated
    */
   updatedAt: string;
+
+  /**
+   * Canonical http(s) origins, besides `origin`, this credential may be filled on,
+   * such as its login host or identity provider (e.g. `https://login.example.com`).
+   * Only the credential's origin and these ever match a page, exactly; at most 20.
+   */
+  additionalOrigins?: Array<string>;
 
   /**
    * Label for the credential
@@ -130,6 +144,13 @@ export namespace CredentialListResponse {
     updatedAt: string;
 
     /**
+     * Canonical http(s) origins, besides `origin`, this credential may be filled on,
+     * such as its login host or identity provider (e.g. `https://login.example.com`).
+     * Only the credential's origin and these ever match a page, exactly; at most 20.
+     */
+    additionalOrigins?: Array<string>;
+
+    /**
      * Label for the credential
      */
     label?: string;
@@ -157,6 +178,13 @@ export interface CredentialCreateParams {
   value: { [key: string]: string };
 
   /**
+   * Canonical http(s) origins, besides `origin`, this credential may be filled on,
+   * such as its login host or identity provider (e.g. `https://login.example.com`).
+   * Only the credential's origin and these ever match a page, exactly; at most 20.
+   */
+  additionalOrigins?: Array<string>;
+
+  /**
    * Label for the credential
    */
   label?: string;
@@ -178,6 +206,14 @@ export interface CredentialCreateParams {
 }
 
 export interface CredentialUpdateParams {
+  /**
+   * Canonical http(s) origins, besides `origin`, this credential may be filled on,
+   * such as its login host or identity provider (e.g. `https://login.example.com`).
+   * Only the credential's origin and these ever match a page, exactly; at most 20.
+   * Replaces the current list; [] clears it.
+   */
+  additionalOrigins?: Array<string>;
+
   /**
    * Label for the credential
    */

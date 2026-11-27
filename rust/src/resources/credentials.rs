@@ -7,102 +7,117 @@ pub struct Credentials<'a> {
 
 impl<'a> Credentials<'a> {
     /// Encrypts and stores credentials for an origin
-    pub async fn create(
+    pub fn create(
         &self,
         params: CredentialCreateParams,
-    ) -> Result<CredentialCreateResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/credentials".to_owned());
-        let mut body = serde_json::Map::new();
-        body.insert("value".to_owned(), serde_json::to_value(&params.value)?);
-        if let Some(value) = &params.label {
-            body.insert("label".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.namespace {
-            body.insert("namespace".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.origin {
-            body.insert("origin".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    ) -> crate::Call<'a, CredentialCreateResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/credentials".to_owned());
+            let mut body = serde_json::Map::new();
+            body.insert("value".to_owned(), serde_json::to_value(&params.value)?);
+            if let Some(value) = &params.additional_origins {
+                body.insert("additionalOrigins".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.label {
+                body.insert("label".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.namespace {
+                body.insert("namespace".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.origin {
+                body.insert("origin".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Encrypts and updates credentials for an origin
-    pub async fn update(
+    pub fn update(
         &self,
         params: CredentialUpdateParams,
-    ) -> Result<CredentialUpdateResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::PUT, "/v1/credentials".to_owned());
-        let mut body = serde_json::Map::new();
-        if let Some(value) = &params.label {
-            body.insert("label".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.namespace {
-            body.insert("namespace".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.origin {
-            body.insert("origin".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.value {
-            body.insert("value".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    ) -> crate::Call<'a, CredentialUpdateResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::PUT, "/v1/credentials".to_owned());
+            let mut body = serde_json::Map::new();
+            if let Some(value) = &params.additional_origins {
+                body.insert("additionalOrigins".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.label {
+                body.insert("label".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.namespace {
+                body.insert("namespace".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.origin {
+                body.insert("origin".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.value {
+                body.insert("value".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Fetches all credential metadata for the current organization.
-    pub async fn list(
-        &self,
-        params: CredentialListParams,
-    ) -> Result<CredentialListResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::GET, "/v1/credentials".to_owned());
-        if let Some(value) = &params.namespace {
-            request.query.extend(crate::encoding::query(
-                "namespace",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.origin {
-            request.query.extend(crate::encoding::query(
-                "origin",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.project_id {
-            request.query.extend(crate::encoding::query(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+    pub fn list(&self, params: CredentialListParams) -> crate::Call<'a, CredentialListResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::GET, "/v1/credentials".to_owned());
+            if let Some(value) = &params.namespace {
+                request.query.extend(crate::encoding::query(
+                    "namespace",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.origin {
+                request.query.extend(crate::encoding::query(
+                    "origin",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 
     /// Deletes encrypted credentials from the database
-    pub async fn delete(
+    pub fn delete(
         &self,
         params: CredentialDeleteParams,
-    ) -> Result<CredentialDeleteResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::DELETE, "/v1/credentials".to_owned());
-        let mut body = serde_json::Map::new();
-        body.insert("origin".to_owned(), serde_json::to_value(&params.origin)?);
-        if let Some(value) = &params.namespace {
-            body.insert("namespace".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    ) -> crate::Call<'a, CredentialDeleteResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::DELETE, "/v1/credentials".to_owned());
+            let mut body = serde_json::Map::new();
+            body.insert("origin".to_owned(), serde_json::to_value(&params.origin)?);
+            if let Some(value) = &params.namespace {
+                body.insert("namespace".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 }
 
@@ -110,6 +125,8 @@ impl<'a> Credentials<'a> {
 pub struct CredentialCreateParams {
     /// Value for the credential
     pub value: std::collections::HashMap<String, String>,
+    /// Canonical http(s) origins, besides `origin`, this credential may be filled on, such as its login host or identity provider (e.g. `https://login.example.com`). Only the credential's origin and these ever match a page, exactly; at most 20.
+    pub additional_origins: Option<Vec<String>>,
     /// Label for the credential
     pub label: Option<String>,
     /// The namespace the credential is stored against. Defaults to "default".
@@ -124,6 +141,7 @@ impl CredentialCreateParams {
     pub fn new(value: std::collections::HashMap<String, String>) -> Self {
         CredentialCreateParams {
             value,
+            additional_origins: None,
             label: None,
             namespace: None,
             origin: None,
@@ -140,6 +158,13 @@ pub struct CredentialCreateResponse {
     /// Date and time the credential was last updated
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
+    /// Canonical http(s) origins, besides `origin`, this credential may be filled on, such as its login host or identity provider (e.g. `https://login.example.com`). Only the credential's origin and these ever match a page, exactly; at most 20.
+    #[serde(
+        rename = "additionalOrigins",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub additional_origins: Option<Vec<String>>,
     /// Label for the credential
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
@@ -153,6 +178,8 @@ pub struct CredentialCreateResponse {
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct CredentialUpdateParams {
+    /// Canonical http(s) origins, besides `origin`, this credential may be filled on, such as its login host or identity provider (e.g. `https://login.example.com`). Only the credential's origin and these ever match a page, exactly; at most 20. Replaces the current list; [] clears it.
+    pub additional_origins: Option<Vec<String>>,
     /// Label for the credential
     pub label: Option<String>,
     /// The namespace the credential is stored against. Defaults to "default".
@@ -173,6 +200,13 @@ pub struct CredentialUpdateResponse {
     /// Date and time the credential was last updated
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
+    /// Canonical http(s) origins, besides `origin`, this credential may be filled on, such as its login host or identity provider (e.g. `https://login.example.com`). Only the credential's origin and these ever match a page, exactly; at most 20.
+    #[serde(
+        rename = "additionalOrigins",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub additional_origins: Option<Vec<String>>,
     /// Label for the credential
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,
@@ -207,6 +241,13 @@ pub struct CredentialListResponseCredential {
     /// Date and time the credential was last updated
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
+    /// Canonical http(s) origins, besides `origin`, this credential may be filled on, such as its login host or identity provider (e.g. `https://login.example.com`). Only the credential's origin and these ever match a page, exactly; at most 20.
+    #[serde(
+        rename = "additionalOrigins",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub additional_origins: Option<Vec<String>>,
     /// Label for the credential
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<String>,

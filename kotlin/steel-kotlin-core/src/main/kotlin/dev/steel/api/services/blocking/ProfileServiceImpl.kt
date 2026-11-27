@@ -16,6 +16,8 @@ import dev.steel.api.core.http.parseable
 import dev.steel.api.core.prepare
 import dev.steel.api.models.profiles.ProfileCreateParams
 import dev.steel.api.models.profiles.ProfileCreateResponse
+import dev.steel.api.models.profiles.ProfileDeleteParams
+import dev.steel.api.models.profiles.ProfileDeleteResponse
 import dev.steel.api.models.profiles.ProfileGetParams
 import dev.steel.api.models.profiles.ProfileGetResponse
 import dev.steel.api.models.profiles.ProfileListParams
@@ -50,6 +52,11 @@ class ProfileServiceImpl internal constructor(private val clientOptions: ClientO
         params: ProfileListParams,
         requestOptions: RequestOptions,
     ): ProfileListResponse = withRawResponse().list(params, requestOptions).parse()
+
+    override fun delete(
+        params: ProfileDeleteParams,
+        requestOptions: RequestOptions,
+    ): ProfileDeleteResponse = withRawResponse().delete(params, requestOptions).parse()
 
     override fun get(params: ProfileGetParams, requestOptions: RequestOptions): ProfileGetResponse =
         withRawResponse().get(params, requestOptions).parse()
@@ -143,6 +150,34 @@ class ProfileServiceImpl internal constructor(private val clientOptions: ClientO
             return errorHandler.handle(response).parseable {
                 response
                     .use { listHandler.handle(it) }
+                    .also {
+                        if (options.responseValidation!!) {
+                            it.validate()
+                        }
+                    }
+            }
+        }
+
+        private val deleteHandler: Handler<ProfileDeleteResponse> =
+            jsonHandler<ProfileDeleteResponse>(clientOptions.jsonMapper)
+
+        override fun delete(
+            params: ProfileDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProfileDeleteResponse> {
+            checkRequired("id", params.id())
+            val request =
+                HttpRequest.builder()
+                    .method(HttpMethod.DELETE)
+                    .baseUrl(clientOptions.baseUrl())
+                    .addPathSegments("v1", "profiles", params._pathParam(0))
+                    .build()
+                    .prepare(clientOptions, params)
+            val options = requestOptions.applyDefaults(RequestOptions.from(clientOptions))
+            val response = clientOptions.httpClient.execute(request, options)
+            return errorHandler.handle(response).parseable {
+                response
+                    .use { deleteHandler.handle(it) }
                     .also {
                         if (options.responseValidation!!) {
                             it.validate()

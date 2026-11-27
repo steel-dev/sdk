@@ -57,6 +57,21 @@ async fn list() {
 }
 
 #[tokio::test]
+async fn delete() {
+    let client = common::client();
+    let result = client
+        .profiles()
+        .delete(
+            "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+            steel_rs::ProfileDeleteParams {
+                project_id: Some("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e".to_owned()),
+            },
+        )
+        .await;
+    assert!(result.is_ok(), "{:?}", result.err());
+}
+
+#[tokio::test]
 async fn get() {
     let client = common::client();
     let result = client

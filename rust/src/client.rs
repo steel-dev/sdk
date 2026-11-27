@@ -2,8 +2,10 @@ use std::collections::hash_map::RandomState;
 use std::collections::VecDeque;
 use std::future::Future;
 use std::hash::{BuildHasher, Hasher};
+use std::pin::Pin;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
+use std::task::{Context, Poll};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
 use bytes::Bytes;
@@ -144,6 +146,87 @@ impl Request {
             body: Body::None,
             accept: None,
         }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Response<T> {
+    status: u16,
+    headers: HeaderMap,
+    data: T,
+}
+
+impl<T> Response<T> {
+    pub fn status(&self) -> u16 {
+        self.status
+    }
+
+    pub fn headers(&self) -> &HeaderMap {
+        &self.headers
+    }
+
+    pub fn data(&self) -> &T {
+        &self.data
+    }
+
+    pub fn into_data(self) -> T {
+        self.data
+    }
+}
+
+impl Response<()> {
+    fn of(response: &reqwest::Response) -> Self {
+        Response {
+            status: response.status().as_u16(),
+            headers: response.headers().clone(),
+            data: (),
+        }
+    }
+
+    fn with<T>(self, data: T) -> Response<T> {
+        Response {
+            status: self.status,
+            headers: self.headers,
+            data,
+        }
+    }
+}
+
+type Pending<'a, T> = Pin<Box<dyn Future<Output = Result<Response<T>, Error>> + Send + 'a>>;
+
+#[must_use = "a call does nothing until it is awaited"]
+pub struct Call<'a, T> {
+    pending: Pending<'a, T>,
+}
+
+impl<'a, T> Call<'a, T> {
+    pub(crate) fn new(
+        future: impl Future<Output = Result<Response<T>, Error>> + Send + 'a,
+    ) -> Self {
+        Call {
+            pending: Box::pin(future),
+        }
+    }
+
+    pub async fn with_response(self) -> Result<Response<T>, Error> {
+        self.pending.await
+    }
+}
+
+impl<T> Future for Call<'_, T> {
+    type Output = Result<T, Error>;
+
+    fn poll(mut self: Pin<&mut Self>, context: &mut Context<'_>) -> Poll<Self::Output> {
+        self.pending
+            .as_mut()
+            .poll(context)
+            .map(|result| result.map(Response::into_data))
+    }
+}
+
+impl<T> std::fmt::Debug for Call<'_, T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Call").finish_non_exhaustive()
     }
 }
 
@@ -308,27 +391,33 @@ impl Client {
         }
     }
 
-    pub(crate) async fn json<T: DeserializeOwned>(&self, request: Request) -> Result<T, Error> {
+    pub(crate) async fn json<T: DeserializeOwned>(
+        &self,
+        request: Request,
+    ) -> Result<Response<T>, Error> {
         let response = self.send(&request).await?;
+        let head = Response::of(&response);
         let bytes = response.bytes().await?;
-        Ok(serde_json::from_slice(&bytes)?)
+        Ok(head.with(serde_json::from_slice(&bytes)?))
     }
 
-    pub(crate) async fn empty(&self, request: Request) -> Result<(), Error> {
-        self.send(&request).await?;
-        Ok(())
+    pub(crate) async fn empty(&self, request: Request) -> Result<Response<()>, Error> {
+        Ok(Response::of(&self.send(&request).await?))
     }
 
-    pub(crate) async fn bytes(&self, request: Request) -> Result<Bytes, Error> {
-        Ok(self.send(&request).await?.bytes().await?)
+    pub(crate) async fn bytes(&self, request: Request) -> Result<Response<Bytes>, Error> {
+        let response = self.send(&request).await?;
+        let head = Response::of(&response);
+        Ok(head.with(response.bytes().await?))
     }
 
     pub(crate) async fn page<T: DeserializeOwned>(
         &self,
         request: Request,
         cursor: Cursor,
-    ) -> Result<Page<T>, Error> {
+    ) -> Result<Response<Page<T>>, Error> {
         let response = self.send(&request).await?;
+        let head = Response::of(&response);
         let bytes = response.bytes().await?;
         let mut value: Value = serde_json::from_slice(&bytes)?;
         let raw = match value.get_mut(cursor.items).map(Value::take) {
@@ -350,12 +439,12 @@ impl Client {
             next.query.push((cursor.param.to_owned(), last));
             next
         });
-        Ok(Page {
+        Ok(head.with(Page {
             items,
             next,
             client: self.clone(),
             cursor,
-        })
+        }))
     }
 }
 
@@ -386,7 +475,7 @@ impl<T: DeserializeOwned> Page<T> {
                 .client
                 .page(request.clone(), self.cursor)
                 .await
-                .map(Some),
+                .map(|response| Some(response.into_data())),
             None => Ok(None),
         }
     }
@@ -409,7 +498,8 @@ impl<T: DeserializeOwned> Page<T> {
                 }
                 let request = state.1.take()?;
                 match state.2.page::<T>(request, state.3).await {
-                    Ok(page) => {
+                    Ok(response) => {
+                        let page = response.into_data();
                         state.0 = VecDeque::from(page.items);
                         state.1 = page.next;
                     }
@@ -490,7 +580,7 @@ mod tests {
     use wiremock::matchers::method;
     use wiremock::{Mock, MockServer, ResponseTemplate};
 
-    use super::{Client, Method, Request};
+    use super::{Call, Client, Method, Request};
 
     async fn server(failures: u64) -> MockServer {
         let server = MockServer::start().await;
@@ -624,6 +714,40 @@ mod tests {
             keys(&server).await,
             vec![vec!["mine".to_owned()], vec!["mine".to_owned()]]
         );
+    }
+
+    #[tokio::test]
+    async fn a_call_gives_the_status_and_headers_of_a_success() {
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .respond_with(
+                ResponseTemplate::new(201)
+                    .insert_header("x-request-id", "abc")
+                    .set_body_json(serde_json::json!({ "id": "one" })),
+            )
+            .mount(&server)
+            .await;
+        let client = client(&server);
+        let get = || Request::new(Method::GET, "/foo".to_owned());
+
+        let response = Call::new(client.json::<serde_json::Value>(get()))
+            .with_response()
+            .await
+            .expect("the call with its response");
+        assert_eq!(response.status(), 201);
+        assert_eq!(
+            response
+                .headers()
+                .get("x-request-id")
+                .and_then(|value| value.to_str().ok()),
+            Some("abc")
+        );
+        assert_eq!(response.data()["id"], "one");
+
+        let data = Call::new(client.json::<serde_json::Value>(get()))
+            .await
+            .expect("the call");
+        assert_eq!(data["id"], "one");
     }
 
     #[test]

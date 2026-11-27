@@ -41,15 +41,14 @@ private constructor(
     private val reload: Reload? = null,
     private val snapshot: Snapshot? = null,
     private val click: Click? = null,
-    private val dblclick: Dblclick? = null,
     private val hover: Hover? = null,
     private val focus: Focus? = null,
     private val type: Type? = null,
     private val fill: Fill? = null,
     private val press: Press? = null,
-    private val keydown: Keydown? = null,
-    private val keyup: Keyup? = null,
+    private val keyboard: Keyboard? = null,
     private val mouse: Mouse? = null,
+    private val release: Release? = null,
     private val select: Select? = null,
     private val check: Check? = null,
     private val uncheck: Uncheck? = null,
@@ -64,6 +63,7 @@ private constructor(
     private val scroll: Scroll? = null,
     private val find: Find? = null,
     private val tab: Tab? = null,
+    private val dialog: Dialog? = null,
     private val _json: JsonValue? = null,
 ) {
 
@@ -79,8 +79,6 @@ private constructor(
 
     fun click(): Optional<Click> = Optional.ofNullable(click)
 
-    fun dblclick(): Optional<Dblclick> = Optional.ofNullable(dblclick)
-
     fun hover(): Optional<Hover> = Optional.ofNullable(hover)
 
     fun focus(): Optional<Focus> = Optional.ofNullable(focus)
@@ -91,11 +89,11 @@ private constructor(
 
     fun press(): Optional<Press> = Optional.ofNullable(press)
 
-    fun keydown(): Optional<Keydown> = Optional.ofNullable(keydown)
-
-    fun keyup(): Optional<Keyup> = Optional.ofNullable(keyup)
+    fun keyboard(): Optional<Keyboard> = Optional.ofNullable(keyboard)
 
     fun mouse(): Optional<Mouse> = Optional.ofNullable(mouse)
+
+    fun release(): Optional<Release> = Optional.ofNullable(release)
 
     fun select(): Optional<Select> = Optional.ofNullable(select)
 
@@ -125,6 +123,8 @@ private constructor(
 
     fun tab(): Optional<Tab> = Optional.ofNullable(tab)
 
+    fun dialog(): Optional<Dialog> = Optional.ofNullable(dialog)
+
     fun isNavigate(): Boolean = navigate != null
 
     fun isBack(): Boolean = back != null
@@ -137,8 +137,6 @@ private constructor(
 
     fun isClick(): Boolean = click != null
 
-    fun isDblclick(): Boolean = dblclick != null
-
     fun isHover(): Boolean = hover != null
 
     fun isFocus(): Boolean = focus != null
@@ -149,11 +147,11 @@ private constructor(
 
     fun isPress(): Boolean = press != null
 
-    fun isKeydown(): Boolean = keydown != null
-
-    fun isKeyup(): Boolean = keyup != null
+    fun isKeyboard(): Boolean = keyboard != null
 
     fun isMouse(): Boolean = mouse != null
+
+    fun isRelease(): Boolean = release != null
 
     fun isSelect(): Boolean = select != null
 
@@ -183,6 +181,8 @@ private constructor(
 
     fun isTab(): Boolean = tab != null
 
+    fun isDialog(): Boolean = dialog != null
+
     fun asNavigate(): Navigate = navigate.getOrThrow("navigate")
 
     fun asBack(): Back = back.getOrThrow("back")
@@ -195,8 +195,6 @@ private constructor(
 
     fun asClick(): Click = click.getOrThrow("click")
 
-    fun asDblclick(): Dblclick = dblclick.getOrThrow("dblclick")
-
     fun asHover(): Hover = hover.getOrThrow("hover")
 
     fun asFocus(): Focus = focus.getOrThrow("focus")
@@ -207,11 +205,11 @@ private constructor(
 
     fun asPress(): Press = press.getOrThrow("press")
 
-    fun asKeydown(): Keydown = keydown.getOrThrow("keydown")
-
-    fun asKeyup(): Keyup = keyup.getOrThrow("keyup")
+    fun asKeyboard(): Keyboard = keyboard.getOrThrow("keyboard")
 
     fun asMouse(): Mouse = mouse.getOrThrow("mouse")
+
+    fun asRelease(): Release = release.getOrThrow("release")
 
     fun asSelect(): Select = select.getOrThrow("select")
 
@@ -241,6 +239,8 @@ private constructor(
 
     fun asTab(): Tab = tab.getOrThrow("tab")
 
+    fun asDialog(): Dialog = dialog.getOrThrow("dialog")
+
     fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
 
     fun <T> accept(visitor: Visitor<T>): T =
@@ -251,15 +251,14 @@ private constructor(
             reload != null -> visitor.visitReload(reload)
             snapshot != null -> visitor.visitSnapshot(snapshot)
             click != null -> visitor.visitClick(click)
-            dblclick != null -> visitor.visitDblclick(dblclick)
             hover != null -> visitor.visitHover(hover)
             focus != null -> visitor.visitFocus(focus)
             type != null -> visitor.visitType(type)
             fill != null -> visitor.visitFill(fill)
             press != null -> visitor.visitPress(press)
-            keydown != null -> visitor.visitKeydown(keydown)
-            keyup != null -> visitor.visitKeyup(keyup)
+            keyboard != null -> visitor.visitKeyboard(keyboard)
             mouse != null -> visitor.visitMouse(mouse)
+            release != null -> visitor.visitRelease(release)
             select != null -> visitor.visitSelect(select)
             check != null -> visitor.visitCheck(check)
             uncheck != null -> visitor.visitUncheck(uncheck)
@@ -274,6 +273,7 @@ private constructor(
             scroll != null -> visitor.visitScroll(scroll)
             find != null -> visitor.visitFind(find)
             tab != null -> visitor.visitTab(tab)
+            dialog != null -> visitor.visitDialog(dialog)
             else -> visitor.unknown(_json)
         }
 
@@ -318,10 +318,6 @@ private constructor(
                     click.validate()
                 }
 
-                override fun visitDblclick(dblclick: Dblclick) {
-                    dblclick.validate()
-                }
-
                 override fun visitHover(hover: Hover) {
                     hover.validate()
                 }
@@ -342,16 +338,16 @@ private constructor(
                     press.validate()
                 }
 
-                override fun visitKeydown(keydown: Keydown) {
-                    keydown.validate()
-                }
-
-                override fun visitKeyup(keyup: Keyup) {
-                    keyup.validate()
+                override fun visitKeyboard(keyboard: Keyboard) {
+                    keyboard.validate()
                 }
 
                 override fun visitMouse(mouse: Mouse) {
                     mouse.validate()
+                }
+
+                override fun visitRelease(release: Release) {
+                    release.validate()
                 }
 
                 override fun visitSelect(select: Select) {
@@ -409,6 +405,10 @@ private constructor(
                 override fun visitTab(tab: Tab) {
                     tab.validate()
                 }
+
+                override fun visitDialog(dialog: Dialog) {
+                    dialog.validate()
+                }
             }
         )
         validated = true
@@ -430,8 +430,6 @@ private constructor(
 
                 override fun visitClick(click: Click) = click.validity()
 
-                override fun visitDblclick(dblclick: Dblclick) = dblclick.validity()
-
                 override fun visitHover(hover: Hover) = hover.validity()
 
                 override fun visitFocus(focus: Focus) = focus.validity()
@@ -442,11 +440,11 @@ private constructor(
 
                 override fun visitPress(press: Press) = press.validity()
 
-                override fun visitKeydown(keydown: Keydown) = keydown.validity()
-
-                override fun visitKeyup(keyup: Keyup) = keyup.validity()
+                override fun visitKeyboard(keyboard: Keyboard) = keyboard.validity()
 
                 override fun visitMouse(mouse: Mouse) = mouse.validity()
+
+                override fun visitRelease(release: Release) = release.validity()
 
                 override fun visitSelect(select: Select) = select.validity()
 
@@ -476,6 +474,8 @@ private constructor(
 
                 override fun visitTab(tab: Tab) = tab.validity()
 
+                override fun visitDialog(dialog: Dialog) = dialog.validity()
+
                 override fun unknown(json: JsonValue?) = 0
             }
         )
@@ -492,15 +492,14 @@ private constructor(
             this.reload == other.reload &&
             this.snapshot == other.snapshot &&
             this.click == other.click &&
-            this.dblclick == other.dblclick &&
             this.hover == other.hover &&
             this.focus == other.focus &&
             this.type == other.type &&
             this.fill == other.fill &&
             this.press == other.press &&
-            this.keydown == other.keydown &&
-            this.keyup == other.keyup &&
+            this.keyboard == other.keyboard &&
             this.mouse == other.mouse &&
+            this.release == other.release &&
             this.select == other.select &&
             this.check == other.check &&
             this.uncheck == other.uncheck &&
@@ -514,7 +513,8 @@ private constructor(
             this.pdf == other.pdf &&
             this.scroll == other.scroll &&
             this.find == other.find &&
-            this.tab == other.tab
+            this.tab == other.tab &&
+            this.dialog == other.dialog
     }
 
     override fun hashCode(): Int =
@@ -525,15 +525,14 @@ private constructor(
             reload,
             snapshot,
             click,
-            dblclick,
             hover,
             focus,
             type,
             fill,
             press,
-            keydown,
-            keyup,
+            keyboard,
             mouse,
+            release,
             select,
             check,
             uncheck,
@@ -548,6 +547,7 @@ private constructor(
             scroll,
             find,
             tab,
+            dialog,
         )
 
     override fun toString(): String =
@@ -558,15 +558,14 @@ private constructor(
             reload != null -> "CommandResult{reload=$reload}"
             snapshot != null -> "CommandResult{snapshot=$snapshot}"
             click != null -> "CommandResult{click=$click}"
-            dblclick != null -> "CommandResult{dblclick=$dblclick}"
             hover != null -> "CommandResult{hover=$hover}"
             focus != null -> "CommandResult{focus=$focus}"
             type != null -> "CommandResult{type=$type}"
             fill != null -> "CommandResult{fill=$fill}"
             press != null -> "CommandResult{press=$press}"
-            keydown != null -> "CommandResult{keydown=$keydown}"
-            keyup != null -> "CommandResult{keyup=$keyup}"
+            keyboard != null -> "CommandResult{keyboard=$keyboard}"
             mouse != null -> "CommandResult{mouse=$mouse}"
+            release != null -> "CommandResult{release=$release}"
             select != null -> "CommandResult{select=$select}"
             check != null -> "CommandResult{check=$check}"
             uncheck != null -> "CommandResult{uncheck=$uncheck}"
@@ -581,6 +580,7 @@ private constructor(
             scroll != null -> "CommandResult{scroll=$scroll}"
             find != null -> "CommandResult{find=$find}"
             tab != null -> "CommandResult{tab=$tab}"
+            dialog != null -> "CommandResult{dialog=$dialog}"
             _json != null -> "CommandResult{_unknown=$_json}"
             else -> throw IllegalStateException("Invalid CommandResult")
         }
@@ -599,8 +599,6 @@ private constructor(
 
         @JvmStatic fun ofClick(click: Click) = CommandResult(click = click)
 
-        @JvmStatic fun ofDblclick(dblclick: Dblclick) = CommandResult(dblclick = dblclick)
-
         @JvmStatic fun ofHover(hover: Hover) = CommandResult(hover = hover)
 
         @JvmStatic fun ofFocus(focus: Focus) = CommandResult(focus = focus)
@@ -611,11 +609,11 @@ private constructor(
 
         @JvmStatic fun ofPress(press: Press) = CommandResult(press = press)
 
-        @JvmStatic fun ofKeydown(keydown: Keydown) = CommandResult(keydown = keydown)
-
-        @JvmStatic fun ofKeyup(keyup: Keyup) = CommandResult(keyup = keyup)
+        @JvmStatic fun ofKeyboard(keyboard: Keyboard) = CommandResult(keyboard = keyboard)
 
         @JvmStatic fun ofMouse(mouse: Mouse) = CommandResult(mouse = mouse)
+
+        @JvmStatic fun ofRelease(release: Release) = CommandResult(release = release)
 
         @JvmStatic fun ofSelect(select: Select) = CommandResult(select = select)
 
@@ -644,6 +642,8 @@ private constructor(
         @JvmStatic fun ofFind(find: Find) = CommandResult(find = find)
 
         @JvmStatic fun ofTab(tab: Tab) = CommandResult(tab = tab)
+
+        @JvmStatic fun ofDialog(dialog: Dialog) = CommandResult(dialog = dialog)
     }
 
     interface Visitor<out T> {
@@ -660,8 +660,6 @@ private constructor(
 
         fun visitClick(click: Click): T
 
-        fun visitDblclick(dblclick: Dblclick): T
-
         fun visitHover(hover: Hover): T
 
         fun visitFocus(focus: Focus): T
@@ -672,11 +670,11 @@ private constructor(
 
         fun visitPress(press: Press): T
 
-        fun visitKeydown(keydown: Keydown): T
-
-        fun visitKeyup(keyup: Keyup): T
+        fun visitKeyboard(keyboard: Keyboard): T
 
         fun visitMouse(mouse: Mouse): T
+
+        fun visitRelease(release: Release): T
 
         fun visitSelect(select: Select): T
 
@@ -705,6 +703,8 @@ private constructor(
         fun visitFind(find: Find): T
 
         fun visitTab(tab: Tab): T
+
+        fun visitDialog(dialog: Dialog): T
 
         fun unknown(json: JsonValue?): T {
             throw SteelInvalidDataException("Unknown CommandResult: $json")
@@ -735,9 +735,6 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Click>())?.let {
                             CommandResult(click = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<Dblclick>())?.let {
-                            CommandResult(dblclick = it, _json = json)
-                        },
                         tryDeserialize(node, jacksonTypeRef<Hover>())?.let {
                             CommandResult(hover = it, _json = json)
                         },
@@ -753,14 +750,14 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Press>())?.let {
                             CommandResult(press = it, _json = json)
                         },
-                        tryDeserialize(node, jacksonTypeRef<Keydown>())?.let {
-                            CommandResult(keydown = it, _json = json)
-                        },
-                        tryDeserialize(node, jacksonTypeRef<Keyup>())?.let {
-                            CommandResult(keyup = it, _json = json)
+                        tryDeserialize(node, jacksonTypeRef<Keyboard>())?.let {
+                            CommandResult(keyboard = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<Mouse>())?.let {
                             CommandResult(mouse = it, _json = json)
+                        },
+                        tryDeserialize(node, jacksonTypeRef<Release>())?.let {
+                            CommandResult(release = it, _json = json)
                         },
                         tryDeserialize(node, jacksonTypeRef<Select>())?.let {
                             CommandResult(select = it, _json = json)
@@ -804,6 +801,9 @@ private constructor(
                         tryDeserialize(node, jacksonTypeRef<Tab>())?.let {
                             CommandResult(tab = it, _json = json)
                         },
+                        tryDeserialize(node, jacksonTypeRef<Dialog>())?.let {
+                            CommandResult(dialog = it, _json = json)
+                        },
                     )
                     .filterNotNull()
                     .allMaxBy { it.validity() }
@@ -830,15 +830,14 @@ private constructor(
                 value.reload != null -> generator.writeObject(value.reload)
                 value.snapshot != null -> generator.writeObject(value.snapshot)
                 value.click != null -> generator.writeObject(value.click)
-                value.dblclick != null -> generator.writeObject(value.dblclick)
                 value.hover != null -> generator.writeObject(value.hover)
                 value.focus != null -> generator.writeObject(value.focus)
                 value.type != null -> generator.writeObject(value.type)
                 value.fill != null -> generator.writeObject(value.fill)
                 value.press != null -> generator.writeObject(value.press)
-                value.keydown != null -> generator.writeObject(value.keydown)
-                value.keyup != null -> generator.writeObject(value.keyup)
+                value.keyboard != null -> generator.writeObject(value.keyboard)
                 value.mouse != null -> generator.writeObject(value.mouse)
+                value.release != null -> generator.writeObject(value.release)
                 value.select != null -> generator.writeObject(value.select)
                 value.check != null -> generator.writeObject(value.check)
                 value.uncheck != null -> generator.writeObject(value.uncheck)
@@ -853,6 +852,7 @@ private constructor(
                 value.scroll != null -> generator.writeObject(value.scroll)
                 value.find != null -> generator.writeObject(value.find)
                 value.tab != null -> generator.writeObject(value.tab)
+                value.dialog != null -> generator.writeObject(value.dialog)
                 value._json != null -> generator.writeObject(value._json)
                 else -> throw IllegalStateException("Invalid CommandResult")
             }
@@ -867,6 +867,7 @@ private constructor(
         private val effect: JsonField<CommandResult.Navigate.Effect>,
         private val ok: JsonField<Boolean>,
         private val error: JsonField<CommandErrorInfo>,
+        private val loading: JsonField<Boolean>,
         private val url: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -881,8 +882,9 @@ private constructor(
             @JsonProperty("error")
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
-        ) : this(command, effect, ok, error, url, mutableMapOf())
+        ) : this(command, effect, ok, error, loading, url, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Navigate.Effect = effect.getRequired("effect")
@@ -890,6 +892,9 @@ private constructor(
         fun ok(): Boolean = ok.getRequired("ok")
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
 
         fun url(): Optional<String> = url.getOptional("url")
 
@@ -903,6 +908,8 @@ private constructor(
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
 
         @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
@@ -931,6 +938,7 @@ private constructor(
             private var effect: JsonField<CommandResult.Navigate.Effect>? = null
             private var ok: JsonField<Boolean>? = null
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var loading: JsonField<Boolean> = JsonMissing.of()
             private var url: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -940,6 +948,7 @@ private constructor(
                 this.effect = navigate.effect
                 this.ok = navigate.ok
                 this.error = navigate.error
+                this.loading = navigate.loading
                 this.url = navigate.url
                 this.additionalProperties = navigate.additionalProperties.toMutableMap()
             }
@@ -961,6 +970,12 @@ private constructor(
             fun error(error: CommandErrorInfo) = error(JsonField.of(error))
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
 
             fun url(url: String) = url(JsonField.of(url))
 
@@ -991,6 +1006,7 @@ private constructor(
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
                     error,
+                    loading,
                     url,
                     additionalProperties.toMutableMap(),
                 )
@@ -1019,6 +1035,7 @@ private constructor(
             effect().validate()
             ok()
             error().ifPresent { it.validate() }
+            loading()
             url()
             validated = true
         }
@@ -1029,6 +1046,7 @@ private constructor(
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
                 (if (url.asKnown().isPresent) 1 else 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -1124,18 +1142,19 @@ private constructor(
                 this.effect == other.effect &&
                 this.ok == other.ok &&
                 this.error == other.error &&
+                this.loading == other.loading &&
                 this.url == other.url &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, error, url, additionalProperties)
+            Objects.hash(command, effect, ok, error, loading, url, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Navigate{command=$command, effect=$effect, ok=$ok, error=$error, url=$url, additionalProperties=$additionalProperties}"
+            "Navigate{command=$command, effect=$effect, ok=$ok, error=$error, loading=$loading, url=$url, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a back command. */
@@ -1146,6 +1165,7 @@ private constructor(
         private val effect: JsonField<CommandResult.Back.Effect>,
         private val ok: JsonField<Boolean>,
         private val error: JsonField<CommandErrorInfo>,
+        private val loading: JsonField<Boolean>,
         private val navigated: JsonField<Boolean>,
         private val url: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1161,11 +1181,12 @@ private constructor(
             @JsonProperty("error")
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("navigated")
             @ExcludeMissing
             navigated: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
-        ) : this(command, effect, ok, error, navigated, url, mutableMapOf())
+        ) : this(command, effect, ok, error, loading, navigated, url, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Back.Effect = effect.getRequired("effect")
@@ -1173,6 +1194,9 @@ private constructor(
         fun ok(): Boolean = ok.getRequired("ok")
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
 
         /** False when there was no history entry. */
         fun navigated(): Optional<Boolean> = navigated.getOptional("navigated")
@@ -1189,6 +1213,8 @@ private constructor(
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
 
         @JsonProperty("navigated") @ExcludeMissing fun _navigated(): JsonField<Boolean> = navigated
 
@@ -1219,6 +1245,7 @@ private constructor(
             private var effect: JsonField<CommandResult.Back.Effect>? = null
             private var ok: JsonField<Boolean>? = null
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var loading: JsonField<Boolean> = JsonMissing.of()
             private var navigated: JsonField<Boolean> = JsonMissing.of()
             private var url: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1229,6 +1256,7 @@ private constructor(
                 this.effect = back.effect
                 this.ok = back.ok
                 this.error = back.error
+                this.loading = back.loading
                 this.navigated = back.navigated
                 this.url = back.url
                 this.additionalProperties = back.additionalProperties.toMutableMap()
@@ -1251,6 +1279,12 @@ private constructor(
             fun error(error: CommandErrorInfo) = error(JsonField.of(error))
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
 
             /** False when there was no history entry. */
             fun navigated(navigated: Boolean) = navigated(JsonField.of(navigated))
@@ -1287,6 +1321,7 @@ private constructor(
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
                     error,
+                    loading,
                     navigated,
                     url,
                     additionalProperties.toMutableMap(),
@@ -1316,6 +1351,7 @@ private constructor(
             effect().validate()
             ok()
             error().ifPresent { it.validate() }
+            loading()
             navigated()
             url()
             validated = true
@@ -1327,6 +1363,7 @@ private constructor(
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
                 (if (navigated.asKnown().isPresent) 1 else 0) +
                 (if (url.asKnown().isPresent) 1 else 0)
 
@@ -1423,19 +1460,20 @@ private constructor(
                 this.effect == other.effect &&
                 this.ok == other.ok &&
                 this.error == other.error &&
+                this.loading == other.loading &&
                 this.navigated == other.navigated &&
                 this.url == other.url &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, error, navigated, url, additionalProperties)
+            Objects.hash(command, effect, ok, error, loading, navigated, url, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Back{command=$command, effect=$effect, ok=$ok, error=$error, navigated=$navigated, url=$url, additionalProperties=$additionalProperties}"
+            "Back{command=$command, effect=$effect, ok=$ok, error=$error, loading=$loading, navigated=$navigated, url=$url, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a forward command. */
@@ -1446,6 +1484,7 @@ private constructor(
         private val effect: JsonField<CommandResult.Forward.Effect>,
         private val ok: JsonField<Boolean>,
         private val error: JsonField<CommandErrorInfo>,
+        private val loading: JsonField<Boolean>,
         private val navigated: JsonField<Boolean>,
         private val url: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -1461,11 +1500,12 @@ private constructor(
             @JsonProperty("error")
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("navigated")
             @ExcludeMissing
             navigated: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
-        ) : this(command, effect, ok, error, navigated, url, mutableMapOf())
+        ) : this(command, effect, ok, error, loading, navigated, url, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Forward.Effect = effect.getRequired("effect")
@@ -1473,6 +1513,9 @@ private constructor(
         fun ok(): Boolean = ok.getRequired("ok")
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
 
         /** False when there was no history entry. */
         fun navigated(): Optional<Boolean> = navigated.getOptional("navigated")
@@ -1489,6 +1532,8 @@ private constructor(
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
 
         @JsonProperty("navigated") @ExcludeMissing fun _navigated(): JsonField<Boolean> = navigated
 
@@ -1519,6 +1564,7 @@ private constructor(
             private var effect: JsonField<CommandResult.Forward.Effect>? = null
             private var ok: JsonField<Boolean>? = null
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var loading: JsonField<Boolean> = JsonMissing.of()
             private var navigated: JsonField<Boolean> = JsonMissing.of()
             private var url: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -1529,6 +1575,7 @@ private constructor(
                 this.effect = forward.effect
                 this.ok = forward.ok
                 this.error = forward.error
+                this.loading = forward.loading
                 this.navigated = forward.navigated
                 this.url = forward.url
                 this.additionalProperties = forward.additionalProperties.toMutableMap()
@@ -1551,6 +1598,12 @@ private constructor(
             fun error(error: CommandErrorInfo) = error(JsonField.of(error))
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
 
             /** False when there was no history entry. */
             fun navigated(navigated: Boolean) = navigated(JsonField.of(navigated))
@@ -1587,6 +1640,7 @@ private constructor(
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
                     error,
+                    loading,
                     navigated,
                     url,
                     additionalProperties.toMutableMap(),
@@ -1616,6 +1670,7 @@ private constructor(
             effect().validate()
             ok()
             error().ifPresent { it.validate() }
+            loading()
             navigated()
             url()
             validated = true
@@ -1627,6 +1682,7 @@ private constructor(
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
                 (if (navigated.asKnown().isPresent) 1 else 0) +
                 (if (url.asKnown().isPresent) 1 else 0)
 
@@ -1723,19 +1779,20 @@ private constructor(
                 this.effect == other.effect &&
                 this.ok == other.ok &&
                 this.error == other.error &&
+                this.loading == other.loading &&
                 this.navigated == other.navigated &&
                 this.url == other.url &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, error, navigated, url, additionalProperties)
+            Objects.hash(command, effect, ok, error, loading, navigated, url, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Forward{command=$command, effect=$effect, ok=$ok, error=$error, navigated=$navigated, url=$url, additionalProperties=$additionalProperties}"
+            "Forward{command=$command, effect=$effect, ok=$ok, error=$error, loading=$loading, navigated=$navigated, url=$url, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a reload command. */
@@ -1746,6 +1803,7 @@ private constructor(
         private val effect: JsonField<CommandResult.Reload.Effect>,
         private val ok: JsonField<Boolean>,
         private val error: JsonField<CommandErrorInfo>,
+        private val loading: JsonField<Boolean>,
         private val url: JsonField<String>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -1760,8 +1818,9 @@ private constructor(
             @JsonProperty("error")
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("url") @ExcludeMissing url: JsonField<String> = JsonMissing.of(),
-        ) : this(command, effect, ok, error, url, mutableMapOf())
+        ) : this(command, effect, ok, error, loading, url, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Reload.Effect = effect.getRequired("effect")
@@ -1769,6 +1828,9 @@ private constructor(
         fun ok(): Boolean = ok.getRequired("ok")
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
 
         fun url(): Optional<String> = url.getOptional("url")
 
@@ -1782,6 +1844,8 @@ private constructor(
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
 
         @JsonProperty("url") @ExcludeMissing fun _url(): JsonField<String> = url
 
@@ -1810,6 +1874,7 @@ private constructor(
             private var effect: JsonField<CommandResult.Reload.Effect>? = null
             private var ok: JsonField<Boolean>? = null
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var loading: JsonField<Boolean> = JsonMissing.of()
             private var url: JsonField<String> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -1819,6 +1884,7 @@ private constructor(
                 this.effect = reload.effect
                 this.ok = reload.ok
                 this.error = reload.error
+                this.loading = reload.loading
                 this.url = reload.url
                 this.additionalProperties = reload.additionalProperties.toMutableMap()
             }
@@ -1840,6 +1906,12 @@ private constructor(
             fun error(error: CommandErrorInfo) = error(JsonField.of(error))
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
 
             fun url(url: String) = url(JsonField.of(url))
 
@@ -1870,6 +1942,7 @@ private constructor(
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
                     error,
+                    loading,
                     url,
                     additionalProperties.toMutableMap(),
                 )
@@ -1898,6 +1971,7 @@ private constructor(
             effect().validate()
             ok()
             error().ifPresent { it.validate() }
+            loading()
             url()
             validated = true
         }
@@ -1908,6 +1982,7 @@ private constructor(
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
                 (if (url.asKnown().isPresent) 1 else 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -2003,18 +2078,19 @@ private constructor(
                 this.effect == other.effect &&
                 this.ok == other.ok &&
                 this.error == other.error &&
+                this.loading == other.loading &&
                 this.url == other.url &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, error, url, additionalProperties)
+            Objects.hash(command, effect, ok, error, loading, url, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Reload{command=$command, effect=$effect, ok=$ok, error=$error, url=$url, additionalProperties=$additionalProperties}"
+            "Reload{command=$command, effect=$effect, ok=$ok, error=$error, loading=$loading, url=$url, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a snapshot command. */
@@ -2328,6 +2404,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -2345,7 +2422,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Click.Effect = effect.getRequired("effect")
@@ -2357,8 +2437,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("click")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -2374,6 +2457,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -2402,6 +2487,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -2412,6 +2498,7 @@ private constructor(
                 this.dialog = click.dialog
                 this.error = click.error
                 this.loading = click.loading
+                this.opened = click.opened.map { it.toMutableList() }
                 this.additionalProperties = click.additionalProperties.toMutableMap()
             }
 
@@ -2439,11 +2526,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -2472,6 +2575,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -2501,6 +2605,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -2511,7 +2616,8 @@ private constructor(
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -2608,320 +2714,18 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Click{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
-    }
-
-    /** Result of a dblclick command. */
-    class Dblclick
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val command: JsonValue,
-        private val effect: JsonField<CommandResult.Dblclick.Effect>,
-        private val ok: JsonField<Boolean>,
-        private val dialog: JsonField<CommandDialog>,
-        private val error: JsonField<CommandErrorInfo>,
-        private val loading: JsonField<Boolean>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("effect")
-            @ExcludeMissing
-            effect: JsonField<CommandResult.Dblclick.Effect> = JsonMissing.of(),
-            @JsonProperty("ok") @ExcludeMissing ok: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("dialog")
-            @ExcludeMissing
-            dialog: JsonField<CommandDialog> = JsonMissing.of(),
-            @JsonProperty("error")
-            @ExcludeMissing
-            error: JsonField<CommandErrorInfo> = JsonMissing.of(),
-            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
-
-        /** What happened to the page: nothing, a change, or a possible change. */
-        fun effect(): CommandResult.Dblclick.Effect = effect.getRequired("effect")
-
-        fun ok(): Boolean = ok.getRequired("ok")
-
-        /** A dialog that the command opened. It blocks the tab until it closes. */
-        fun dialog(): Optional<CommandDialog> = dialog.getOptional("dialog")
-
-        fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
-
-        /** The command started a navigation that was still loading when it returned. */
-        fun loading(): Optional<Boolean> = loading.getOptional("loading")
-
-        /** Expected to always return `JsonValue.from("dblclick")`. It is set by default. */
-        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("effect")
-        @ExcludeMissing
-        fun _effect(): JsonField<CommandResult.Dblclick.Effect> = effect
-
-        @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
-
-        @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<CommandDialog> = dialog
-
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
-
-        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Dblclick]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Dblclick]. */
-        class Builder internal constructor() {
-
-            private var command: JsonValue = JsonValue.from("dblclick")
-            private var effect: JsonField<CommandResult.Dblclick.Effect>? = null
-            private var ok: JsonField<Boolean>? = null
-            private var dialog: JsonField<CommandDialog> = JsonMissing.of()
-            private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
-            private var loading: JsonField<Boolean> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(dblclick: Dblclick) = apply {
-                this.command = dblclick.command
-                this.effect = dblclick.effect
-                this.ok = dblclick.ok
-                this.dialog = dblclick.dialog
-                this.error = dblclick.error
-                this.loading = dblclick.loading
-                this.additionalProperties = dblclick.additionalProperties.toMutableMap()
-            }
-
-            fun command(command: JsonValue) = apply { this.command = command }
-
-            /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: CommandResult.Dblclick.Effect) = effect(JsonField.of(effect))
-
-            /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: JsonField<CommandResult.Dblclick.Effect>) = apply {
-                this.effect = effect
-            }
-
-            fun ok(ok: Boolean) = ok(JsonField.of(ok))
-
-            fun ok(ok: JsonField<Boolean>) = apply { this.ok = ok }
-
-            /** A dialog that the command opened. It blocks the tab until it closes. */
-            fun dialog(dialog: CommandDialog) = dialog(JsonField.of(dialog))
-
-            /** A dialog that the command opened. It blocks the tab until it closes. */
-            fun dialog(dialog: JsonField<CommandDialog>) = apply { this.dialog = dialog }
-
-            fun error(error: CommandErrorInfo) = error(JsonField.of(error))
-
-            fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
-
-            /** The command started a navigation that was still loading when it returned. */
-            fun loading(loading: Boolean) = loading(JsonField.of(loading))
-
-            /** The command started a navigation that was still loading when it returned. */
-            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Dblclick =
-                Dblclick(
-                    command,
-                    checkRequired("effect", effect),
-                    checkRequired("ok", ok),
-                    dialog,
-                    error,
-                    loading,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Dblclick = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _command().let {
-                if (it != JsonValue.from("dblclick")) {
-                    throw SteelInvalidDataException("'command' is invalid, received $it")
-                }
-            }
-            effect().validate()
-            ok()
-            dialog().ifPresent { it.validate() }
-            error().ifPresent { it.validate() }
-            loading()
-            validated = true
-        }
-
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("dblclick")) 1 else 0 }) +
-                (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (ok.asKnown().isPresent) 1 else 0) +
-                (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
-
-        class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val NONE = of("none")
-
-                @JvmField val APPLIED = of("applied")
-
-                @JvmField val UNKNOWN = of("unknown")
-
-                @JvmStatic fun of(value: String) = Effect(JsonField.of(value))
-            }
-
-            enum class Known {
-                NONE,
-                APPLIED,
-                UNKNOWN,
-            }
-
-            enum class Value {
-                NONE,
-                APPLIED,
-                UNKNOWN,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    NONE -> Value.NONE
-                    APPLIED -> Value.APPLIED
-                    UNKNOWN -> Value.UNKNOWN
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    NONE -> Known.NONE
-                    APPLIED -> Known.APPLIED
-                    UNKNOWN -> Known.UNKNOWN
-                    else -> throw SteelInvalidDataException("Unknown Effect: $value")
-                }
-
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    SteelInvalidDataException("Value is not a String")
-                }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Effect = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Effect && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Dblclick &&
-                this.command == other.command &&
-                this.effect == other.effect &&
-                this.ok == other.ok &&
-                this.dialog == other.dialog &&
-                this.error == other.error &&
-                this.loading == other.loading &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Dblclick{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Click{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a hover command. */
@@ -3481,6 +3285,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -3498,7 +3303,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Type.Effect = effect.getRequired("effect")
@@ -3510,8 +3318,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("type")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -3527,6 +3338,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3555,6 +3368,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -3565,6 +3379,7 @@ private constructor(
                 this.dialog = type.dialog
                 this.error = type.error
                 this.loading = type.loading
+                this.opened = type.opened.map { it.toMutableList() }
                 this.additionalProperties = type.additionalProperties.toMutableMap()
             }
 
@@ -3592,11 +3407,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -3625,6 +3456,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -3654,6 +3486,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -3664,7 +3497,8 @@ private constructor(
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -3761,17 +3595,18 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Type{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Type{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a fill command. */
@@ -3784,6 +3619,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -3801,7 +3637,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Fill.Effect = effect.getRequired("effect")
@@ -3813,8 +3652,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("fill")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -3830,6 +3672,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3858,6 +3702,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -3868,6 +3713,7 @@ private constructor(
                 this.dialog = fill.dialog
                 this.error = fill.error
                 this.loading = fill.loading
+                this.opened = fill.opened.map { it.toMutableList() }
                 this.additionalProperties = fill.additionalProperties.toMutableMap()
             }
 
@@ -3895,11 +3741,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -3928,6 +3790,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -3957,6 +3820,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -3967,7 +3831,8 @@ private constructor(
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -4064,17 +3929,18 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Fill{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Fill{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a press command. */
@@ -4084,9 +3950,11 @@ private constructor(
         private val command: JsonValue,
         private val effect: JsonField<CommandResult.Press.Effect>,
         private val ok: JsonField<Boolean>,
+        private val answered: JsonField<String>,
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -4097,6 +3965,9 @@ private constructor(
             @ExcludeMissing
             effect: JsonField<CommandResult.Press.Effect> = JsonMissing.of(),
             @JsonProperty("ok") @ExcludeMissing ok: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("answered")
+            @ExcludeMissing
+            answered: JsonField<String> = JsonMissing.of(),
             @JsonProperty("dialog")
             @ExcludeMissing
             dialog: JsonField<CommandDialog> = JsonMissing.of(),
@@ -4104,20 +3975,29 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, answered, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Press.Effect = effect.getRequired("effect")
 
         fun ok(): Boolean = ok.getRequired("ok")
 
+        /** The id of the dialog that the key answered. Absent when the key went to the page. */
+        fun answered(): Optional<String> = answered.getOptional("answered")
+
         /** A dialog that the command opened. It blocks the tab until it closes. */
         fun dialog(): Optional<CommandDialog> = dialog.getOptional("dialog")
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("press")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -4128,11 +4008,15 @@ private constructor(
 
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
+        @JsonProperty("answered") @ExcludeMissing fun _answered(): JsonField<String> = answered
+
         @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<CommandDialog> = dialog
 
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -4158,9 +4042,11 @@ private constructor(
             private var command: JsonValue = JsonValue.from("press")
             private var effect: JsonField<CommandResult.Press.Effect>? = null
             private var ok: JsonField<Boolean>? = null
+            private var answered: JsonField<String> = JsonMissing.of()
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -4168,9 +4054,11 @@ private constructor(
                 this.command = press.command
                 this.effect = press.effect
                 this.ok = press.ok
+                this.answered = press.answered
                 this.dialog = press.dialog
                 this.error = press.error
                 this.loading = press.loading
+                this.opened = press.opened.map { it.toMutableList() }
                 this.additionalProperties = press.additionalProperties.toMutableMap()
             }
 
@@ -4188,6 +4076,12 @@ private constructor(
 
             fun ok(ok: JsonField<Boolean>) = apply { this.ok = ok }
 
+            /** The id of the dialog that the key answered. Absent when the key went to the page. */
+            fun answered(answered: String) = answered(JsonField.of(answered))
+
+            /** The id of the dialog that the key answered. Absent when the key went to the page. */
+            fun answered(answered: JsonField<String>) = apply { this.answered = answered }
+
             /** A dialog that the command opened. It blocks the tab until it closes. */
             fun dialog(dialog: CommandDialog) = dialog(JsonField.of(dialog))
 
@@ -4198,11 +4092,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -4228,9 +4138,11 @@ private constructor(
                     command,
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
+                    answered,
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -4257,9 +4169,11 @@ private constructor(
             }
             effect().validate()
             ok()
+            answered()
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -4268,9 +4182,11 @@ private constructor(
             (command.let { if (it == JsonValue.from("press")) 1 else 0 }) +
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
+                (if (answered.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -4364,32 +4280,45 @@ private constructor(
                 this.command == other.command &&
                 this.effect == other.effect &&
                 this.ok == other.ok &&
+                this.answered == other.answered &&
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(
+                command,
+                effect,
+                ok,
+                answered,
+                dialog,
+                error,
+                loading,
+                opened,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Press{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Press{command=$command, effect=$effect, ok=$ok, answered=$answered, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
-    /** Result of a keydown command. */
-    class Keydown
+    /** Result of a keyboard command. */
+    class Keyboard
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val command: JsonValue,
-        private val effect: JsonField<CommandResult.Keydown.Effect>,
+        private val effect: JsonField<CommandResult.Keyboard.Effect>,
         private val ok: JsonField<Boolean>,
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -4398,7 +4327,7 @@ private constructor(
             @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
             @JsonProperty("effect")
             @ExcludeMissing
-            effect: JsonField<CommandResult.Keydown.Effect> = JsonMissing.of(),
+            effect: JsonField<CommandResult.Keyboard.Effect> = JsonMissing.of(),
             @JsonProperty("ok") @ExcludeMissing ok: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("dialog")
             @ExcludeMissing
@@ -4407,10 +4336,13 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
-        fun effect(): CommandResult.Keydown.Effect = effect.getRequired("effect")
+        fun effect(): CommandResult.Keyboard.Effect = effect.getRequired("effect")
 
         fun ok(): Boolean = ok.getRequired("ok")
 
@@ -4419,15 +4351,18 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
 
-        /** Expected to always return `JsonValue.from("keydown")`. It is set by default. */
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
+
+        /** Expected to always return `JsonValue.from("keyboard")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
         @JsonProperty("effect")
         @ExcludeMissing
-        fun _effect(): JsonField<CommandResult.Keydown.Effect> = effect
+        fun _effect(): JsonField<CommandResult.Keyboard.Effect> = effect
 
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
@@ -4436,6 +4371,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -4451,39 +4388,41 @@ private constructor(
 
         companion object {
 
-            /** Returns a mutable builder for constructing an instance of [Keydown]. */
+            /** Returns a mutable builder for constructing an instance of [Keyboard]. */
             @JvmStatic fun builder() = Builder()
         }
 
-        /** A builder for [Keydown]. */
+        /** A builder for [Keyboard]. */
         class Builder internal constructor() {
 
-            private var command: JsonValue = JsonValue.from("keydown")
-            private var effect: JsonField<CommandResult.Keydown.Effect>? = null
+            private var command: JsonValue = JsonValue.from("keyboard")
+            private var effect: JsonField<CommandResult.Keyboard.Effect>? = null
             private var ok: JsonField<Boolean>? = null
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
-            internal fun from(keydown: Keydown) = apply {
-                this.command = keydown.command
-                this.effect = keydown.effect
-                this.ok = keydown.ok
-                this.dialog = keydown.dialog
-                this.error = keydown.error
-                this.loading = keydown.loading
-                this.additionalProperties = keydown.additionalProperties.toMutableMap()
+            internal fun from(keyboard: Keyboard) = apply {
+                this.command = keyboard.command
+                this.effect = keyboard.effect
+                this.ok = keyboard.ok
+                this.dialog = keyboard.dialog
+                this.error = keyboard.error
+                this.loading = keyboard.loading
+                this.opened = keyboard.opened.map { it.toMutableList() }
+                this.additionalProperties = keyboard.additionalProperties.toMutableMap()
             }
 
             fun command(command: JsonValue) = apply { this.command = command }
 
             /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: CommandResult.Keydown.Effect) = effect(JsonField.of(effect))
+            fun effect(effect: CommandResult.Keyboard.Effect) = effect(JsonField.of(effect))
 
             /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: JsonField<CommandResult.Keydown.Effect>) = apply {
+            fun effect(effect: JsonField<CommandResult.Keyboard.Effect>) = apply {
                 this.effect = effect
             }
 
@@ -4501,11 +4440,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -4526,14 +4481,15 @@ private constructor(
                 keys.forEach(::removeAdditionalProperty)
             }
 
-            fun build(): Keydown =
-                Keydown(
+            fun build(): Keyboard =
+                Keyboard(
                     command,
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -4548,13 +4504,13 @@ private constructor(
 
         private var validated: Boolean = false
 
-        fun validate(): Keydown = apply {
+        fun validate(): Keyboard = apply {
             if (validated) {
                 return@apply
             }
 
             _command().let {
-                if (it != JsonValue.from("keydown")) {
+                if (it != JsonValue.from("keyboard")) {
                     throw SteelInvalidDataException("'command' is invalid, received $it")
                 }
             }
@@ -4563,17 +4519,19 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
         @JvmSynthetic
         internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("keydown")) 1 else 0 }) +
+            (command.let { if (it == JsonValue.from("keyboard")) 1 else 0 }) +
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -4663,327 +4621,25 @@ private constructor(
                 return true
             }
 
-            return other is Keydown &&
+            return other is Keyboard &&
                 this.command == other.command &&
                 this.effect == other.effect &&
                 this.ok == other.ok &&
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Keydown{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
-    }
-
-    /** Result of a keyup command. */
-    class Keyup
-    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-    private constructor(
-        private val command: JsonValue,
-        private val effect: JsonField<CommandResult.Keyup.Effect>,
-        private val ok: JsonField<Boolean>,
-        private val dialog: JsonField<CommandDialog>,
-        private val error: JsonField<CommandErrorInfo>,
-        private val loading: JsonField<Boolean>,
-        private val additionalProperties: MutableMap<String, JsonValue>,
-    ) {
-
-        @JsonCreator
-        private constructor(
-            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-            @JsonProperty("effect")
-            @ExcludeMissing
-            effect: JsonField<CommandResult.Keyup.Effect> = JsonMissing.of(),
-            @JsonProperty("ok") @ExcludeMissing ok: JsonField<Boolean> = JsonMissing.of(),
-            @JsonProperty("dialog")
-            @ExcludeMissing
-            dialog: JsonField<CommandDialog> = JsonMissing.of(),
-            @JsonProperty("error")
-            @ExcludeMissing
-            error: JsonField<CommandErrorInfo> = JsonMissing.of(),
-            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
-
-        /** What happened to the page: nothing, a change, or a possible change. */
-        fun effect(): CommandResult.Keyup.Effect = effect.getRequired("effect")
-
-        fun ok(): Boolean = ok.getRequired("ok")
-
-        /** A dialog that the command opened. It blocks the tab until it closes. */
-        fun dialog(): Optional<CommandDialog> = dialog.getOptional("dialog")
-
-        fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
-
-        /** The command started a navigation that was still loading when it returned. */
-        fun loading(): Optional<Boolean> = loading.getOptional("loading")
-
-        /** Expected to always return `JsonValue.from("keyup")`. It is set by default. */
-        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-        @JsonProperty("effect")
-        @ExcludeMissing
-        fun _effect(): JsonField<CommandResult.Keyup.Effect> = effect
-
-        @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
-
-        @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<CommandDialog> = dialog
-
-        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
-
-        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
-
-        @JsonAnySetter
-        private fun putAdditionalProperty(key: String, value: JsonValue) {
-            additionalProperties.put(key, value)
-        }
-
-        @JsonAnyGetter
-        @ExcludeMissing
-        fun _additionalProperties(): Map<String, JsonValue> =
-            Collections.unmodifiableMap(additionalProperties)
-
-        fun toBuilder() = Builder().from(this)
-
-        companion object {
-
-            /** Returns a mutable builder for constructing an instance of [Keyup]. */
-            @JvmStatic fun builder() = Builder()
-        }
-
-        /** A builder for [Keyup]. */
-        class Builder internal constructor() {
-
-            private var command: JsonValue = JsonValue.from("keyup")
-            private var effect: JsonField<CommandResult.Keyup.Effect>? = null
-            private var ok: JsonField<Boolean>? = null
-            private var dialog: JsonField<CommandDialog> = JsonMissing.of()
-            private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
-            private var loading: JsonField<Boolean> = JsonMissing.of()
-            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-            @JvmSynthetic
-            internal fun from(keyup: Keyup) = apply {
-                this.command = keyup.command
-                this.effect = keyup.effect
-                this.ok = keyup.ok
-                this.dialog = keyup.dialog
-                this.error = keyup.error
-                this.loading = keyup.loading
-                this.additionalProperties = keyup.additionalProperties.toMutableMap()
-            }
-
-            fun command(command: JsonValue) = apply { this.command = command }
-
-            /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: CommandResult.Keyup.Effect) = effect(JsonField.of(effect))
-
-            /** What happened to the page: nothing, a change, or a possible change. */
-            fun effect(effect: JsonField<CommandResult.Keyup.Effect>) = apply {
-                this.effect = effect
-            }
-
-            fun ok(ok: Boolean) = ok(JsonField.of(ok))
-
-            fun ok(ok: JsonField<Boolean>) = apply { this.ok = ok }
-
-            /** A dialog that the command opened. It blocks the tab until it closes. */
-            fun dialog(dialog: CommandDialog) = dialog(JsonField.of(dialog))
-
-            /** A dialog that the command opened. It blocks the tab until it closes. */
-            fun dialog(dialog: JsonField<CommandDialog>) = apply { this.dialog = dialog }
-
-            fun error(error: CommandErrorInfo) = error(JsonField.of(error))
-
-            fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
-
-            /** The command started a navigation that was still loading when it returned. */
-            fun loading(loading: Boolean) = loading(JsonField.of(loading))
-
-            /** The command started a navigation that was still loading when it returned. */
-            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
-
-            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.clear()
-                putAllAdditionalProperties(additionalProperties)
-            }
-
-            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                additionalProperties.put(key, value)
-            }
-
-            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                this.additionalProperties.putAll(additionalProperties)
-            }
-
-            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
-
-            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                keys.forEach(::removeAdditionalProperty)
-            }
-
-            fun build(): Keyup =
-                Keyup(
-                    command,
-                    checkRequired("effect", effect),
-                    checkRequired("ok", ok),
-                    dialog,
-                    error,
-                    loading,
-                    additionalProperties.toMutableMap(),
-                )
-        }
-
-        fun isValid(): Boolean =
-            try {
-                validate()
-                true
-            } catch (e: SteelInvalidDataException) {
-                false
-            }
-
-        private var validated: Boolean = false
-
-        fun validate(): Keyup = apply {
-            if (validated) {
-                return@apply
-            }
-
-            _command().let {
-                if (it != JsonValue.from("keyup")) {
-                    throw SteelInvalidDataException("'command' is invalid, received $it")
-                }
-            }
-            effect().validate()
-            ok()
-            dialog().ifPresent { it.validate() }
-            error().ifPresent { it.validate() }
-            loading()
-            validated = true
-        }
-
-        @JvmSynthetic
-        internal fun validity(): Int =
-            (command.let { if (it == JsonValue.from("keyup")) 1 else 0 }) +
-                (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (ok.asKnown().isPresent) 1 else 0) +
-                (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
-
-        class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
-
-            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
-
-            companion object {
-
-                @JvmField val NONE = of("none")
-
-                @JvmField val APPLIED = of("applied")
-
-                @JvmField val UNKNOWN = of("unknown")
-
-                @JvmStatic fun of(value: String) = Effect(JsonField.of(value))
-            }
-
-            enum class Known {
-                NONE,
-                APPLIED,
-                UNKNOWN,
-            }
-
-            enum class Value {
-                NONE,
-                APPLIED,
-                UNKNOWN,
-                _UNKNOWN,
-            }
-
-            fun value(): Value =
-                when (this) {
-                    NONE -> Value.NONE
-                    APPLIED -> Value.APPLIED
-                    UNKNOWN -> Value.UNKNOWN
-                    else -> Value._UNKNOWN
-                }
-
-            fun known(): Known =
-                when (this) {
-                    NONE -> Known.NONE
-                    APPLIED -> Known.APPLIED
-                    UNKNOWN -> Known.UNKNOWN
-                    else -> throw SteelInvalidDataException("Unknown Effect: $value")
-                }
-
-            fun asString(): String =
-                _value().asString().orElseThrow {
-                    SteelInvalidDataException("Value is not a String")
-                }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): Effect = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                known()
-                validated = true
-            }
-
-            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is Effect && value == other.value
-            }
-
-            override fun hashCode() = value.hashCode()
-
-            override fun toString() = value.toString()
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) {
-                return true
-            }
-
-            return other is Keyup &&
-                this.command == other.command &&
-                this.effect == other.effect &&
-                this.ok == other.ok &&
-                this.dialog == other.dialog &&
-                this.error == other.error &&
-                this.loading == other.loading &&
-                this.additionalProperties == other.additionalProperties
-        }
-
-        private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
-        }
-
-        override fun hashCode(): Int = hashCode
-
-        override fun toString() =
-            "Keyup{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Keyboard{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a mouse command. */
@@ -4996,6 +4652,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -5013,7 +4670,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Mouse.Effect = effect.getRequired("effect")
@@ -5025,8 +4685,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("mouse")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -5042,6 +4705,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -5070,6 +4735,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -5080,6 +4746,7 @@ private constructor(
                 this.dialog = mouse.dialog
                 this.error = mouse.error
                 this.loading = mouse.loading
+                this.opened = mouse.opened.map { it.toMutableList() }
                 this.additionalProperties = mouse.additionalProperties.toMutableMap()
             }
 
@@ -5107,11 +4774,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -5140,6 +4823,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -5169,6 +4853,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -5179,7 +4864,8 @@ private constructor(
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -5276,17 +4962,494 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Mouse{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Mouse{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
+    }
+
+    /** Result of a release command. */
+    class Release
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val command: JsonValue,
+        private val effect: JsonField<CommandResult.Release.Effect>,
+        private val ok: JsonField<Boolean>,
+        private val button: JsonField<Button>,
+        private val dialog: JsonField<CommandDialog>,
+        private val error: JsonField<CommandErrorInfo>,
+        private val keys: JsonField<List<String>>,
+        private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
+            @JsonProperty("effect")
+            @ExcludeMissing
+            effect: JsonField<CommandResult.Release.Effect> = JsonMissing.of(),
+            @JsonProperty("ok") @ExcludeMissing ok: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("button") @ExcludeMissing button: JsonField<Button> = JsonMissing.of(),
+            @JsonProperty("dialog")
+            @ExcludeMissing
+            dialog: JsonField<CommandDialog> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("keys") @ExcludeMissing keys: JsonField<List<String>> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, button, dialog, error, keys, loading, opened, mutableMapOf())
+
+        /** What happened to the page: nothing, a change, or a possible change. */
+        fun effect(): CommandResult.Release.Effect = effect.getRequired("effect")
+
+        fun ok(): Boolean = ok.getRequired("ok")
+
+        /** The mouse button that was let go. */
+        fun button(): Optional<Button> = button.getOptional("button")
+
+        /** A dialog that the command opened. It blocks the tab until it closes. */
+        fun dialog(): Optional<CommandDialog> = dialog.getOptional("dialog")
+
+        fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The keys that were let go. */
+        fun keys(): Optional<List<String>> = keys.getOptional("keys")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
+
+        /** Expected to always return `JsonValue.from("release")`. It is set by default. */
+        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
+
+        @JsonProperty("effect")
+        @ExcludeMissing
+        fun _effect(): JsonField<CommandResult.Release.Effect> = effect
+
+        @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
+
+        @JsonProperty("button") @ExcludeMissing fun _button(): JsonField<Button> = button
+
+        @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<CommandDialog> = dialog
+
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("keys") @ExcludeMissing fun _keys(): JsonField<List<String>> = keys
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Release]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Release]. */
+        class Builder internal constructor() {
+
+            private var command: JsonValue = JsonValue.from("release")
+            private var effect: JsonField<CommandResult.Release.Effect>? = null
+            private var ok: JsonField<Boolean>? = null
+            private var button: JsonField<Button> = JsonMissing.of()
+            private var dialog: JsonField<CommandDialog> = JsonMissing.of()
+            private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var keys: JsonField<MutableList<String>>? = null
+            private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(release: Release) = apply {
+                this.command = release.command
+                this.effect = release.effect
+                this.ok = release.ok
+                this.button = release.button
+                this.dialog = release.dialog
+                this.error = release.error
+                this.keys = release.keys.map { it.toMutableList() }
+                this.loading = release.loading
+                this.opened = release.opened.map { it.toMutableList() }
+                this.additionalProperties = release.additionalProperties.toMutableMap()
+            }
+
+            fun command(command: JsonValue) = apply { this.command = command }
+
+            /** What happened to the page: nothing, a change, or a possible change. */
+            fun effect(effect: CommandResult.Release.Effect) = effect(JsonField.of(effect))
+
+            /** What happened to the page: nothing, a change, or a possible change. */
+            fun effect(effect: JsonField<CommandResult.Release.Effect>) = apply {
+                this.effect = effect
+            }
+
+            fun ok(ok: Boolean) = ok(JsonField.of(ok))
+
+            fun ok(ok: JsonField<Boolean>) = apply { this.ok = ok }
+
+            /** The mouse button that was let go. */
+            fun button(button: Button) = button(JsonField.of(button))
+
+            /** The mouse button that was let go. */
+            fun button(button: JsonField<Button>) = apply { this.button = button }
+
+            /** A dialog that the command opened. It blocks the tab until it closes. */
+            fun dialog(dialog: CommandDialog) = dialog(JsonField.of(dialog))
+
+            /** A dialog that the command opened. It blocks the tab until it closes. */
+            fun dialog(dialog: JsonField<CommandDialog>) = apply { this.dialog = dialog }
+
+            fun error(error: CommandErrorInfo) = error(JsonField.of(error))
+
+            fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The keys that were let go. */
+            fun keys(keys: List<String>) = keys(JsonField.of(keys))
+
+            /** The keys that were let go. */
+            fun keys(keys: JsonField<List<String>>) = apply {
+                this.keys = keys.map { it.toMutableList() }
+            }
+
+            /** The keys that were let go. */
+            fun addKey(key: String) = apply {
+                this.keys =
+                    (this.keys ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("keys", it).add(key)
+                    }
+            }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): Release =
+                Release(
+                    command,
+                    checkRequired("effect", effect),
+                    checkRequired("ok", ok),
+                    button,
+                    dialog,
+                    error,
+                    (keys ?: JsonMissing.of()).map { it.toImmutable() },
+                    loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: SteelInvalidDataException) {
+                false
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Release = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _command().let {
+                if (it != JsonValue.from("release")) {
+                    throw SteelInvalidDataException("'command' is invalid, received $it")
+                }
+            }
+            effect().validate()
+            ok()
+            button().ifPresent { it.validate() }
+            dialog().ifPresent { it.validate() }
+            error().ifPresent { it.validate() }
+            keys()
+            loading()
+            opened()
+            validated = true
+        }
+
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (command.let { if (it == JsonValue.from("release")) 1 else 0 }) +
+                (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (ok.asKnown().isPresent) 1 else 0) +
+                (button.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (keys.asKnown().getOrNull()?.let { it.size } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
+
+        class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val NONE = of("none")
+
+                @JvmField val APPLIED = of("applied")
+
+                @JvmField val UNKNOWN = of("unknown")
+
+                @JvmStatic fun of(value: String) = Effect(JsonField.of(value))
+            }
+
+            enum class Known {
+                NONE,
+                APPLIED,
+                UNKNOWN,
+            }
+
+            enum class Value {
+                NONE,
+                APPLIED,
+                UNKNOWN,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    NONE -> Value.NONE
+                    APPLIED -> Value.APPLIED
+                    UNKNOWN -> Value.UNKNOWN
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    NONE -> Known.NONE
+                    APPLIED -> Known.APPLIED
+                    UNKNOWN -> Known.UNKNOWN
+                    else -> throw SteelInvalidDataException("Unknown Effect: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Effect = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Effect && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        class Button @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val LEFT = of("left")
+
+                @JvmField val RIGHT = of("right")
+
+                @JvmField val MIDDLE = of("middle")
+
+                @JvmStatic fun of(value: String) = Button(JsonField.of(value))
+            }
+
+            enum class Known {
+                LEFT,
+                RIGHT,
+                MIDDLE,
+            }
+
+            enum class Value {
+                LEFT,
+                RIGHT,
+                MIDDLE,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    LEFT -> Value.LEFT
+                    RIGHT -> Value.RIGHT
+                    MIDDLE -> Value.MIDDLE
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    LEFT -> Known.LEFT
+                    RIGHT -> Known.RIGHT
+                    MIDDLE -> Known.MIDDLE
+                    else -> throw SteelInvalidDataException("Unknown Button: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Button = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Button && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Release &&
+                this.command == other.command &&
+                this.effect == other.effect &&
+                this.ok == other.ok &&
+                this.button == other.button &&
+                this.dialog == other.dialog &&
+                this.error == other.error &&
+                this.keys == other.keys &&
+                this.loading == other.loading &&
+                this.opened == other.opened &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(
+                command,
+                effect,
+                ok,
+                button,
+                dialog,
+                error,
+                keys,
+                loading,
+                opened,
+                additionalProperties,
+            )
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Release{command=$command, effect=$effect, ok=$ok, button=$button, dialog=$dialog, error=$error, keys=$keys, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a select command. */
@@ -5299,6 +5462,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val selected: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -5317,10 +5481,13 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("selected")
             @ExcludeMissing
             selected: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, selected, mutableMapOf())
+        ) : this(command, effect, ok, dialog, error, loading, opened, selected, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Select.Effect = effect.getRequired("effect")
@@ -5332,8 +5499,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** The values of the selected options. */
         fun selected(): Optional<List<String>> = selected.getOptional("selected")
@@ -5352,6 +5522,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonProperty("selected")
         @ExcludeMissing
@@ -5384,6 +5556,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var selected: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -5395,6 +5568,7 @@ private constructor(
                 this.dialog = select.dialog
                 this.error = select.error
                 this.loading = select.loading
+                this.opened = select.opened.map { it.toMutableList() }
                 this.selected = select.selected.map { it.toMutableList() }
                 this.additionalProperties = select.additionalProperties.toMutableMap()
             }
@@ -5423,11 +5597,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             /** The values of the selected options. */
             fun selected(selected: List<String>) = selected(JsonField.of(selected))
@@ -5472,6 +5662,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     (selected ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -5502,6 +5693,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             selected()
             validated = true
         }
@@ -5514,6 +5706,7 @@ private constructor(
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0) +
                 (selected.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
@@ -5611,6 +5804,7 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.selected == other.selected &&
                 this.additionalProperties == other.additionalProperties
         }
@@ -5623,6 +5817,7 @@ private constructor(
                 dialog,
                 error,
                 loading,
+                opened,
                 selected,
                 additionalProperties,
             )
@@ -5631,7 +5826,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Select{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, selected=$selected, additionalProperties=$additionalProperties}"
+            "Select{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, selected=$selected, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a check command. */
@@ -5645,6 +5840,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -5663,7 +5859,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, checked, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, checked, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Check.Effect = effect.getRequired("effect")
@@ -5677,8 +5876,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("check")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -5696,6 +5898,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -5725,6 +5929,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -5736,6 +5941,7 @@ private constructor(
                 this.dialog = check.dialog
                 this.error = check.error
                 this.loading = check.loading
+                this.opened = check.opened.map { it.toMutableList() }
                 this.additionalProperties = check.additionalProperties.toMutableMap()
             }
 
@@ -5767,11 +5973,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -5801,6 +6023,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -5831,6 +6054,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -5842,7 +6066,8 @@ private constructor(
                 (if (checked.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -5940,17 +6165,28 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, checked, dialog, error, loading, additionalProperties)
+            Objects.hash(
+                command,
+                effect,
+                ok,
+                checked,
+                dialog,
+                error,
+                loading,
+                opened,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Check{command=$command, effect=$effect, ok=$ok, checked=$checked, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Check{command=$command, effect=$effect, ok=$ok, checked=$checked, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a uncheck command. */
@@ -5964,6 +6200,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -5982,7 +6219,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, checked, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, checked, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Uncheck.Effect = effect.getRequired("effect")
@@ -5996,8 +6236,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("uncheck")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -6015,6 +6258,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6044,6 +6289,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6055,6 +6301,7 @@ private constructor(
                 this.dialog = uncheck.dialog
                 this.error = uncheck.error
                 this.loading = uncheck.loading
+                this.opened = uncheck.opened.map { it.toMutableList() }
                 this.additionalProperties = uncheck.additionalProperties.toMutableMap()
             }
 
@@ -6086,11 +6333,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -6120,6 +6383,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6150,6 +6414,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -6161,7 +6426,8 @@ private constructor(
                 (if (checked.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -6259,17 +6525,28 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, checked, dialog, error, loading, additionalProperties)
+            Objects.hash(
+                command,
+                effect,
+                ok,
+                checked,
+                dialog,
+                error,
+                loading,
+                opened,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Uncheck{command=$command, effect=$effect, ok=$ok, checked=$checked, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Uncheck{command=$command, effect=$effect, ok=$ok, checked=$checked, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a upload command. */
@@ -6283,6 +6560,7 @@ private constructor(
         private val error: JsonField<CommandErrorInfo>,
         private val files: JsonField<List<String>>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -6303,7 +6581,10 @@ private constructor(
             @ExcludeMissing
             files: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, files, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, files, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Upload.Effect = effect.getRequired("effect")
@@ -6317,8 +6598,11 @@ private constructor(
 
         fun files(): Optional<List<String>> = files.getOptional("files")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("upload")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -6336,6 +6620,8 @@ private constructor(
         @JsonProperty("files") @ExcludeMissing fun _files(): JsonField<List<String>> = files
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6365,6 +6651,7 @@ private constructor(
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var files: JsonField<MutableList<String>>? = null
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6376,6 +6663,7 @@ private constructor(
                 this.error = upload.error
                 this.files = upload.files.map { it.toMutableList() }
                 this.loading = upload.loading
+                this.opened = upload.opened.map { it.toMutableList() }
                 this.additionalProperties = upload.additionalProperties.toMutableMap()
             }
 
@@ -6416,11 +6704,27 @@ private constructor(
                     }
             }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -6450,6 +6754,7 @@ private constructor(
                     error,
                     (files ?: JsonMissing.of()).map { it.toImmutable() },
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6480,6 +6785,7 @@ private constructor(
             error().ifPresent { it.validate() }
             files()
             loading()
+            opened()
             validated = true
         }
 
@@ -6491,7 +6797,8 @@ private constructor(
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (files.asKnown().getOrNull()?.let { it.size } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -6589,17 +6896,28 @@ private constructor(
                 this.error == other.error &&
                 this.files == other.files &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, files, loading, additionalProperties)
+            Objects.hash(
+                command,
+                effect,
+                ok,
+                dialog,
+                error,
+                files,
+                loading,
+                opened,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Upload{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, files=$files, loading=$loading, additionalProperties=$additionalProperties}"
+            "Upload{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, files=$files, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a drag command. */
@@ -6612,6 +6930,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -6629,7 +6948,10 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, mutableMapOf())
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Drag.Effect = effect.getRequired("effect")
@@ -6641,8 +6963,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("drag")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -6658,6 +6983,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6686,6 +7013,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6696,6 +7024,7 @@ private constructor(
                 this.dialog = drag.dialog
                 this.error = drag.error
                 this.loading = drag.loading
+                this.opened = drag.opened.map { it.toMutableList() }
                 this.additionalProperties = drag.additionalProperties.toMutableMap()
             }
 
@@ -6723,11 +7052,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
@@ -6756,6 +7101,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -6785,6 +7131,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -6795,7 +7142,8 @@ private constructor(
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -6892,17 +7240,18 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, additionalProperties)
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Drag{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, additionalProperties=$additionalProperties}"
+            "Drag{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a get command. */
@@ -6915,6 +7264,7 @@ private constructor(
         private val error: JsonField<CommandErrorInfo>,
         private val masked: JsonField<Boolean>,
         private val value: JsonValue,
+        private val what: JsonField<What>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
 
@@ -6930,7 +7280,8 @@ private constructor(
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("masked") @ExcludeMissing masked: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("value") @ExcludeMissing value: JsonValue = JsonMissing.of(),
-        ) : this(command, effect, ok, error, masked, value, mutableMapOf())
+            @JsonProperty("what") @ExcludeMissing what: JsonField<What> = JsonMissing.of(),
+        ) : this(command, effect, ok, error, masked, value, what, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Get.Effect = effect.getRequired("effect")
@@ -6941,6 +7292,9 @@ private constructor(
 
         /** The value is a secret, so it is left out. */
         fun masked(): Optional<Boolean> = masked.getOptional("masked")
+
+        /** What was read. It tells the type of value. */
+        fun what(): Optional<What> = what.getOptional("what")
 
         /** Expected to always return `JsonValue.from("get")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -6956,6 +7310,8 @@ private constructor(
         @JsonProperty("masked") @ExcludeMissing fun _masked(): JsonField<Boolean> = masked
 
         @JsonProperty("value") @ExcludeMissing fun _value(): JsonValue = value
+
+        @JsonProperty("what") @ExcludeMissing fun _what(): JsonField<What> = what
 
         @JsonAnySetter
         private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -6984,6 +7340,7 @@ private constructor(
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var masked: JsonField<Boolean> = JsonMissing.of()
             private var value: JsonValue = JsonMissing.of()
+            private var what: JsonField<What> = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
@@ -6994,6 +7351,7 @@ private constructor(
                 this.error = get.error
                 this.masked = get.masked
                 this.value = get.value
+                this.what = get.what
                 this.additionalProperties = get.additionalProperties.toMutableMap()
             }
 
@@ -7025,6 +7383,12 @@ private constructor(
              */
             fun value(value: JsonValue) = apply { this.value = value }
 
+            /** What was read. It tells the type of value. */
+            fun what(what: What) = what(JsonField.of(what))
+
+            /** What was read. It tells the type of value. */
+            fun what(what: JsonField<What>) = apply { this.what = what }
+
             fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
                 this.additionalProperties.clear()
                 putAllAdditionalProperties(additionalProperties)
@@ -7052,6 +7416,7 @@ private constructor(
                     error,
                     masked,
                     value,
+                    what,
                     additionalProperties.toMutableMap(),
                 )
         }
@@ -7080,6 +7445,7 @@ private constructor(
             ok()
             error().ifPresent { it.validate() }
             masked()
+            what().ifPresent { it.validate() }
             validated = true
         }
 
@@ -7089,7 +7455,8 @@ private constructor(
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (masked.asKnown().isPresent) 1 else 0)
+                (if (masked.asKnown().isPresent) 1 else 0) +
+                (what.asKnown().getOrNull()?.let { it.validity() } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -7174,6 +7541,131 @@ private constructor(
             override fun toString() = value.toString()
         }
 
+        class What @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val TEXT = of("text")
+
+                @JvmField val HTML = of("html")
+
+                @JvmField val MARKDOWN = of("markdown")
+
+                @JvmField val VALUE = of("value")
+
+                @JvmField val ATTR = of("attr")
+
+                @JvmField val TITLE = of("title")
+
+                @JvmField val URL = of("url")
+
+                @JvmField val COUNT = of("count")
+
+                @JvmField val BOX = of("box")
+
+                @JvmField val LOCATOR = of("locator")
+
+                @JvmStatic fun of(value: String) = What(JsonField.of(value))
+            }
+
+            enum class Known {
+                TEXT,
+                HTML,
+                MARKDOWN,
+                VALUE,
+                ATTR,
+                TITLE,
+                URL,
+                COUNT,
+                BOX,
+                LOCATOR,
+            }
+
+            enum class Value {
+                TEXT,
+                HTML,
+                MARKDOWN,
+                VALUE,
+                ATTR,
+                TITLE,
+                URL,
+                COUNT,
+                BOX,
+                LOCATOR,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    TEXT -> Value.TEXT
+                    HTML -> Value.HTML
+                    MARKDOWN -> Value.MARKDOWN
+                    VALUE -> Value.VALUE
+                    ATTR -> Value.ATTR
+                    TITLE -> Value.TITLE
+                    URL -> Value.URL
+                    COUNT -> Value.COUNT
+                    BOX -> Value.BOX
+                    LOCATOR -> Value.LOCATOR
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    TEXT -> Known.TEXT
+                    HTML -> Known.HTML
+                    MARKDOWN -> Known.MARKDOWN
+                    VALUE -> Known.VALUE
+                    ATTR -> Known.ATTR
+                    TITLE -> Known.TITLE
+                    URL -> Known.URL
+                    COUNT -> Known.COUNT
+                    BOX -> Known.BOX
+                    LOCATOR -> Known.LOCATOR
+                    else -> throw SteelInvalidDataException("Unknown What: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): What = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is What && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
         override fun equals(other: Any?): Boolean {
             if (this === other) {
                 return true
@@ -7186,17 +7678,18 @@ private constructor(
                 this.error == other.error &&
                 this.masked == other.masked &&
                 this.value == other.value &&
+                this.what == other.what &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, error, masked, value, additionalProperties)
+            Objects.hash(command, effect, ok, error, masked, value, what, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Get{command=$command, effect=$effect, ok=$ok, error=$error, masked=$masked, value=$value, additionalProperties=$additionalProperties}"
+            "Get{command=$command, effect=$effect, ok=$ok, error=$error, masked=$masked, value=$value, what=$what, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a is command. */
@@ -8285,6 +8778,7 @@ private constructor(
         private val dialog: JsonField<CommandDialog>,
         private val error: JsonField<CommandErrorInfo>,
         private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
         private val value: JsonValue,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -8303,8 +8797,11 @@ private constructor(
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
             @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("value") @ExcludeMissing value: JsonValue = JsonMissing.of(),
-        ) : this(command, effect, ok, dialog, error, loading, value, mutableMapOf())
+        ) : this(command, effect, ok, dialog, error, loading, opened, value, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Eval.Effect = effect.getRequired("effect")
@@ -8316,8 +8813,11 @@ private constructor(
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
 
-        /** The command started a navigation that was still loading when it returned. */
+        /** The page was still loading when the command returned. */
         fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
 
         /** Expected to always return `JsonValue.from("eval")`. It is set by default. */
         @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
@@ -8333,6 +8833,8 @@ private constructor(
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
 
         @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
 
         @JsonProperty("value") @ExcludeMissing fun _value(): JsonValue = value
 
@@ -8363,6 +8865,7 @@ private constructor(
             private var dialog: JsonField<CommandDialog> = JsonMissing.of()
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
             private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
             private var value: JsonValue = JsonMissing.of()
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
@@ -8374,6 +8877,7 @@ private constructor(
                 this.dialog = eval.dialog
                 this.error = eval.error
                 this.loading = eval.loading
+                this.opened = eval.opened.map { it.toMutableList() }
                 this.value = eval.value
                 this.additionalProperties = eval.additionalProperties.toMutableMap()
             }
@@ -8402,11 +8906,27 @@ private constructor(
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: Boolean) = loading(JsonField.of(loading))
 
-            /** The command started a navigation that was still loading when it returned. */
+            /** The page was still loading when the command returned. */
             fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
 
             /** The result of the script as JSON. */
             fun value(value: JsonValue) = apply { this.value = value }
@@ -8438,6 +8958,7 @@ private constructor(
                     dialog,
                     error,
                     loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
                     value,
                     additionalProperties.toMutableMap(),
                 )
@@ -8468,6 +8989,7 @@ private constructor(
             dialog().ifPresent { it.validate() }
             error().ifPresent { it.validate() }
             loading()
+            opened()
             validated = true
         }
 
@@ -8478,7 +9000,8 @@ private constructor(
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                (if (loading.asKnown().isPresent) 1 else 0)
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
 
         class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
 
@@ -8575,18 +9098,29 @@ private constructor(
                 this.dialog == other.dialog &&
                 this.error == other.error &&
                 this.loading == other.loading &&
+                this.opened == other.opened &&
                 this.value == other.value &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, dialog, error, loading, value, additionalProperties)
+            Objects.hash(
+                command,
+                effect,
+                ok,
+                dialog,
+                error,
+                loading,
+                opened,
+                value,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Eval{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, value=$value, additionalProperties=$additionalProperties}"
+            "Eval{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, value=$value, additionalProperties=$additionalProperties}"
     }
 
     /** Result of a pdf command. */
@@ -9736,6 +10270,7 @@ private constructor(
         private val effect: JsonField<CommandResult.Tab.Effect>,
         private val ok: JsonField<Boolean>,
         private val error: JsonField<CommandErrorInfo>,
+        private val loading: JsonField<Boolean>,
         private val tab: JsonField<String>,
         private val tabs: JsonField<List<TabModel>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
@@ -9751,9 +10286,10 @@ private constructor(
             @JsonProperty("error")
             @ExcludeMissing
             error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
             @JsonProperty("tabs") @ExcludeMissing tabs: JsonField<List<TabModel>> = JsonMissing.of(),
-        ) : this(command, effect, ok, error, tab, tabs, mutableMapOf())
+        ) : this(command, effect, ok, error, loading, tab, tabs, mutableMapOf())
 
         /** What happened to the page: nothing, a change, or a possible change. */
         fun effect(): CommandResult.Tab.Effect = effect.getRequired("effect")
@@ -9761,6 +10297,9 @@ private constructor(
         fun ok(): Boolean = ok.getRequired("ok")
 
         fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
 
         fun tab(): Optional<String> = tab.getOptional("tab")
 
@@ -9776,6 +10315,8 @@ private constructor(
         @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
 
         @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
 
         @JsonProperty("tab") @ExcludeMissing fun _tab(): JsonField<String> = tab
 
@@ -9806,6 +10347,7 @@ private constructor(
             private var effect: JsonField<CommandResult.Tab.Effect>? = null
             private var ok: JsonField<Boolean>? = null
             private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var loading: JsonField<Boolean> = JsonMissing.of()
             private var tab: JsonField<String> = JsonMissing.of()
             private var tabs: JsonField<MutableList<TabModel>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
@@ -9816,6 +10358,7 @@ private constructor(
                 this.effect = tab.effect
                 this.ok = tab.ok
                 this.error = tab.error
+                this.loading = tab.loading
                 this.tab = tab.tab
                 this.tabs = tab.tabs.map { it.toMutableList() }
                 this.additionalProperties = tab.additionalProperties.toMutableMap()
@@ -9836,6 +10379,12 @@ private constructor(
             fun error(error: CommandErrorInfo) = error(JsonField.of(error))
 
             fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
 
             fun tab(tab: String) = tab(JsonField.of(tab))
 
@@ -9879,6 +10428,7 @@ private constructor(
                     checkRequired("effect", effect),
                     checkRequired("ok", ok),
                     error,
+                    loading,
                     tab,
                     (tabs ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
@@ -9908,6 +10458,7 @@ private constructor(
             effect().validate()
             ok()
             error().ifPresent { it.validate() }
+            loading()
             tab()
             tabs().ifPresent { it.forEach { it.validate() } }
             validated = true
@@ -9919,6 +10470,7 @@ private constructor(
                 (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (if (ok.asKnown().isPresent) 1 else 0) +
                 (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
                 (if (tab.asKnown().isPresent) 1 else 0) +
                 (tabs.asKnown().getOrNull()?.let { it.sumOf { (it.validity()).toInt() } } ?: 0)
 
@@ -10169,18 +10721,353 @@ private constructor(
                 this.effect == other.effect &&
                 this.ok == other.ok &&
                 this.error == other.error &&
+                this.loading == other.loading &&
                 this.tab == other.tab &&
                 this.tabs == other.tabs &&
                 this.additionalProperties == other.additionalProperties
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(command, effect, ok, error, tab, tabs, additionalProperties)
+            Objects.hash(command, effect, ok, error, loading, tab, tabs, additionalProperties)
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Tab{command=$command, effect=$effect, ok=$ok, error=$error, tab=$tab, tabs=$tabs, additionalProperties=$additionalProperties}"
+            "Tab{command=$command, effect=$effect, ok=$ok, error=$error, loading=$loading, tab=$tab, tabs=$tabs, additionalProperties=$additionalProperties}"
+    }
+
+    /** Result of a dialog command. */
+    class Dialog
+    @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+    private constructor(
+        private val command: JsonValue,
+        private val effect: JsonField<CommandResult.Dialog.Effect>,
+        private val ok: JsonField<Boolean>,
+        private val dialog: JsonField<CommandDialog>,
+        private val error: JsonField<CommandErrorInfo>,
+        private val loading: JsonField<Boolean>,
+        private val opened: JsonField<List<String>>,
+        private val additionalProperties: MutableMap<String, JsonValue>,
+    ) {
+
+        @JsonCreator
+        private constructor(
+            @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
+            @JsonProperty("effect")
+            @ExcludeMissing
+            effect: JsonField<CommandResult.Dialog.Effect> = JsonMissing.of(),
+            @JsonProperty("ok") @ExcludeMissing ok: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("dialog")
+            @ExcludeMissing
+            dialog: JsonField<CommandDialog> = JsonMissing.of(),
+            @JsonProperty("error")
+            @ExcludeMissing
+            error: JsonField<CommandErrorInfo> = JsonMissing.of(),
+            @JsonProperty("loading") @ExcludeMissing loading: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("opened")
+            @ExcludeMissing
+            opened: JsonField<List<String>> = JsonMissing.of(),
+        ) : this(command, effect, ok, dialog, error, loading, opened, mutableMapOf())
+
+        /** What happened to the page: nothing, a change, or a possible change. */
+        fun effect(): CommandResult.Dialog.Effect = effect.getRequired("effect")
+
+        fun ok(): Boolean = ok.getRequired("ok")
+
+        /** A dialog that the command opened. It blocks the tab until it closes. */
+        fun dialog(): Optional<CommandDialog> = dialog.getOptional("dialog")
+
+        fun error(): Optional<CommandErrorInfo> = error.getOptional("error")
+
+        /** The page was still loading when the command returned. */
+        fun loading(): Optional<Boolean> = loading.getOptional("loading")
+
+        /** The ids of tabs that opened while the command ran. */
+        fun opened(): Optional<List<String>> = opened.getOptional("opened")
+
+        /** Expected to always return `JsonValue.from("dialog")`. It is set by default. */
+        @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
+
+        @JsonProperty("effect")
+        @ExcludeMissing
+        fun _effect(): JsonField<CommandResult.Dialog.Effect> = effect
+
+        @JsonProperty("ok") @ExcludeMissing fun _ok(): JsonField<Boolean> = ok
+
+        @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<CommandDialog> = dialog
+
+        @JsonProperty("error") @ExcludeMissing fun _error(): JsonField<CommandErrorInfo> = error
+
+        @JsonProperty("loading") @ExcludeMissing fun _loading(): JsonField<Boolean> = loading
+
+        @JsonProperty("opened") @ExcludeMissing fun _opened(): JsonField<List<String>> = opened
+
+        @JsonAnySetter
+        private fun putAdditionalProperty(key: String, value: JsonValue) {
+            additionalProperties.put(key, value)
+        }
+
+        @JsonAnyGetter
+        @ExcludeMissing
+        fun _additionalProperties(): Map<String, JsonValue> =
+            Collections.unmodifiableMap(additionalProperties)
+
+        fun toBuilder() = Builder().from(this)
+
+        companion object {
+
+            /** Returns a mutable builder for constructing an instance of [Dialog]. */
+            @JvmStatic fun builder() = Builder()
+        }
+
+        /** A builder for [Dialog]. */
+        class Builder internal constructor() {
+
+            private var command: JsonValue = JsonValue.from("dialog")
+            private var effect: JsonField<CommandResult.Dialog.Effect>? = null
+            private var ok: JsonField<Boolean>? = null
+            private var dialog: JsonField<CommandDialog> = JsonMissing.of()
+            private var error: JsonField<CommandErrorInfo> = JsonMissing.of()
+            private var loading: JsonField<Boolean> = JsonMissing.of()
+            private var opened: JsonField<MutableList<String>>? = null
+            private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+            @JvmSynthetic
+            internal fun from(dialog: Dialog) = apply {
+                this.command = dialog.command
+                this.effect = dialog.effect
+                this.ok = dialog.ok
+                this.dialog = dialog.dialog
+                this.error = dialog.error
+                this.loading = dialog.loading
+                this.opened = dialog.opened.map { it.toMutableList() }
+                this.additionalProperties = dialog.additionalProperties.toMutableMap()
+            }
+
+            fun command(command: JsonValue) = apply { this.command = command }
+
+            /** What happened to the page: nothing, a change, or a possible change. */
+            fun effect(effect: CommandResult.Dialog.Effect) = effect(JsonField.of(effect))
+
+            /** What happened to the page: nothing, a change, or a possible change. */
+            fun effect(effect: JsonField<CommandResult.Dialog.Effect>) = apply {
+                this.effect = effect
+            }
+
+            fun ok(ok: Boolean) = ok(JsonField.of(ok))
+
+            fun ok(ok: JsonField<Boolean>) = apply { this.ok = ok }
+
+            /** A dialog that the command opened. It blocks the tab until it closes. */
+            fun dialog(dialog: CommandDialog) = dialog(JsonField.of(dialog))
+
+            /** A dialog that the command opened. It blocks the tab until it closes. */
+            fun dialog(dialog: JsonField<CommandDialog>) = apply { this.dialog = dialog }
+
+            fun error(error: CommandErrorInfo) = error(JsonField.of(error))
+
+            fun error(error: JsonField<CommandErrorInfo>) = apply { this.error = error }
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: Boolean) = loading(JsonField.of(loading))
+
+            /** The page was still loading when the command returned. */
+            fun loading(loading: JsonField<Boolean>) = apply { this.loading = loading }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: List<String>) = opened(JsonField.of(opened))
+
+            /** The ids of tabs that opened while the command ran. */
+            fun opened(opened: JsonField<List<String>>) = apply {
+                this.opened = opened.map { it.toMutableList() }
+            }
+
+            /** The ids of tabs that opened while the command ran. */
+            fun addOpened(opened: String) = apply {
+                this.opened =
+                    (this.opened ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("opened", it).add(opened)
+                    }
+            }
+
+            fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.clear()
+                putAllAdditionalProperties(additionalProperties)
+            }
+
+            fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                additionalProperties.put(key, value)
+            }
+
+            fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                this.additionalProperties.putAll(additionalProperties)
+            }
+
+            fun removeAdditionalProperty(key: String) = apply { additionalProperties.remove(key) }
+
+            fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                keys.forEach(::removeAdditionalProperty)
+            }
+
+            fun build(): Dialog =
+                Dialog(
+                    command,
+                    checkRequired("effect", effect),
+                    checkRequired("ok", ok),
+                    dialog,
+                    error,
+                    loading,
+                    (opened ?: JsonMissing.of()).map { it.toImmutable() },
+                    additionalProperties.toMutableMap(),
+                )
+        }
+
+        fun isValid(): Boolean =
+            try {
+                validate()
+                true
+            } catch (e: SteelInvalidDataException) {
+                false
+            }
+
+        private var validated: Boolean = false
+
+        fun validate(): Dialog = apply {
+            if (validated) {
+                return@apply
+            }
+
+            _command().let {
+                if (it != JsonValue.from("dialog")) {
+                    throw SteelInvalidDataException("'command' is invalid, received $it")
+                }
+            }
+            effect().validate()
+            ok()
+            dialog().ifPresent { it.validate() }
+            error().ifPresent { it.validate() }
+            loading()
+            opened()
+            validated = true
+        }
+
+        @JvmSynthetic
+        internal fun validity(): Int =
+            (command.let { if (it == JsonValue.from("dialog")) 1 else 0 }) +
+                (effect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (ok.asKnown().isPresent) 1 else 0) +
+                (dialog.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (error.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                (if (loading.asKnown().isPresent) 1 else 0) +
+                (opened.asKnown().getOrNull()?.let { it.size } ?: 0)
+
+        class Effect @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val NONE = of("none")
+
+                @JvmField val APPLIED = of("applied")
+
+                @JvmField val UNKNOWN = of("unknown")
+
+                @JvmStatic fun of(value: String) = Effect(JsonField.of(value))
+            }
+
+            enum class Known {
+                NONE,
+                APPLIED,
+                UNKNOWN,
+            }
+
+            enum class Value {
+                NONE,
+                APPLIED,
+                UNKNOWN,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    NONE -> Value.NONE
+                    APPLIED -> Value.APPLIED
+                    UNKNOWN -> Value.UNKNOWN
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    NONE -> Known.NONE
+                    APPLIED -> Known.APPLIED
+                    UNKNOWN -> Known.UNKNOWN
+                    else -> throw SteelInvalidDataException("Unknown Effect: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Effect = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Effect && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) {
+                return true
+            }
+
+            return other is Dialog &&
+                this.command == other.command &&
+                this.effect == other.effect &&
+                this.ok == other.ok &&
+                this.dialog == other.dialog &&
+                this.error == other.error &&
+                this.loading == other.loading &&
+                this.opened == other.opened &&
+                this.additionalProperties == other.additionalProperties
+        }
+
+        private val hashCode: Int by lazy {
+            Objects.hash(command, effect, ok, dialog, error, loading, opened, additionalProperties)
+        }
+
+        override fun hashCode(): Int = hashCode
+
+        override fun toString() =
+            "Dialog{command=$command, effect=$effect, ok=$ok, dialog=$dialog, error=$error, loading=$loading, opened=$opened, additionalProperties=$additionalProperties}"
     }
 }

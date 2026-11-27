@@ -40,7 +40,7 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
-    /** Block ads in the browser session. Default is false. */
+    /** Block ads in the browser session. Default is true. */
     fun blockAds(): Boolean? = body.blockAds()
 
     /**
@@ -52,7 +52,11 @@ private constructor(
     /** Number of sessions to create concurrently (check your plan limit) */
     fun concurrency(): Long? = body.concurrency()
 
-    /** Configuration for session credentials */
+    /**
+     * Configuration for session credentials. Set enabled to false to disable credentials, including
+     * those inherited from a profile. Credentials are opt-in at creation; only credentials-enabled
+     * sessions can have credentials attached later (otherwise 409 `credentials_not_enabled`).
+     */
     fun credentials(): Credentials? = body.credentials()
 
     /**
@@ -141,6 +145,7 @@ private constructor(
     /**
      * Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided
      * proxies in favor of your specified proxy. Format: http(s)://username:password@hostname:port
+     * or socks5://username:password@hostname:port
      */
     fun proxyUrl(): String? = body.proxyUrl()
 
@@ -156,8 +161,12 @@ private constructor(
      */
     fun sessionContext(): SessionContext? = body.sessionContext()
 
-    /** Optional custom UUID for the session */
-    fun sessionId(): String? = body.sessionId()
+    /**
+     * Deprecated. A session ID of your choice. Steel will reject it in a future release, because
+     * the ID that Steel generates records where the session runs. Omit it, use the `id` in the
+     * response, and put your own ID in `metadata`.
+     */
+    @Deprecated("deprecated") @Suppress("DEPRECATION") fun sessionId(): String? = body.sessionId()
 
     /** Enable automatic captcha solving. Default is false. */
     fun solveCaptcha(): Boolean? = body.solveCaptcha()
@@ -165,7 +174,11 @@ private constructor(
     /** Stealth configuration for the session */
     fun stealthConfig(): StealthConfig? = body.stealthConfig()
 
-    /** Session timeout duration in milliseconds. Default is 300000 (5 minutes). */
+    /**
+     * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch and Scale,
+     * a value over the plan's maximum runs at the maximum; the response's `timeout` shows the value
+     * used.
+     */
     fun timeout(): Long? = body.timeout()
 
     /** Simple boolean to enable/disable Steel proxies */
@@ -264,10 +277,10 @@ private constructor(
 
         fun body(body: Body) = apply { this.body = body.toBuilder() }
 
-        /** Block ads in the browser session. Default is false. */
+        /** Block ads in the browser session. Default is true. */
         fun blockAds(blockAds: Boolean) = apply { body.blockAds(blockAds) }
 
-        /** Block ads in the browser session. Default is false. */
+        /** Block ads in the browser session. Default is true. */
         fun blockAds(blockAds: JsonField<Boolean>) = apply { body.blockAds(blockAds) }
 
         /**
@@ -298,10 +311,20 @@ private constructor(
         /** Number of sessions to create concurrently (check your plan limit) */
         fun concurrency(concurrency: JsonField<Long>) = apply { body.concurrency(concurrency) }
 
-        /** Configuration for session credentials */
+        /**
+         * Configuration for session credentials. Set enabled to false to disable credentials,
+         * including those inherited from a profile. Credentials are opt-in at creation; only
+         * credentials-enabled sessions can have credentials attached later (otherwise 409
+         * `credentials_not_enabled`).
+         */
         fun credentials(credentials: Credentials) = apply { body.credentials(credentials) }
 
-        /** Configuration for session credentials */
+        /**
+         * Configuration for session credentials. Set enabled to false to disable credentials,
+         * including those inherited from a profile. Credentials are opt-in at creation; only
+         * credentials-enabled sessions can have credentials attached later (otherwise 409
+         * `credentials_not_enabled`).
+         */
         fun credentials(credentials: JsonField<Credentials>) = apply {
             body.credentials(credentials)
         }
@@ -522,14 +545,14 @@ private constructor(
         /**
          * Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided
          * proxies in favor of your specified proxy. Format:
-         * http(s)://username:password@hostname:port
+         * http(s)://username:password@hostname:port or socks5://username:password@hostname:port
          */
         fun proxyUrl(proxyUrl: String) = apply { body.proxyUrl(proxyUrl) }
 
         /**
          * Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided
          * proxies in favor of your specified proxy. Format:
-         * http(s)://username:password@hostname:port
+         * http(s)://username:password@hostname:port or socks5://username:password@hostname:port
          */
         fun proxyUrl(proxyUrl: JsonField<String>) = apply { body.proxyUrl(proxyUrl) }
 
@@ -568,10 +591,22 @@ private constructor(
             body.sessionContext(sessionContext)
         }
 
-        /** Optional custom UUID for the session */
+        /**
+         * Deprecated. A session ID of your choice. Steel will reject it in a future release,
+         * because the ID that Steel generates records where the session runs. Omit it, use the `id`
+         * in the response, and put your own ID in `metadata`.
+         */
+        @Deprecated("deprecated")
+        @Suppress("DEPRECATION")
         fun sessionId(sessionId: String) = apply { body.sessionId(sessionId) }
 
-        /** Optional custom UUID for the session */
+        /**
+         * Deprecated. A session ID of your choice. Steel will reject it in a future release,
+         * because the ID that Steel generates records where the session runs. Omit it, use the `id`
+         * in the response, and put your own ID in `metadata`.
+         */
+        @Deprecated("deprecated")
+        @Suppress("DEPRECATION")
         fun sessionId(sessionId: JsonField<String>) = apply { body.sessionId(sessionId) }
 
         /** Enable automatic captcha solving. Default is false. */
@@ -592,10 +627,18 @@ private constructor(
             body.stealthConfig(stealthConfig)
         }
 
-        /** Session timeout duration in milliseconds. Default is 300000 (5 minutes). */
+        /**
+         * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch and
+         * Scale, a value over the plan's maximum runs at the maximum; the response's `timeout`
+         * shows the value used.
+         */
         fun timeout(timeout: Long) = apply { body.timeout(timeout) }
 
-        /** Session timeout duration in milliseconds. Default is 300000 (5 minutes). */
+        /**
+         * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch and
+         * Scale, a value over the plan's maximum runs at the maximum; the response's `timeout`
+         * shows the value used.
+         */
         fun timeout(timeout: JsonField<Long>) = apply { body.timeout(timeout) }
 
         /** Simple boolean to enable/disable Steel proxies */
@@ -906,7 +949,7 @@ private constructor(
             mutableMapOf(),
         )
 
-        /** Block ads in the browser session. Default is false. */
+        /** Block ads in the browser session. Default is true. */
         fun blockAds(): Boolean? = blockAds.getNullable("blockAds")
 
         /**
@@ -918,7 +961,12 @@ private constructor(
         /** Number of sessions to create concurrently (check your plan limit) */
         fun concurrency(): Long? = concurrency.getNullable("concurrency")
 
-        /** Configuration for session credentials */
+        /**
+         * Configuration for session credentials. Set enabled to false to disable credentials,
+         * including those inherited from a profile. Credentials are opt-in at creation; only
+         * credentials-enabled sessions can have credentials attached later (otherwise 409
+         * `credentials_not_enabled`).
+         */
         fun credentials(): Credentials? = credentials.getNullable("credentials")
 
         /**
@@ -1010,7 +1058,7 @@ private constructor(
         /**
          * Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided
          * proxies in favor of your specified proxy. Format:
-         * http(s)://username:password@hostname:port
+         * http(s)://username:password@hostname:port or socks5://username:password@hostname:port
          */
         fun proxyUrl(): String? = proxyUrl.getNullable("proxyUrl")
 
@@ -1026,7 +1074,13 @@ private constructor(
          */
         fun sessionContext(): SessionContext? = sessionContext.getNullable("sessionContext")
 
-        /** Optional custom UUID for the session */
+        /**
+         * Deprecated. A session ID of your choice. Steel will reject it in a future release,
+         * because the ID that Steel generates records where the session runs. Omit it, use the `id`
+         * in the response, and put your own ID in `metadata`.
+         */
+        @Deprecated("deprecated")
+        @Suppress("DEPRECATION")
         fun sessionId(): String? = sessionId.getNullable("sessionId")
 
         /** Enable automatic captcha solving. Default is false. */
@@ -1035,7 +1089,11 @@ private constructor(
         /** Stealth configuration for the session */
         fun stealthConfig(): StealthConfig? = stealthConfig.getNullable("stealthConfig")
 
-        /** Session timeout duration in milliseconds. Default is 300000 (5 minutes). */
+        /**
+         * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch and
+         * Scale, a value over the plan's maximum runs at the maximum; the response's `timeout`
+         * shows the value used.
+         */
         fun timeout(): Long? = timeout.getNullable("timeout")
 
         /** Simple boolean to enable/disable Steel proxies */
@@ -1220,10 +1278,10 @@ private constructor(
                 this.additionalProperties = body_.additionalProperties.toMutableMap()
             }
 
-            /** Block ads in the browser session. Default is false. */
+            /** Block ads in the browser session. Default is true. */
             fun blockAds(blockAds: Boolean) = blockAds(JsonField.of(blockAds))
 
-            /** Block ads in the browser session. Default is false. */
+            /** Block ads in the browser session. Default is true. */
             fun blockAds(blockAds: JsonField<Boolean>) = apply { this.blockAds = blockAds }
 
             /**
@@ -1258,10 +1316,20 @@ private constructor(
             /** Number of sessions to create concurrently (check your plan limit) */
             fun concurrency(concurrency: JsonField<Long>) = apply { this.concurrency = concurrency }
 
-            /** Configuration for session credentials */
+            /**
+             * Configuration for session credentials. Set enabled to false to disable credentials,
+             * including those inherited from a profile. Credentials are opt-in at creation; only
+             * credentials-enabled sessions can have credentials attached later (otherwise 409
+             * `credentials_not_enabled`).
+             */
             fun credentials(credentials: Credentials) = credentials(JsonField.of(credentials))
 
-            /** Configuration for session credentials */
+            /**
+             * Configuration for session credentials. Set enabled to false to disable credentials,
+             * including those inherited from a profile. Credentials are opt-in at creation; only
+             * credentials-enabled sessions can have credentials attached later (otherwise 409
+             * `credentials_not_enabled`).
+             */
             fun credentials(credentials: JsonField<Credentials>) = apply {
                 this.credentials = credentials
             }
@@ -1489,14 +1557,14 @@ private constructor(
             /**
              * Custom proxy URL for the browser session. Overrides useProxy, disabling
              * Steel-provided proxies in favor of your specified proxy. Format:
-             * http(s)://username:password@hostname:port
+             * http(s)://username:password@hostname:port or socks5://username:password@hostname:port
              */
             fun proxyUrl(proxyUrl: String) = proxyUrl(JsonField.of(proxyUrl))
 
             /**
              * Custom proxy URL for the browser session. Overrides useProxy, disabling
              * Steel-provided proxies in favor of your specified proxy. Format:
-             * http(s)://username:password@hostname:port
+             * http(s)://username:password@hostname:port or socks5://username:password@hostname:port
              */
             fun proxyUrl(proxyUrl: JsonField<String>) = apply { this.proxyUrl = proxyUrl }
 
@@ -1534,10 +1602,22 @@ private constructor(
                 this.sessionContext = sessionContext
             }
 
-            /** Optional custom UUID for the session */
+            /**
+             * Deprecated. A session ID of your choice. Steel will reject it in a future release,
+             * because the ID that Steel generates records where the session runs. Omit it, use the
+             * `id` in the response, and put your own ID in `metadata`.
+             */
+            @Deprecated("deprecated")
+            @Suppress("DEPRECATION")
             fun sessionId(sessionId: String) = sessionId(JsonField.of(sessionId))
 
-            /** Optional custom UUID for the session */
+            /**
+             * Deprecated. A session ID of your choice. Steel will reject it in a future release,
+             * because the ID that Steel generates records where the session runs. Omit it, use the
+             * `id` in the response, and put your own ID in `metadata`.
+             */
+            @Deprecated("deprecated")
+            @Suppress("DEPRECATION")
             fun sessionId(sessionId: JsonField<String>) = apply { this.sessionId = sessionId }
 
             /** Enable automatic captcha solving. Default is false. */
@@ -1557,10 +1637,18 @@ private constructor(
                 this.stealthConfig = stealthConfig
             }
 
-            /** Session timeout duration in milliseconds. Default is 300000 (5 minutes). */
+            /**
+             * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch
+             * and Scale, a value over the plan's maximum runs at the maximum; the response's
+             * `timeout` shows the value used.
+             */
             fun timeout(timeout: Long) = timeout(JsonField.of(timeout))
 
-            /** Session timeout duration in milliseconds. Default is 300000 (5 minutes). */
+            /**
+             * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch
+             * and Scale, a value over the plan's maximum runs at the maximum; the response's
+             * `timeout` shows the value used.
+             */
             fun timeout(timeout: JsonField<Long>) = apply { this.timeout = timeout }
 
             /** Simple boolean to enable/disable Steel proxies */
@@ -1800,14 +1888,23 @@ private constructor(
             "Body{blockAds=$blockAds, caCertificates=$caCertificates, concurrency=$concurrency, credentials=$credentials, debugConfig=$debugConfig, deviceConfig=$deviceConfig, dimensions=$dimensions, experimentalFeatures=$experimentalFeatures, extensionIds=$extensionIds, fullscreen=$fullscreen, headless=$headless, inactivityTimeout=$inactivityTimeout, isSelenium=$isSelenium, metadata=$metadata, namespace=$namespace, optimizeBandwidth=$optimizeBandwidth, persistProfile=$persistProfile, profileId=$profileId, projectId=$projectId, proxyUrl=$proxyUrl, recording=$recording, region=$region, sessionContext=$sessionContext, sessionId=$sessionId, solveCaptcha=$solveCaptcha, stealthConfig=$stealthConfig, timeout=$timeout, useProxy=$useProxy, userAgent=$userAgent, additionalProperties=$additionalProperties}"
     }
 
-    /** Configuration for session credentials */
+    /**
+     * Configuration for session credentials. Set enabled to false to disable credentials, including
+     * those inherited from a profile. Credentials are opt-in at creation; only credentials-enabled
+     * sessions can have credentials attached later (otherwise 409 `credentials_not_enabled`).
+     */
     class Credentials
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
         private val autoSubmit: JsonField<Boolean>,
+        private val bindings: JsonField<List<Binding>>,
         private val blurFields: JsonField<Boolean>,
+        private val credentialIds: JsonField<List<String>>,
         private val credentialProvider: JsonField<String>,
+        private val domTrigger: JsonField<Boolean>,
+        private val enabled: JsonField<Boolean>,
         private val exactOrigin: JsonField<Boolean>,
+        private val lookup: JsonField<Lookup>,
         private val origins: JsonField<List<String>>,
         private val additionalProperties: MutableMap<String, JsonValue>,
     ) {
@@ -1817,28 +1914,88 @@ private constructor(
             @JsonProperty("autoSubmit")
             @ExcludeMissing
             autoSubmit: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("bindings")
+            @ExcludeMissing
+            bindings: JsonField<List<Binding>> = JsonMissing.of(),
             @JsonProperty("blurFields")
             @ExcludeMissing
             blurFields: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("credentialIds")
+            @ExcludeMissing
+            credentialIds: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("credentialProvider")
             @ExcludeMissing
             credentialProvider: JsonField<String> = JsonMissing.of(),
+            @JsonProperty("domTrigger")
+            @ExcludeMissing
+            domTrigger: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("enabled") @ExcludeMissing enabled: JsonField<Boolean> = JsonMissing.of(),
             @JsonProperty("exactOrigin")
             @ExcludeMissing
             exactOrigin: JsonField<Boolean> = JsonMissing.of(),
+            @JsonProperty("lookup") @ExcludeMissing lookup: JsonField<Lookup> = JsonMissing.of(),
             @JsonProperty("origins")
             @ExcludeMissing
             origins: JsonField<List<String>> = JsonMissing.of(),
-        ) : this(autoSubmit, blurFields, credentialProvider, exactOrigin, origins, mutableMapOf())
+        ) : this(
+            autoSubmit,
+            bindings,
+            blurFields,
+            credentialIds,
+            credentialProvider,
+            domTrigger,
+            enabled,
+            exactOrigin,
+            lookup,
+            origins,
+            mutableMapOf(),
+        )
 
         fun autoSubmit(): Boolean? = autoSubmit.getNullable("autoSubmit")
 
+        /**
+         * At most 100 bindings. KV references may use { reference, allowedOrigins }, with at most
+         * 20 canonical HTTP(S) origins; omitted or empty origins match nothing.
+         */
+        fun bindings(): List<Binding>? = bindings.getNullable("bindings")
+
         fun blurFields(): Boolean? = blurFields.getNullable("blurFields")
+
+        /**
+         * Bind the session to these credentials (ids of Secrets of kind `credential` in the
+         * session's project). A bound session only ever fills these, never others by namespace and
+         * origin. Implies `lookup: "explicit"`. Change them later with
+         * /v1/sessions/{id}/credentials. Errors: 400 `credential_not_bindable` (param
+         * `credentials.credentialIds`), 400 `too_many_credentials`, 409 `session_id_taken` (a
+         * custom sessionId that already has a session or credential bindings).
+         */
+        fun credentialIds(): List<String>? = credentialIds.getNullable("credentialIds")
 
         /** Credential provider to use for runtime credential resolution. Defaults to "steel". */
         fun credentialProvider(): String? = credentialProvider.getNullable("credentialProvider")
 
+        /**
+         * Allow any script on the page, including third-party scripts, to request credential form
+         * operations through DOM events. Disabled by default.
+         */
+        fun domTrigger(): Boolean? = domTrigger.getNullable("domTrigger")
+
+        /** Set to false to disable credential injection for this session. */
+        fun enabled(): Boolean? = enabled.getNullable("enabled")
+
+        /**
+         * Deprecated and ignored: credentials only ever match their own origin or their
+         * additionalOrigins.
+         */
         fun exactOrigin(): Boolean? = exactOrigin.getNullable("exactOrigin")
+
+        /**
+         * `implicit` (default without credentialIds or bindings): fill credentials stored for the
+         * session's namespace and the page origin. `explicit` (default when credentialIds or
+         * bindings is supplied): fill only direct credentials and credentials in bound Vaults,
+         * including future members; with none bound, nothing is filled until some are attached.
+         */
+        fun lookup(): Lookup? = lookup.getNullable("lookup")
 
         /** Optional allowlist of credential origins to inject into this session. */
         fun origins(): List<String>? = origins.getNullable("origins")
@@ -1847,17 +2004,33 @@ private constructor(
         @ExcludeMissing
         fun _autoSubmit(): JsonField<Boolean> = autoSubmit
 
+        @JsonProperty("bindings")
+        @ExcludeMissing
+        fun _bindings(): JsonField<List<Binding>> = bindings
+
         @JsonProperty("blurFields")
         @ExcludeMissing
         fun _blurFields(): JsonField<Boolean> = blurFields
+
+        @JsonProperty("credentialIds")
+        @ExcludeMissing
+        fun _credentialIds(): JsonField<List<String>> = credentialIds
 
         @JsonProperty("credentialProvider")
         @ExcludeMissing
         fun _credentialProvider(): JsonField<String> = credentialProvider
 
+        @JsonProperty("domTrigger")
+        @ExcludeMissing
+        fun _domTrigger(): JsonField<Boolean> = domTrigger
+
+        @JsonProperty("enabled") @ExcludeMissing fun _enabled(): JsonField<Boolean> = enabled
+
         @JsonProperty("exactOrigin")
         @ExcludeMissing
         fun _exactOrigin(): JsonField<Boolean> = exactOrigin
+
+        @JsonProperty("lookup") @ExcludeMissing fun _lookup(): JsonField<Lookup> = lookup
 
         @JsonProperty("origins") @ExcludeMissing fun _origins(): JsonField<List<String>> = origins
 
@@ -1883,18 +2056,28 @@ private constructor(
         class Builder internal constructor() {
 
             private var autoSubmit: JsonField<Boolean> = JsonMissing.of()
+            private var bindings: JsonField<MutableList<Binding>>? = null
             private var blurFields: JsonField<Boolean> = JsonMissing.of()
+            private var credentialIds: JsonField<MutableList<String>>? = null
             private var credentialProvider: JsonField<String> = JsonMissing.of()
+            private var domTrigger: JsonField<Boolean> = JsonMissing.of()
+            private var enabled: JsonField<Boolean> = JsonMissing.of()
             private var exactOrigin: JsonField<Boolean> = JsonMissing.of()
+            private var lookup: JsonField<Lookup> = JsonMissing.of()
             private var origins: JsonField<MutableList<String>>? = null
             private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
             @JvmSynthetic
             internal fun from(credentials: Credentials) = apply {
                 this.autoSubmit = credentials.autoSubmit
+                this.bindings = credentials.bindings.map { it.toMutableList() }
                 this.blurFields = credentials.blurFields
+                this.credentialIds = credentials.credentialIds.map { it.toMutableList() }
                 this.credentialProvider = credentials.credentialProvider
+                this.domTrigger = credentials.domTrigger
+                this.enabled = credentials.enabled
                 this.exactOrigin = credentials.exactOrigin
+                this.lookup = credentials.lookup
                 this.origins = credentials.origins.map { it.toMutableList() }
                 this.additionalProperties = credentials.additionalProperties.toMutableMap()
             }
@@ -1903,9 +2086,72 @@ private constructor(
 
             fun autoSubmit(autoSubmit: JsonField<Boolean>) = apply { this.autoSubmit = autoSubmit }
 
+            /**
+             * At most 100 bindings. KV references may use { reference, allowedOrigins }, with at
+             * most 20 canonical HTTP(S) origins; omitted or empty origins match nothing.
+             */
+            fun bindings(bindings: List<Binding>) = bindings(JsonField.of(bindings))
+
+            /**
+             * At most 100 bindings. KV references may use { reference, allowedOrigins }, with at
+             * most 20 canonical HTTP(S) origins; omitted or empty origins match nothing.
+             */
+            fun bindings(bindings: JsonField<List<Binding>>) = apply {
+                this.bindings = bindings.map { it.toMutableList() }
+            }
+
+            /**
+             * At most 100 bindings. KV references may use { reference, allowedOrigins }, with at
+             * most 20 canonical HTTP(S) origins; omitted or empty origins match nothing.
+             */
+            fun addBinding(binding: Binding) = apply {
+                this.bindings =
+                    (this.bindings ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("bindings", it).add(binding)
+                    }
+            }
+
             fun blurFields(blurFields: Boolean) = blurFields(JsonField.of(blurFields))
 
             fun blurFields(blurFields: JsonField<Boolean>) = apply { this.blurFields = blurFields }
+
+            /**
+             * Bind the session to these credentials (ids of Secrets of kind `credential` in the
+             * session's project). A bound session only ever fills these, never others by namespace
+             * and origin. Implies `lookup: "explicit"`. Change them later with
+             * /v1/sessions/{id}/credentials. Errors: 400 `credential_not_bindable` (param
+             * `credentials.credentialIds`), 400 `too_many_credentials`, 409 `session_id_taken` (a
+             * custom sessionId that already has a session or credential bindings).
+             */
+            fun credentialIds(credentialIds: List<String>) =
+                credentialIds(JsonField.of(credentialIds))
+
+            /**
+             * Bind the session to these credentials (ids of Secrets of kind `credential` in the
+             * session's project). A bound session only ever fills these, never others by namespace
+             * and origin. Implies `lookup: "explicit"`. Change them later with
+             * /v1/sessions/{id}/credentials. Errors: 400 `credential_not_bindable` (param
+             * `credentials.credentialIds`), 400 `too_many_credentials`, 409 `session_id_taken` (a
+             * custom sessionId that already has a session or credential bindings).
+             */
+            fun credentialIds(credentialIds: JsonField<List<String>>) = apply {
+                this.credentialIds = credentialIds.map { it.toMutableList() }
+            }
+
+            /**
+             * Bind the session to these credentials (ids of Secrets of kind `credential` in the
+             * session's project). A bound session only ever fills these, never others by namespace
+             * and origin. Implies `lookup: "explicit"`. Change them later with
+             * /v1/sessions/{id}/credentials. Errors: 400 `credential_not_bindable` (param
+             * `credentials.credentialIds`), 400 `too_many_credentials`, 409 `session_id_taken` (a
+             * custom sessionId that already has a session or credential bindings).
+             */
+            fun addCredentialId(credentialId: String) = apply {
+                this.credentialIds =
+                    (this.credentialIds ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("credentialIds", it).add(credentialId)
+                    }
+            }
 
             /**
              * Credential provider to use for runtime credential resolution. Defaults to "steel".
@@ -1920,11 +2166,55 @@ private constructor(
                 this.credentialProvider = credentialProvider
             }
 
+            /**
+             * Allow any script on the page, including third-party scripts, to request credential
+             * form operations through DOM events. Disabled by default.
+             */
+            fun domTrigger(domTrigger: Boolean) = domTrigger(JsonField.of(domTrigger))
+
+            /**
+             * Allow any script on the page, including third-party scripts, to request credential
+             * form operations through DOM events. Disabled by default.
+             */
+            fun domTrigger(domTrigger: JsonField<Boolean>) = apply { this.domTrigger = domTrigger }
+
+            /** Set to false to disable credential injection for this session. */
+            fun enabled(enabled: Boolean) = enabled(JsonField.of(enabled))
+
+            /** Set to false to disable credential injection for this session. */
+            fun enabled(enabled: JsonField<Boolean>) = apply { this.enabled = enabled }
+
+            /**
+             * Deprecated and ignored: credentials only ever match their own origin or their
+             * additionalOrigins.
+             */
             fun exactOrigin(exactOrigin: Boolean) = exactOrigin(JsonField.of(exactOrigin))
 
+            /**
+             * Deprecated and ignored: credentials only ever match their own origin or their
+             * additionalOrigins.
+             */
             fun exactOrigin(exactOrigin: JsonField<Boolean>) = apply {
                 this.exactOrigin = exactOrigin
             }
+
+            /**
+             * `implicit` (default without credentialIds or bindings): fill credentials stored for
+             * the session's namespace and the page origin. `explicit` (default when credentialIds
+             * or bindings is supplied): fill only direct credentials and credentials in bound
+             * Vaults, including future members; with none bound, nothing is filled until some are
+             * attached.
+             */
+            fun lookup(lookup: Lookup) = lookup(JsonField.of(lookup))
+
+            /**
+             * `implicit` (default without credentialIds or bindings): fill credentials stored for
+             * the session's namespace and the page origin. `explicit` (default when credentialIds
+             * or bindings is supplied): fill only direct credentials and credentials in bound
+             * Vaults, including future members; with none bound, nothing is filled until some are
+             * attached.
+             */
+            fun lookup(lookup: JsonField<Lookup>) = apply { this.lookup = lookup }
 
             /** Optional allowlist of credential origins to inject into this session. */
             fun origins(origins: List<String>) = origins(JsonField.of(origins))
@@ -1964,9 +2254,14 @@ private constructor(
             fun build(): Credentials =
                 Credentials(
                     autoSubmit,
+                    (bindings ?: JsonMissing.of()).map { it.toImmutable() },
                     blurFields,
+                    (credentialIds ?: JsonMissing.of()).map { it.toImmutable() },
                     credentialProvider,
+                    domTrigger,
+                    enabled,
                     exactOrigin,
+                    lookup,
                     (origins ?: JsonMissing.of()).map { it.toImmutable() },
                     additionalProperties.toMutableMap(),
                 )
@@ -1988,9 +2283,14 @@ private constructor(
             }
 
             autoSubmit()
+            bindings()?.let { it.forEach { it.validate() } }
             blurFields()
+            credentialIds()
             credentialProvider()
+            domTrigger()
+            enabled()
             exactOrigin()
+            lookup()?.let { it.validate() }
             origins()
             validated = true
         }
@@ -1998,10 +2298,415 @@ private constructor(
         @JvmSynthetic
         internal fun validity(): Int =
             (if (autoSubmit.asKnown().isPresent) 1 else 0) +
+                (bindings.asKnown().getOrNull()?.let { it.sumOf { (it.validity()).toInt() } }
+                    ?: 0) +
                 (if (blurFields.asKnown().isPresent) 1 else 0) +
+                (credentialIds.asKnown().getOrNull()?.let { it.size } ?: 0) +
                 (if (credentialProvider.asKnown().isPresent) 1 else 0) +
+                (if (domTrigger.asKnown().isPresent) 1 else 0) +
+                (if (enabled.asKnown().isPresent) 1 else 0) +
                 (if (exactOrigin.asKnown().isPresent) 1 else 0) +
+                (lookup.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                 (origins.asKnown().getOrNull()?.let { it.size } ?: 0)
+
+        @JsonDeserialize(using = Binding.Deserializer::class)
+        @JsonSerialize(using = Binding.Serializer::class)
+        class Binding
+        private constructor(
+            private val string: String? = null,
+            private val unionMember1: SessionCreateParams.Credentials.Binding.UnionMember1? = null,
+            private val _json: JsonValue? = null,
+        ) {
+
+            fun string(): String? = string
+
+            fun unionMember1(): SessionCreateParams.Credentials.Binding.UnionMember1? = unionMember1
+
+            fun isString(): Boolean = string != null
+
+            fun isUnionMember1(): Boolean = unionMember1 != null
+
+            fun asString(): String = string.getOrThrow("string")
+
+            fun asUnionMember1(): SessionCreateParams.Credentials.Binding.UnionMember1 =
+                unionMember1.getOrThrow("unionMember1")
+
+            fun _json(): JsonValue? = _json
+
+            fun <T> accept(visitor: Visitor<T>): T =
+                when {
+                    string != null -> visitor.visitString(string)
+                    unionMember1 != null -> visitor.visitUnionMember1(unionMember1)
+                    else -> visitor.unknown(_json)
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Binding = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                accept(
+                    object : Visitor<Unit> {
+                        override fun visitString(string: String) {}
+
+                        override fun visitUnionMember1(
+                            unionMember1: SessionCreateParams.Credentials.Binding.UnionMember1
+                        ) {
+                            unionMember1.validate()
+                        }
+                    }
+                )
+                validated = true
+            }
+
+            @JvmSynthetic
+            internal fun validity(): Int =
+                accept(
+                    object : Visitor<Int> {
+                        override fun visitString(string: String) = 1
+
+                        override fun visitUnionMember1(
+                            unionMember1: SessionCreateParams.Credentials.Binding.UnionMember1
+                        ) = unionMember1.validity()
+
+                        override fun unknown(json: JsonValue?) = 0
+                    }
+                )
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Binding &&
+                    this.string == other.string &&
+                    this.unionMember1 == other.unionMember1
+            }
+
+            override fun hashCode(): Int = Objects.hash(string, unionMember1)
+
+            override fun toString(): String =
+                when {
+                    string != null -> "Binding{string=$string}"
+                    unionMember1 != null -> "Binding{unionMember1=$unionMember1}"
+                    _json != null -> "Binding{_unknown=$_json}"
+                    else -> throw IllegalStateException("Invalid Binding")
+                }
+
+            companion object {
+
+                @JvmStatic fun ofString(string: String) = Binding(string = string)
+
+                @JvmStatic
+                fun ofUnionMember1(
+                    unionMember1: SessionCreateParams.Credentials.Binding.UnionMember1
+                ) = Binding(unionMember1 = unionMember1)
+            }
+
+            interface Visitor<out T> {
+
+                fun visitString(string: String): T
+
+                fun visitUnionMember1(
+                    unionMember1: SessionCreateParams.Credentials.Binding.UnionMember1
+                ): T
+
+                fun unknown(json: JsonValue?): T {
+                    throw SteelInvalidDataException("Unknown Binding: $json")
+                }
+            }
+
+            internal class Deserializer : BaseDeserializer<Binding>(Binding::class) {
+
+                override fun ObjectCodec.deserialize(node: JsonNode): Binding {
+                    val json = JsonValue.fromJsonNode(node)
+                    val bestMatches =
+                        sequenceOf(
+                                tryDeserialize(
+                                        node,
+                                        jacksonTypeRef<
+                                            SessionCreateParams.Credentials.Binding.UnionMember1
+                                        >(),
+                                    )
+                                    ?.let { Binding(unionMember1 = it, _json = json) },
+                                tryDeserialize(node, jacksonTypeRef<String>())?.let {
+                                    Binding(string = it, _json = json)
+                                },
+                            )
+                            .filterNotNull()
+                            .allMaxBy { it.validity() }
+                            .toList()
+                    return when (bestMatches.size) {
+                        0 -> Binding(_json = json)
+                        1 -> bestMatches.single()
+                        else -> bestMatches.firstOrNull { it.isValid() } ?: bestMatches.first()
+                    }
+                }
+            }
+
+            internal class Serializer : BaseSerializer<Binding>(Binding::class) {
+
+                override fun serialize(
+                    value: Binding,
+                    generator: JsonGenerator,
+                    provider: SerializerProvider,
+                ) {
+                    when {
+                        value.string != null -> generator.writeObject(value.string)
+                        value.unionMember1 != null -> generator.writeObject(value.unionMember1)
+                        value._json != null -> generator.writeObject(value._json)
+                        else -> throw IllegalStateException("Invalid Binding")
+                    }
+                }
+            }
+
+            class UnionMember1
+            @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+            private constructor(
+                private val allowedOrigins: JsonField<List<String>>,
+                private val reference: JsonField<String>,
+                private val additionalProperties: MutableMap<String, JsonValue>,
+            ) {
+
+                @JsonCreator
+                private constructor(
+                    @JsonProperty("allowedOrigins")
+                    @ExcludeMissing
+                    allowedOrigins: JsonField<List<String>> = JsonMissing.of(),
+                    @JsonProperty("reference")
+                    @ExcludeMissing
+                    reference: JsonField<String> = JsonMissing.of(),
+                ) : this(allowedOrigins, reference, mutableMapOf())
+
+                fun allowedOrigins(): List<String> = allowedOrigins.getRequired("allowedOrigins")
+
+                fun reference(): String = reference.getRequired("reference")
+
+                @JsonProperty("allowedOrigins")
+                @ExcludeMissing
+                fun _allowedOrigins(): JsonField<List<String>> = allowedOrigins
+
+                @JsonProperty("reference")
+                @ExcludeMissing
+                fun _reference(): JsonField<String> = reference
+
+                @JsonAnySetter
+                private fun putAdditionalProperty(key: String, value: JsonValue) {
+                    additionalProperties.put(key, value)
+                }
+
+                @JsonAnyGetter
+                @ExcludeMissing
+                fun _additionalProperties(): Map<String, JsonValue> =
+                    Collections.unmodifiableMap(additionalProperties)
+
+                fun toBuilder() = Builder().from(this)
+
+                companion object {
+
+                    /** Returns a mutable builder for constructing an instance of [UnionMember1]. */
+                    @JvmStatic fun builder() = Builder()
+                }
+
+                /** A builder for [UnionMember1]. */
+                class Builder internal constructor() {
+
+                    private var allowedOrigins: JsonField<MutableList<String>>? = null
+                    private var reference: JsonField<String>? = null
+                    private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                    @JvmSynthetic
+                    internal fun from(unionMember1: UnionMember1) = apply {
+                        this.allowedOrigins = unionMember1.allowedOrigins.map { it.toMutableList() }
+                        this.reference = unionMember1.reference
+                        this.additionalProperties = unionMember1.additionalProperties.toMutableMap()
+                    }
+
+                    fun allowedOrigins(allowedOrigins: List<String>) =
+                        allowedOrigins(JsonField.of(allowedOrigins))
+
+                    fun allowedOrigins(allowedOrigins: JsonField<List<String>>) = apply {
+                        this.allowedOrigins = allowedOrigins.map { it.toMutableList() }
+                    }
+
+                    fun addAllowedOrigin(allowedOrigin: String) = apply {
+                        this.allowedOrigins =
+                            (this.allowedOrigins ?: JsonField.of(mutableListOf())).also {
+                                checkKnown("allowedOrigins", it).add(allowedOrigin)
+                            }
+                    }
+
+                    fun reference(reference: String) = reference(JsonField.of(reference))
+
+                    fun reference(reference: JsonField<String>) = apply {
+                        this.reference = reference
+                    }
+
+                    fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                        this.additionalProperties.clear()
+                        putAllAdditionalProperties(additionalProperties)
+                    }
+
+                    fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                        additionalProperties.put(key, value)
+                    }
+
+                    fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                        apply {
+                            this.additionalProperties.putAll(additionalProperties)
+                        }
+
+                    fun removeAdditionalProperty(key: String) = apply {
+                        additionalProperties.remove(key)
+                    }
+
+                    fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                        keys.forEach(::removeAdditionalProperty)
+                    }
+
+                    fun build(): UnionMember1 =
+                        UnionMember1(
+                            checkRequired("allowedOrigins", allowedOrigins).map {
+                                it.toImmutable()
+                            },
+                            checkRequired("reference", reference),
+                            additionalProperties.toMutableMap(),
+                        )
+                }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: SteelInvalidDataException) {
+                        false
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): UnionMember1 = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    allowedOrigins()
+                    reference()
+                    validated = true
+                }
+
+                @JvmSynthetic
+                internal fun validity(): Int =
+                    (allowedOrigins.asKnown().getOrNull()?.let { it.size } ?: 0) +
+                        (if (reference.asKnown().isPresent) 1 else 0)
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is UnionMember1 &&
+                        this.allowedOrigins == other.allowedOrigins &&
+                        this.reference == other.reference &&
+                        this.additionalProperties == other.additionalProperties
+                }
+
+                private val hashCode: Int by lazy {
+                    Objects.hash(allowedOrigins, reference, additionalProperties)
+                }
+
+                override fun hashCode(): Int = hashCode
+
+                override fun toString() =
+                    "UnionMember1{allowedOrigins=$allowedOrigins, reference=$reference, additionalProperties=$additionalProperties}"
+            }
+        }
+
+        class Lookup @JsonCreator private constructor(private val value: JsonField<String>) : Enum {
+
+            @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+            companion object {
+
+                @JvmField val IMPLICIT = of("implicit")
+
+                @JvmField val EXPLICIT = of("explicit")
+
+                @JvmStatic fun of(value: String) = Lookup(JsonField.of(value))
+            }
+
+            enum class Known {
+                IMPLICIT,
+                EXPLICIT,
+            }
+
+            enum class Value {
+                IMPLICIT,
+                EXPLICIT,
+                _UNKNOWN,
+            }
+
+            fun value(): Value =
+                when (this) {
+                    IMPLICIT -> Value.IMPLICIT
+                    EXPLICIT -> Value.EXPLICIT
+                    else -> Value._UNKNOWN
+                }
+
+            fun known(): Known =
+                when (this) {
+                    IMPLICIT -> Known.IMPLICIT
+                    EXPLICIT -> Known.EXPLICIT
+                    else -> throw SteelInvalidDataException("Unknown Lookup: $value")
+                }
+
+            fun asString(): String =
+                _value().asString().orElseThrow {
+                    SteelInvalidDataException("Value is not a String")
+                }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): Lookup = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                known()
+                validated = true
+            }
+
+            @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is Lookup && value == other.value
+            }
+
+            override fun hashCode() = value.hashCode()
+
+            override fun toString() = value.toString()
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) {
@@ -2010,9 +2715,14 @@ private constructor(
 
             return other is Credentials &&
                 this.autoSubmit == other.autoSubmit &&
+                this.bindings == other.bindings &&
                 this.blurFields == other.blurFields &&
+                this.credentialIds == other.credentialIds &&
                 this.credentialProvider == other.credentialProvider &&
+                this.domTrigger == other.domTrigger &&
+                this.enabled == other.enabled &&
                 this.exactOrigin == other.exactOrigin &&
+                this.lookup == other.lookup &&
                 this.origins == other.origins &&
                 this.additionalProperties == other.additionalProperties
         }
@@ -2020,9 +2730,14 @@ private constructor(
         private val hashCode: Int by lazy {
             Objects.hash(
                 autoSubmit,
+                bindings,
                 blurFields,
+                credentialIds,
                 credentialProvider,
+                domTrigger,
+                enabled,
                 exactOrigin,
+                lookup,
                 origins,
                 additionalProperties,
             )
@@ -2031,7 +2746,7 @@ private constructor(
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Credentials{autoSubmit=$autoSubmit, blurFields=$blurFields, credentialProvider=$credentialProvider, exactOrigin=$exactOrigin, origins=$origins, additionalProperties=$additionalProperties}"
+            "Credentials{autoSubmit=$autoSubmit, bindings=$bindings, blurFields=$blurFields, credentialIds=$credentialIds, credentialProvider=$credentialProvider, domTrigger=$domTrigger, enabled=$enabled, exactOrigin=$exactOrigin, lookup=$lookup, origins=$origins, additionalProperties=$additionalProperties}"
     }
 
     /**
@@ -2631,13 +3346,13 @@ private constructor(
     class OptimizeBandwidth
     private constructor(
         private val bool: Boolean? = null,
-        private val unionMember1: UnionMember1? = null,
+        private val unionMember1: SessionCreateParams.OptimizeBandwidth.UnionMember1? = null,
         private val _json: JsonValue? = null,
     ) {
 
         fun bool(): Boolean? = bool
 
-        fun unionMember1(): UnionMember1? = unionMember1
+        fun unionMember1(): SessionCreateParams.OptimizeBandwidth.UnionMember1? = unionMember1
 
         fun isBool(): Boolean = bool != null
 
@@ -2645,7 +3360,8 @@ private constructor(
 
         fun asBool(): Boolean = bool.getOrThrow("bool")
 
-        fun asUnionMember1(): UnionMember1 = unionMember1.getOrThrow("unionMember1")
+        fun asUnionMember1(): SessionCreateParams.OptimizeBandwidth.UnionMember1 =
+            unionMember1.getOrThrow("unionMember1")
 
         fun _json(): JsonValue? = _json
 
@@ -2675,7 +3391,9 @@ private constructor(
                 object : Visitor<Unit> {
                     override fun visitBool(bool: Boolean) {}
 
-                    override fun visitUnionMember1(unionMember1: UnionMember1) {
+                    override fun visitUnionMember1(
+                        unionMember1: SessionCreateParams.OptimizeBandwidth.UnionMember1
+                    ) {
                         unionMember1.validate()
                     }
                 }
@@ -2689,8 +3407,9 @@ private constructor(
                 object : Visitor<Int> {
                     override fun visitBool(bool: Boolean) = 1
 
-                    override fun visitUnionMember1(unionMember1: UnionMember1) =
-                        unionMember1.validity()
+                    override fun visitUnionMember1(
+                        unionMember1: SessionCreateParams.OptimizeBandwidth.UnionMember1
+                    ) = unionMember1.validity()
 
                     override fun unknown(json: JsonValue?) = 0
                 }
@@ -2721,7 +3440,7 @@ private constructor(
             @JvmStatic fun ofBool(bool: Boolean) = OptimizeBandwidth(bool = bool)
 
             @JvmStatic
-            fun ofUnionMember1(unionMember1: UnionMember1) =
+            fun ofUnionMember1(unionMember1: SessionCreateParams.OptimizeBandwidth.UnionMember1) =
                 OptimizeBandwidth(unionMember1 = unionMember1)
         }
 
@@ -2729,7 +3448,9 @@ private constructor(
 
             fun visitBool(bool: Boolean): T
 
-            fun visitUnionMember1(unionMember1: UnionMember1): T
+            fun visitUnionMember1(
+                unionMember1: SessionCreateParams.OptimizeBandwidth.UnionMember1
+            ): T
 
             fun unknown(json: JsonValue?): T {
                 throw SteelInvalidDataException("Unknown OptimizeBandwidth: $json")
@@ -2743,9 +3464,13 @@ private constructor(
                 val json = JsonValue.fromJsonNode(node)
                 val bestMatches =
                     sequenceOf(
-                            tryDeserialize(node, jacksonTypeRef<UnionMember1>())?.let {
-                                OptimizeBandwidth(unionMember1 = it, _json = json)
-                            },
+                            tryDeserialize(
+                                    node,
+                                    jacksonTypeRef<
+                                        SessionCreateParams.OptimizeBandwidth.UnionMember1
+                                    >(),
+                                )
+                                ?.let { OptimizeBandwidth(unionMember1 = it, _json = json) },
                             tryDeserialize(node, jacksonTypeRef<Boolean>())?.let {
                                 OptimizeBandwidth(bool = it, _json = json)
                             },

@@ -30,9 +30,14 @@ describe('resource sessions', () => {
           concurrency: -9007199254740991,
           credentials: {
             autoSubmit: true,
+            bindings: ['string'],
             blurFields: true,
+            credentialIds: ['182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e'],
             credentialProvider: 'credentialProvider',
+            domTrigger: true,
+            enabled: true,
             exactOrigin: true,
+            lookup: 'implicit',
             origins: ['string'],
           },
           debugConfig: { interactive: true, systemCursor: true },
@@ -230,7 +235,7 @@ describe('resource sessions', () => {
       },
       after: 'x',
       observe: {
-        mode: 'none',
+        mode: 'snapshot',
         base: 'x',
         compact: true,
         depth: 0,

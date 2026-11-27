@@ -4,7 +4,7 @@ contact_links:
     url: https://discord.gg/steel-dev
     about: Ask questions and get help from the Steel team and community
   - name: 📚 Documentation
-    url: https://docs.steel.dev/
+    url: https://steel.dev/docs
     about: Guides and the API reference
   - name: 🍳 Steel Cookbook
     url: https://github.com/steel-dev/steel-cookbook

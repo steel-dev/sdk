@@ -11,7 +11,7 @@ configure<PublishingExtension> {
             pom {
                 name.set("Steel API")
                 description.set("The Steel API SDK for Java.")
-                url.set("https://docs.steel.dev")
+                url.set("https://steel.dev/docs")
 
                 licenses {
                     license {

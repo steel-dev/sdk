@@ -4,7 +4,7 @@
 
 This library provides convenient access to the Steel REST API from server-side TypeScript or JavaScript.
 
-The REST API documentation can be found on [docs.steel.dev](https://docs.steel.dev). The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/typescript/api.md).
+The REST API documentation can be found on [steel.dev/docs](https://steel.dev/docs). The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/typescript/api.md).
 
 ## Installation
 
@@ -346,3 +346,26 @@ If you are interested in other runtime environments, please open or upvote an is
 ## Contributing
 
 See [the contributing documentation](https://github.com/steel-dev/sdk/tree/main/typescript/CONTRIBUTING.md).
+
+## Steel CDP helpers
+
+Use `wrapCDPSession` with a browser-level CDP session on a Steel browser that supports the credential commands. The wrapper does not add those commands to local Chrome.
+
+```ts
+import { wrapCDPSession } from 'steel-sdk/cdp';
+
+// Playwright (Chromium):
+const cdp = wrapCDPSession(await browser.newBrowserCDPSession());
+// Puppeteer: wrapCDPSession(await browser.target().createCDPSession());
+
+try {
+  const detection = await cdp.steel.detect({ checkCredentials: true });
+  // On a page with a single eligible login form and credential:
+  await cdp.steel.fill({ submit: false });
+  await cdp.send('Browser.getVersion'); // Native CDP is still available.
+} finally {
+  await cdp.detach();
+}
+```
+
+The helpers include `detect`, `fill`, `injectCredential`, `getControls`, and `setControls`. `injectCredential` takes a selector and a stored field path, not a raw secret. `fill` does not submit by default. Command failures propagate as errors from your browser library.

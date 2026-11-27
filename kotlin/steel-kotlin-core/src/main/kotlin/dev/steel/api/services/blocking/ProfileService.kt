@@ -6,6 +6,8 @@ import dev.steel.api.core.RequestOptions
 import dev.steel.api.core.http.HttpResponseFor
 import dev.steel.api.models.profiles.ProfileCreateParams
 import dev.steel.api.models.profiles.ProfileCreateResponse
+import dev.steel.api.models.profiles.ProfileDeleteParams
+import dev.steel.api.models.profiles.ProfileDeleteResponse
 import dev.steel.api.models.profiles.ProfileGetParams
 import dev.steel.api.models.profiles.ProfileGetResponse
 import dev.steel.api.models.profiles.ProfileListParams
@@ -65,6 +67,34 @@ interface ProfileService {
     /** @see list */
     fun list(requestOptions: RequestOptions): ProfileListResponse =
         list(ProfileListParams.none(), requestOptions)
+
+    /** @see delete */
+    fun delete(
+        id: String,
+        params: ProfileDeleteParams,
+        requestOptions: RequestOptions,
+    ): ProfileDeleteResponse = delete(params.toBuilder().id(id).build(), requestOptions)
+
+    /** @see delete */
+    fun delete(id: String, params: ProfileDeleteParams): ProfileDeleteResponse =
+        delete(id, params, RequestOptions.none())
+
+    /** @see delete */
+    fun delete(id: String): ProfileDeleteResponse = delete(id, ProfileDeleteParams.none())
+
+    /** @see delete */
+    fun delete(id: String, requestOptions: RequestOptions): ProfileDeleteResponse =
+        delete(id, ProfileDeleteParams.none(), requestOptions)
+
+    /**
+     * Delete the profile and its stored browser data immediately, with a final asynchronous cleanup
+     * pass.
+     */
+    fun delete(params: ProfileDeleteParams, requestOptions: RequestOptions): ProfileDeleteResponse
+
+    /** @see delete */
+    fun delete(params: ProfileDeleteParams): ProfileDeleteResponse =
+        delete(params, RequestOptions.none())
 
     /** @see get */
     fun get(
@@ -155,6 +185,50 @@ interface ProfileService {
         @MustBeClosed
         fun list(requestOptions: RequestOptions): HttpResponseFor<ProfileListResponse> =
             list(ProfileListParams.none(), requestOptions)
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            params: ProfileDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProfileDeleteResponse> =
+            delete(params.toBuilder().id(id).build(), requestOptions)
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            params: ProfileDeleteParams,
+        ): HttpResponseFor<ProfileDeleteResponse> = delete(id, params, RequestOptions.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(id: String): HttpResponseFor<ProfileDeleteResponse> =
+            delete(id, ProfileDeleteParams.none())
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(
+            id: String,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProfileDeleteResponse> =
+            delete(id, ProfileDeleteParams.none(), requestOptions)
+
+        /**
+         * Delete the profile and its stored browser data immediately, with a final asynchronous
+         * cleanup pass.
+         */
+        @MustBeClosed
+        fun delete(
+            params: ProfileDeleteParams,
+            requestOptions: RequestOptions,
+        ): HttpResponseFor<ProfileDeleteResponse>
+
+        /** @see delete */
+        @MustBeClosed
+        fun delete(params: ProfileDeleteParams): HttpResponseFor<ProfileDeleteResponse> =
+            delete(params, RequestOptions.none())
 
         /** @see get */
         @MustBeClosed

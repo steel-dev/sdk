@@ -51,6 +51,8 @@ import dev.steel.api.services.async.sessions.CaptchaServiceAsync
 import dev.steel.api.services.async.sessions.CaptchaServiceAsyncImpl
 import dev.steel.api.services.async.sessions.CommandExecutionServiceAsync
 import dev.steel.api.services.async.sessions.CommandExecutionServiceAsyncImpl
+import dev.steel.api.services.async.sessions.CredentialServiceAsync
+import dev.steel.api.services.async.sessions.CredentialServiceAsyncImpl
 import dev.steel.api.services.async.sessions.FileServiceAsync
 import dev.steel.api.services.async.sessions.FileServiceAsyncImpl
 import java.util.concurrent.CompletableFuture
@@ -70,6 +72,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
         CommandExecutionServiceAsyncImpl(clientOptions)
     }
 
+    private val credentials: CredentialServiceAsync by lazy {
+        CredentialServiceAsyncImpl(clientOptions)
+    }
+
     private val files: FileServiceAsync by lazy { FileServiceAsyncImpl(clientOptions) }
 
     override fun withRawResponse(): SessionServiceAsync.WithRawResponse = withRawResponse
@@ -80,6 +86,8 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
     override fun captchas(): CaptchaServiceAsync = captchas
 
     override fun commandExecutions(): CommandExecutionServiceAsync = commandExecutions
+
+    override fun credentials(): CredentialServiceAsync = credentials
 
     override fun files(): FileServiceAsync = files
 
@@ -198,6 +206,10 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
             CommandExecutionServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val credentials: CredentialServiceAsync.WithRawResponse by lazy {
+            CredentialServiceAsyncImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val files: FileServiceAsync.WithRawResponse by lazy {
             FileServiceAsyncImpl.WithRawResponseImpl(clientOptions)
         }
@@ -213,6 +225,8 @@ class SessionServiceAsyncImpl internal constructor(private val clientOptions: Cl
 
         override fun commandExecutions(): CommandExecutionServiceAsync.WithRawResponse =
             commandExecutions
+
+        override fun credentials(): CredentialServiceAsync.WithRawResponse = credentials
 
         override fun files(): FileServiceAsync.WithRawResponse = files
 

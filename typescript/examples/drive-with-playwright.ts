@@ -4,7 +4,7 @@ import Steel from 'steel-sdk';
 const client = new Steel();
 
 async function main() {
-  const session = await client.sessions.create();
+  const session = await client.sessions.create({ inactivityTimeout: 3 * 60 * 1000 });
   console.log(`Watch the session live at ${session.sessionViewerUrl}`);
 
   try {

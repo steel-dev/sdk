@@ -28,4 +28,4 @@ The [README](README.md#cookbook) shows how to run the examples.
 
 ## Questions
 
-Ask on [Discord](https://discord.gg/steel-dev), or read the [documentation](https://docs.steel.dev).
+Ask on [Discord](https://discord.gg/steel-dev), or read the [documentation](https://steel.dev/docs).

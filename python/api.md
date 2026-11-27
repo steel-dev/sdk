@@ -91,6 +91,7 @@ from steel.types import (
     ProfileCreateResponse,
     ProfileUpdateResponse,
     ProfileListResponse,
+    ProfileDeleteResponse,
     ProfileGetResponse,
 )
 ```
@@ -100,6 +101,7 @@ Methods:
 - <code title="post /v1/profiles">client.profiles.<a href="./src/steel/resources/profiles.py">create</a>(\*\*<a href="src/steel/types/profile_create_params.py">params</a>) -> <a href="./src/steel/types/profile_create_response.py">ProfileCreateResponse</a></code>
 - <code title="patch /v1/profiles/{id}">client.profiles.<a href="./src/steel/resources/profiles.py">update</a>(id, \*\*<a href="src/steel/types/profile_update_params.py">params</a>) -> <a href="./src/steel/types/profile_update_response.py">ProfileUpdateResponse</a></code>
 - <code title="get /v1/profiles">client.profiles.<a href="./src/steel/resources/profiles.py">list</a>(\*\*<a href="src/steel/types/profile_list_params.py">params</a>) -> <a href="./src/steel/types/profile_list_response.py">ProfileListResponse</a></code>
+- <code title="delete /v1/profiles/{id}">client.profiles.<a href="./src/steel/resources/profiles.py">delete</a>(id, \*\*<a href="src/steel/types/profile_delete_params.py">params</a>) -> <a href="./src/steel/types/profile_delete_response.py">ProfileDeleteResponse</a></code>
 - <code title="get /v1/profiles/{id}">client.profiles.<a href="./src/steel/resources/profiles.py">get</a>(id, \*\*<a href="src/steel/types/profile_get_params.py">params</a>) -> <a href="./src/steel/types/profile_get_response.py">ProfileGetResponse</a></code>
 
 # Projects
@@ -115,6 +117,28 @@ Methods:
 - <code title="get /v1/projects/{id}">client.projects.<a href="./src/steel/resources/projects.py">retrieve</a>(id) -> <a href="./src/steel/types/project.py">Project</a></code>
 - <code title="get /v1/projects">client.projects.<a href="./src/steel/resources/projects.py">list</a>() -> <a href="./src/steel/types/projects_list.py">ProjectsList</a></code>
 
+# SecretConnections
+
+Types:
+
+```python
+from steel.types import (
+    SecretConnectionCreateResponse,
+    SecretConnectionRetrieveResponse,
+    SecretConnectionUpdateResponse,
+    SecretConnectionListResponse,
+)
+```
+
+Methods:
+
+- <code title="post /v1/secret-connections">client.secret_connections.<a href="./src/steel/resources/secret_connections.py">create</a>(\*\*<a href="src/steel/types/secret_connection_create_params.py">params</a>) -> <a href="./src/steel/types/secret_connection_create_response.py">SecretConnectionCreateResponse</a></code>
+- <code title="get /v1/secret-connections/{id}">client.secret_connections.<a href="./src/steel/resources/secret_connections.py">retrieve</a>(id, \*\*<a href="src/steel/types/secret_connection_retrieve_params.py">params</a>) -> <a href="./src/steel/types/secret_connection_retrieve_response.py">SecretConnectionRetrieveResponse</a></code>
+- <code title="patch /v1/secret-connections/{id}">client.secret_connections.<a href="./src/steel/resources/secret_connections.py">update</a>(id, \*\*<a href="src/steel/types/secret_connection_update_params.py">params</a>) -> <a href="./src/steel/types/secret_connection_update_response.py">SecretConnectionUpdateResponse</a></code>
+- <code title="get /v1/secret-connections">client.secret_connections.<a href="./src/steel/resources/secret_connections.py">list</a>(\*\*<a href="src/steel/types/secret_connection_list_params.py">params</a>) -> <a href="./src/steel/types/secret_connection_list_response.py">SecretConnectionListResponse</a></code>
+- <code title="delete /v1/secret-connections/{id}">client.secret_connections.<a href="./src/steel/resources/secret_connections.py">delete</a>(id, \*\*<a href="src/steel/types/secret_connection_delete_params.py">params</a>) -> None</code>
+- <code title="post /v1/secret-connections/{id}/test">client.secret_connections.<a href="./src/steel/resources/secret_connections.py">test</a>(id, \*\*<a href="src/steel/types/secret_connection_test_params.py">params</a>) -> None</code>
+
 # Sessions
 
 Types:
@@ -126,11 +150,13 @@ from steel.types import (
     CommandErrorInfo,
     CommandExpectation,
     CommandFrame,
+    CommandHeld,
     CommandLocator,
     CommandResult,
     CommandTarget,
     Session,
     SessionContext,
+    SessionCredentials,
     Sessionslist,
     SessionAgentTracesResponse,
     SessionCommandsResponse,
@@ -198,6 +224,16 @@ Methods:
 - <code title="get /v1/sessions/{sessionId}/commands/executions/{executionId}">client.sessions.command_executions.<a href="./src/steel/resources/sessions/command_executions.py">retrieve</a>(execution_id, \*, session_id) -> <a href="./src/steel/types/sessions/command_execution_retrieve_response.py">CommandExecutionRetrieveResponse</a></code>
 - <code title="post /v1/sessions/{sessionId}/commands/executions/{executionId}/cancel">client.sessions.command_executions.<a href="./src/steel/resources/sessions/command_executions.py">cancel</a>(execution_id, \*, session_id) -> <a href="./src/steel/types/sessions/command_execution_cancel_response.py">CommandExecutionCancelResponse</a></code>
 
+## Credentials
+
+Methods:
+
+- <code title="get /v1/sessions/{id}/credentials">client.sessions.credentials.<a href="./src/steel/resources/sessions/credentials.py">list</a>(id) -> <a href="./src/steel/types/session_credentials.py">SessionCredentials</a></code>
+- <code title="post /v1/sessions/{id}/credentials">client.sessions.credentials.<a href="./src/steel/resources/sessions/credentials.py">attach</a>(id, \*\*<a href="src/steel/types/sessions/credential_attach_params.py">params</a>) -> <a href="./src/steel/types/session_credentials.py">SessionCredentials</a></code>
+- <code title="delete /v1/sessions/{id}/credentials/{credentialId}">client.sessions.credentials.<a href="./src/steel/resources/sessions/credentials.py">detach</a>(credential_id, \*, id) -> <a href="./src/steel/types/session_credentials.py">SessionCredentials</a></code>
+- <code title="delete /v1/sessions/{id}/credentials/bindings">client.sessions.credentials.<a href="./src/steel/resources/sessions/credentials.py">detach_binding</a>(id, \*\*<a href="src/steel/types/sessions/credential_detach_binding_params.py">params</a>) -> <a href="./src/steel/types/session_credentials.py">SessionCredentials</a></code>
+- <code title="put /v1/sessions/{id}/credentials">client.sessions.credentials.<a href="./src/steel/resources/sessions/credentials.py">replace</a>(id, \*\*<a href="src/steel/types/sessions/credential_replace_params.py">params</a>) -> <a href="./src/steel/types/session_credentials.py">SessionCredentials</a></code>
+
 ## Files
 
 Methods:
@@ -208,3 +244,19 @@ Methods:
 - <code title="get /v1/sessions/{sessionId}/files/{path}">client.sessions.files.<a href="./src/steel/resources/sessions/files.py">download</a>(path, \*, session_id) -> BinaryAPIResponse</code>
 - <code title="get /v1/sessions/{sessionId}/files.zip">client.sessions.files.<a href="./src/steel/resources/sessions/files.py">download_archive</a>(session_id) -> BinaryAPIResponse</code>
 - <code title="post /v1/sessions/{sessionId}/files">client.sessions.files.<a href="./src/steel/resources/sessions/files.py">upload</a>(session_id, \*\*<a href="src/steel/types/sessions/file_upload_params.py">params</a>) -> <a href="./src/steel/types/file.py">File</a></code>
+
+# Vaults
+
+Types:
+
+```python
+from steel.types import Vault, VaultList
+```
+
+Methods:
+
+- <code title="post /v1/vaults">client.vaults.<a href="./src/steel/resources/vaults.py">create</a>(\*\*<a href="src/steel/types/vault_create_params.py">params</a>) -> <a href="./src/steel/types/vault.py">Vault</a></code>
+- <code title="get /v1/vaults/{id}">client.vaults.<a href="./src/steel/resources/vaults.py">retrieve</a>(id, \*\*<a href="src/steel/types/vault_retrieve_params.py">params</a>) -> <a href="./src/steel/types/vault.py">Vault</a></code>
+- <code title="patch /v1/vaults/{id}">client.vaults.<a href="./src/steel/resources/vaults.py">update</a>(id, \*\*<a href="src/steel/types/vault_update_params.py">params</a>) -> <a href="./src/steel/types/vault.py">Vault</a></code>
+- <code title="get /v1/vaults">client.vaults.<a href="./src/steel/resources/vaults.py">list</a>(\*\*<a href="src/steel/types/vault_list_params.py">params</a>) -> <a href="./src/steel/types/vault_list.py">VaultList</a></code>
+- <code title="delete /v1/vaults/{id}">client.vaults.<a href="./src/steel/resources/vaults.py">delete</a>(id, \*\*<a href="src/steel/types/vault_delete_params.py">params</a>) -> None</code>

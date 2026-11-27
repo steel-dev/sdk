@@ -7,6 +7,7 @@ async fn create() {
         .credentials()
         .create(steel_rs::CredentialCreateParams {
             value: std::collections::HashMap::from([("foo".to_owned(), "string".to_owned())]),
+            additional_origins: Some(vec!["x".to_owned()]),
             label: Some("label".to_owned()),
             namespace: Some("namespace".to_owned()),
             origin: Some("origin".to_owned()),
@@ -22,6 +23,7 @@ async fn update() {
     let result = client
         .credentials()
         .update(steel_rs::CredentialUpdateParams {
+            additional_origins: Some(vec!["x".to_owned()]),
             label: Some("label".to_owned()),
             namespace: Some("namespace".to_owned()),
             origin: Some("origin".to_owned()),

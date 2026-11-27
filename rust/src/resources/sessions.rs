@@ -2,6 +2,8 @@ pub mod captchas;
 pub use captchas::*;
 pub mod command_executions;
 pub use command_executions::*;
+pub mod credentials;
+pub use credentials::*;
 pub mod files;
 pub use files::*;
 
@@ -25,6 +27,12 @@ impl<'a> Sessions<'a> {
         }
     }
 
+    pub fn credentials(&self) -> crate::SessionsCredentials<'a> {
+        crate::SessionsCredentials {
+            client: self.client,
+        }
+    }
+
     pub fn files(&self) -> crate::SessionsFiles<'a> {
         crate::SessionsFiles {
             client: self.client,
@@ -32,187 +40,191 @@ impl<'a> Sessions<'a> {
     }
 
     /// Creates a new session with the provided configuration.
-    pub async fn create(
-        &self,
-        params: SessionCreateParams,
-    ) -> Result<crate::Session, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/sessions".to_owned());
-        let mut body = serde_json::Map::new();
-        if let Some(value) = &params.block_ads {
-            body.insert("blockAds".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.ca_certificates {
-            body.insert("caCertificates".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.concurrency {
-            body.insert("concurrency".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.credentials {
-            body.insert("credentials".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.debug_config {
-            body.insert("debugConfig".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.device_config {
-            body.insert("deviceConfig".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.dimensions {
-            body.insert("dimensions".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.experimental_features {
-            body.insert(
-                "experimentalFeatures".to_owned(),
-                serde_json::to_value(value)?,
-            );
-        }
-        if let Some(value) = &params.extension_ids {
-            body.insert("extensionIds".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.fullscreen {
-            body.insert("fullscreen".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.headless {
-            body.insert("headless".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.inactivity_timeout {
-            body.insert("inactivityTimeout".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.is_selenium {
-            body.insert("isSelenium".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.metadata {
-            body.insert("metadata".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.namespace {
-            body.insert("namespace".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.optimize_bandwidth {
-            body.insert("optimizeBandwidth".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.persist_profile {
-            body.insert("persistProfile".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.profile_id {
-            body.insert("profileId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.proxy_url {
-            body.insert("proxyUrl".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.recording {
-            body.insert("recording".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.region {
-            body.insert("region".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.session_context {
-            body.insert("sessionContext".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.session_id {
-            body.insert("sessionId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.solve_captcha {
-            body.insert("solveCaptcha".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.stealth_config {
-            body.insert("stealthConfig".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.timeout {
-            body.insert("timeout".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.use_proxy {
-            body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.user_agent {
-            body.insert("userAgent".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    pub fn create(&self, params: SessionCreateParams) -> crate::Call<'a, crate::Session> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/sessions".to_owned());
+            let mut body = serde_json::Map::new();
+            if let Some(value) = &params.block_ads {
+                body.insert("blockAds".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.ca_certificates {
+                body.insert("caCertificates".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.concurrency {
+                body.insert("concurrency".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.credentials {
+                body.insert("credentials".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.debug_config {
+                body.insert("debugConfig".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.device_config {
+                body.insert("deviceConfig".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.dimensions {
+                body.insert("dimensions".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.experimental_features {
+                body.insert(
+                    "experimentalFeatures".to_owned(),
+                    serde_json::to_value(value)?,
+                );
+            }
+            if let Some(value) = &params.extension_ids {
+                body.insert("extensionIds".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.fullscreen {
+                body.insert("fullscreen".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.headless {
+                body.insert("headless".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.inactivity_timeout {
+                body.insert("inactivityTimeout".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.is_selenium {
+                body.insert("isSelenium".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.metadata {
+                body.insert("metadata".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.namespace {
+                body.insert("namespace".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.optimize_bandwidth {
+                body.insert("optimizeBandwidth".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.persist_profile {
+                body.insert("persistProfile".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.profile_id {
+                body.insert("profileId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.proxy_url {
+                body.insert("proxyUrl".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.recording {
+                body.insert("recording".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.region {
+                body.insert("region".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.session_context {
+                body.insert("sessionContext".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.session_id {
+                body.insert("sessionId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.solve_captcha {
+                body.insert("solveCaptcha".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.stealth_config {
+                body.insert("stealthConfig".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.timeout {
+                body.insert("timeout".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.use_proxy {
+                body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.user_agent {
+                body.insert("userAgent".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Retrieves details of a specific session by ID.
-    pub async fn retrieve(&self, id: &str) -> Result<crate::Session, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}", crate::encoding::segment(id)),
-        );
-        self.client.json(request).await
+    pub fn retrieve(&self, id: &str) -> crate::Call<'a, crate::Session> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 
     /// Fetches all active sessions for the current organization.
-    pub async fn list(
+    pub fn list(
         &self,
         params: SessionListParams,
-    ) -> Result<crate::Page<SessionslistSession>, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::GET, "/v1/sessions".to_owned());
-        if let Some(value) = &params.created_after {
-            request.query.extend(crate::encoding::query(
-                "createdAfter",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.created_before {
-            request.query.extend(crate::encoding::query(
-                "createdBefore",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.cursor_id {
-            request.query.extend(crate::encoding::query(
-                "cursorId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.limit {
-            request.query.extend(crate::encoding::query(
-                "limit",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.metadata {
-            request.query.extend(crate::encoding::query(
-                "metadata",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.project_id {
-            request.query.extend(crate::encoding::query(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.release_reason {
-            request.query.extend(crate::encoding::query(
-                "releaseReason",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.signal {
-            request.query.extend(crate::encoding::query(
-                "signal",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.status {
-            request.query.extend(crate::encoding::query(
-                "status",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client
-            .page(
-                request,
-                crate::client::Cursor {
-                    items: "sessions",
-                    param: "cursorId",
-                    from: "id",
-                },
-            )
-            .await
+    ) -> crate::Call<'a, crate::Page<SessionslistSession>> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::GET, "/v1/sessions".to_owned());
+            if let Some(value) = &params.created_after {
+                request.query.extend(crate::encoding::query(
+                    "createdAfter",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.created_before {
+                request.query.extend(crate::encoding::query(
+                    "createdBefore",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.cursor_id {
+                request.query.extend(crate::encoding::query(
+                    "cursorId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.limit {
+                request.query.extend(crate::encoding::query(
+                    "limit",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.metadata {
+                request.query.extend(crate::encoding::query(
+                    "metadata",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.release_reason {
+                request.query.extend(crate::encoding::query(
+                    "releaseReason",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.signal {
+                request.query.extend(crate::encoding::query(
+                    "signal",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.status {
+                request.query.extend(crate::encoding::query(
+                    "status",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client
+                .page(
+                    request,
+                    crate::client::Cursor {
+                        items: "sessions",
+                        param: "cursorId",
+                        from: "id",
+                    },
+                )
+                .await
+        })
     }
 
     /// Fetches all active sessions for the current organization.
@@ -225,304 +237,324 @@ impl<'a> Sessions<'a> {
     }
 
     /// Query the semantic agent trace timeline for a session: a coalesced, replay-oriented record of user/agent interactions (clicks, typing, scrolls, drags, navigations) with target metadata (role, accessible name, selectors). Returns an empty list for sessions that predate browser-interaction capture.
-    pub async fn agent_traces(
+    pub fn agent_traces(
         &self,
         id: &str,
         params: SessionAgentTracesParams,
-    ) -> Result<SessionAgentTracesResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/agent-traces", crate::encoding::segment(id)),
-        );
-        if let Some(value) = &params.end_time {
-            request.query.extend(crate::encoding::query(
-                "endTime",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.event_types {
-            request.query.extend(crate::encoding::query(
-                "eventTypes",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.limit {
-            request.query.extend(crate::encoding::query(
-                "limit",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.namespace {
-            request.query.extend(crate::encoding::query(
-                "namespace",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.offset {
-            request.query.extend(crate::encoding::query(
-                "offset",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.start_time {
-            request.query.extend(crate::encoding::query(
-                "startTime",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+    ) -> crate::Call<'a, SessionAgentTracesResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/agent-traces", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            if let Some(value) = &params.end_time {
+                request.query.extend(crate::encoding::query(
+                    "endTime",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.event_types {
+                request.query.extend(crate::encoding::query(
+                    "eventTypes",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.limit {
+                request.query.extend(crate::encoding::query(
+                    "limit",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.namespace {
+                request.query.extend(crate::encoding::query(
+                    "namespace",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.offset {
+                request.query.extend(crate::encoding::query(
+                    "offset",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.start_time {
+                request.query.extend(crate::encoding::query(
+                    "startTime",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 
     /// Drives the session's browser with high-level commands such as snapshot, click, and fill. Commands run in order and stop at the first failure. Send a random Idempotency-Key header to make retries safe.
-    pub async fn commands(
+    pub fn commands(
         &self,
         session_id: &str,
         params: SessionCommandsParams,
-    ) -> Result<SessionCommandsResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::POST,
-            format!(
-                "/v1/sessions/{}/commands",
-                crate::encoding::segment(session_id)
-            ),
+    ) -> crate::Call<'a, SessionCommandsResponse> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/commands",
+            crate::encoding::segment(session_id)
         );
-        if let Some(value) = &params.idempotency_key {
-            request.headers.extend(crate::encoding::query(
-                "idempotency-key",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        let mut body = serde_json::Map::new();
-        body.insert(
-            "commands".to_owned(),
-            serde_json::to_value(&params.commands)?,
-        );
-        if let Some(value) = &params.after {
-            body.insert("after".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.observe {
-            body.insert("observe".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::POST, path);
+            if let Some(value) = &params.idempotency_key {
+                request.headers.extend(crate::encoding::query(
+                    "idempotency-key",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            let mut body = serde_json::Map::new();
+            body.insert(
+                "commands".to_owned(),
+                serde_json::to_value(&params.commands)?,
+            );
+            if let Some(value) = &params.after {
+                body.insert("after".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.observe {
+                body.insert("observe".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Execute computer actions like mouse movements, clicks, keyboard input, and more
-    pub async fn computer(
+    pub fn computer(
         &self,
         session_id: &str,
         params: SessionComputerParams,
-    ) -> Result<SessionComputerResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::POST,
-            format!(
-                "/v1/sessions/{}/computer",
-                crate::encoding::segment(session_id)
-            ),
+    ) -> crate::Call<'a, SessionComputerResponse> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/computer",
+            crate::encoding::segment(session_id)
         );
-        request.body = crate::client::Body::Json(serde_json::to_value(&params)?);
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::POST, path);
+            request.body = crate::client::Body::Json(serde_json::to_value(&params)?);
+            client.json(request).await
+        })
     }
 
     /// Fetches the context data of a specific session.
-    pub async fn context(&self, id: &str) -> Result<crate::SessionContext, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/context", crate::encoding::segment(id)),
-        );
-        self.client.json(request).await
+    pub fn context(&self, id: &str) -> crate::Call<'a, crate::SessionContext> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/context", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 
     /// Returns the finalized cost of a released session as an exact amount in US dollars (e.g. 0.031905), suitable for precise billing passthrough.
-    pub async fn cost(&self, id: &str) -> Result<SessionCostResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/cost", crate::encoding::segment(id)),
-        );
-        self.client.json(request).await
+    pub fn cost(&self, id: &str) -> crate::Call<'a, SessionCostResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/cost", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 
     /// This endpoint allows you to get the recorded session events in the RRWeb format
-    pub async fn events(
+    pub fn events(
         &self,
         id: &str,
         params: SessionEventsParams,
-    ) -> Result<Vec<serde_json::Value>, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/events", crate::encoding::segment(id)),
-        );
-        if let Some(value) = &params.compressed {
-            request.query.extend(crate::encoding::query(
-                "compressed",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.limit {
-            request.query.extend(crate::encoding::query(
-                "limit",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.pointer {
-            request.query.extend(crate::encoding::query(
-                "pointer",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+    ) -> crate::Call<'a, Vec<serde_json::Value>> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/events", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            if let Some(value) = &params.compressed {
+                request.query.extend(crate::encoding::query(
+                    "compressed",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.limit {
+                request.query.extend(crate::encoding::query(
+                    "limit",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.pointer {
+                request.query.extend(crate::encoding::query(
+                    "pointer",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 
     /// Get HLS playlist for a session recording using app auth or an RTC token
-    pub async fn hls(&self, id: &str) -> Result<bytes::Bytes, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/hls", crate::encoding::segment(id)),
-        );
-        request.accept = Some("application/vnd.apple.mpegurl");
-        self.client.bytes(request).await
+    pub fn hls(&self, id: &str) -> crate::Call<'a, bytes::Bytes> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/hls", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            request.accept = Some("application/vnd.apple.mpegurl");
+            client.bytes(request).await
+        })
     }
 
     /// Returns the live state of the session, including pages, tabs, and browser state
-    pub async fn live_details(&self, id: &str) -> Result<SessionLiveDetailsResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/live-details", crate::encoding::segment(id)),
-        );
-        self.client.json(request).await
+    pub fn live_details(&self, id: &str) -> crate::Call<'a, SessionLiveDetailsResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/live-details", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 
     /// Query browser event logs for a session
-    pub async fn logs(
+    pub fn logs(
         &self,
         id: &str,
         params: SessionLogsParams,
-    ) -> Result<SessionLogsResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!("/v1/sessions/{}/logs", crate::encoding::segment(id)),
-        );
-        if let Some(value) = &params.end_time {
-            request.query.extend(crate::encoding::query(
-                "endTime",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.event_types {
-            request.query.extend(crate::encoding::query(
-                "eventTypes",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.limit {
-            request.query.extend(crate::encoding::query(
-                "limit",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.namespace {
-            request.query.extend(crate::encoding::query(
-                "namespace",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.offset {
-            request.query.extend(crate::encoding::query(
-                "offset",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        if let Some(value) = &params.start_time {
-            request.query.extend(crate::encoding::query(
-                "startTime",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+    ) -> crate::Call<'a, SessionLogsResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/logs", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::GET, path);
+            if let Some(value) = &params.end_time {
+                request.query.extend(crate::encoding::query(
+                    "endTime",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.event_types {
+                request.query.extend(crate::encoding::query(
+                    "eventTypes",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.limit {
+                request.query.extend(crate::encoding::query(
+                    "limit",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.namespace {
+                request.query.extend(crate::encoding::query(
+                    "namespace",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.offset {
+                request.query.extend(crate::encoding::query(
+                    "offset",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            if let Some(value) = &params.start_time {
+                request.query.extend(crate::encoding::query(
+                    "startTime",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 
     /// Releases a specific session by ID.
-    pub async fn release(&self, id: &str) -> Result<SessionReleaseResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::POST,
-            format!("/v1/sessions/{}/release", crate::encoding::segment(id)),
-        );
-        self.client.json(request).await
+    pub fn release(&self, id: &str) -> crate::Call<'a, SessionReleaseResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/release", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::POST, path);
+            client.json(request).await
+        })
     }
 
     /// Releases all active sessions for the current organization.
-    pub async fn release_all(
+    pub fn release_all(
         &self,
         params: SessionReleaseAllParams,
-    ) -> Result<SessionReleaseAllResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/sessions/release".to_owned());
-        if let Some(value) = &params.project_id {
-            request.query.extend(crate::encoding::query(
-                "projectId",
-                &serde_json::to_value(value)?,
-            ));
-        }
-        self.client.json(request).await
+    ) -> crate::Call<'a, SessionReleaseAllResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(
+                reqwest::Method::POST,
+                "/v1/sessions/release".to_owned(),
+            );
+            if let Some(value) = &params.project_id {
+                request.query.extend(crate::encoding::query(
+                    "projectId",
+                    &serde_json::to_value(value)?,
+                ));
+            }
+            client.json(request).await
+        })
     }
 
     /// Atomically replace customer metadata. Send an empty object to clear it. Last accepted write wins; use PATCH to change individual keys. Subject to session organization and project access.
-    pub async fn replace_metadata(
+    pub fn replace_metadata(
         &self,
         id: &str,
         params: SessionReplaceMetadataParams,
-    ) -> Result<SessionReplaceMetadataResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::PUT,
-            format!("/v1/sessions/{}/metadata", crate::encoding::segment(id)),
-        );
-        let mut body = serde_json::Map::new();
-        body.insert(
-            "metadata".to_owned(),
-            serde_json::to_value(&params.metadata)?,
-        );
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    ) -> crate::Call<'a, SessionReplaceMetadataResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/metadata", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::PUT, path);
+            let mut body = serde_json::Map::new();
+            body.insert(
+                "metadata".to_owned(),
+                serde_json::to_value(&params.metadata)?,
+            );
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Returns current signal labels and meanings for customer integrations. Uses normal Steel API-key authentication. Includes no session data or administrative signals. Definitions do not establish that detection ran for a particular session.
-    pub async fn signal_catalog(&self) -> Result<SessionSignalCatalogResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            "/v1/sessions/signals/catalog".to_owned(),
-        );
-        self.client.json(request).await
+    pub fn signal_catalog(&self) -> crate::Call<'a, SessionSignalCatalogResponse> {
+        let client = self.client;
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(
+                reqwest::Method::GET,
+                "/v1/sessions/signals/catalog".to_owned(),
+            );
+            client.json(request).await
+        })
     }
 
     /// Atomically merge keys into customer metadata. Set a key to null to remove it; keys you leave out are kept, so concurrent updates to different keys are all kept. Returns the merged metadata, which must stay within the metadata limits. Subject to session organization and project access.
-    pub async fn update_metadata(
+    pub fn update_metadata(
         &self,
         id: &str,
         params: SessionUpdateMetadataParams,
-    ) -> Result<SessionUpdateMetadataResponse, crate::Error> {
-        let mut request = crate::client::Request::new(
-            reqwest::Method::PATCH,
-            format!("/v1/sessions/{}/metadata", crate::encoding::segment(id)),
-        );
-        let mut body = serde_json::Map::new();
-        body.insert(
-            "metadata".to_owned(),
-            serde_json::to_value(&params.metadata)?,
-        );
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.client.json(request).await
+    ) -> crate::Call<'a, SessionUpdateMetadataResponse> {
+        let client = self.client;
+        let path = format!("/v1/sessions/{}/metadata", crate::encoding::segment(id));
+        crate::Call::new(async move {
+            let mut request = crate::client::Request::new(reqwest::Method::PATCH, path);
+            let mut body = serde_json::Map::new();
+            body.insert(
+                "metadata".to_owned(),
+                serde_json::to_value(&params.metadata)?,
+            );
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 }
 
 #[derive(Debug, Clone, Default, PartialEq)]
 pub struct SessionCreateParams {
-    /// Block ads in the browser session. Default is false.
+    /// Block ads in the browser session. Default is true.
     pub block_ads: Option<bool>,
     /// PEM-encoded root CA certificates to trust in this session. THIS IS CURRENTLY AN EXPERIMENTAL FEATURE.
     pub ca_certificates: Option<Vec<String>>,
     /// Number of sessions to create concurrently (check your plan limit)
     pub concurrency: Option<i64>,
-    /// Configuration for session credentials
+    /// Configuration for session credentials. Set enabled to false to disable credentials, including those inherited from a profile. Credentials are opt-in at creation; only credentials-enabled sessions can have credentials attached later (otherwise 409 `credentials_not_enabled`).
     pub credentials: Option<SessionCreateParamsCredentials>,
     /// Configuration for the debug URL and session viewer. Controls interaction capabilities, cursor visibility, and other debug-related settings.
     pub debug_config: Option<SessionCreateParamsDebugConfig>,
@@ -554,7 +586,7 @@ pub struct SessionCreateParams {
     pub profile_id: Option<String>,
     /// The project to create the session in. When provided, the session namespace is resolved from the project.
     pub project_id: Option<String>,
-    /// Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided proxies in favor of your specified proxy. Format: http(s)://username:password@hostname:port
+    /// Custom proxy URL for the browser session. Overrides useProxy, disabling Steel-provided proxies in favor of your specified proxy. Format: http(s)://username:password@hostname:port or socks5://username:password@hostname:port
     pub proxy_url: Option<String>,
     /// Record the headful session for playback after it ends. Default is true. Disabling recording does not affect live WHEP viewing.
     pub recording: Option<bool>,
@@ -562,13 +594,13 @@ pub struct SessionCreateParams {
     pub region: Option<serde_json::Value>,
     /// Session context data to be used in the created session. Sessions will start with an empty context by default.
     pub session_context: Option<SessionCreateParamsSessionContext>,
-    /// Optional custom UUID for the session
+    /// Deprecated. A session ID of your choice. Steel will reject it in a future release, because the ID that Steel generates records where the session runs. Omit it, use the `id` in the response, and put your own ID in `metadata`.
     pub session_id: Option<String>,
     /// Enable automatic captcha solving. Default is false.
     pub solve_captcha: Option<bool>,
     /// Stealth configuration for the session
     pub stealth_config: Option<SessionCreateParamsStealthConfig>,
-    /// Session timeout duration in milliseconds. Default is 300000 (5 minutes).
+    /// Session timeout duration in milliseconds. Default is 300000 (5 minutes). On Launch and Scale, a value over the plan's maximum runs at the maximum; the response's `timeout` shows the value used.
     pub timeout: Option<i64>,
     /// Simple boolean to enable/disable Steel proxies
     pub use_proxy: Option<serde_json::Value>,
@@ -584,12 +616,22 @@ pub struct SessionCreateParamsCredentials {
         skip_serializing_if = "Option::is_none"
     )]
     pub auto_submit: Option<bool>,
+    /// At most 100 bindings. KV references may use { reference, allowedOrigins }, with at most 20 canonical HTTP(S) origins; omitted or empty origins match nothing.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bindings: Option<Vec<SessionCreateParamsCredentialsBinding>>,
     #[serde(
         rename = "blurFields",
         default,
         skip_serializing_if = "Option::is_none"
     )]
     pub blur_fields: Option<bool>,
+    /// Bind the session to these credentials (ids of Secrets of kind `credential` in the session's project). A bound session only ever fills these, never others by namespace and origin. Implies `lookup: "explicit"`. Change them later with /v1/sessions/{id}/credentials. Errors: 400 `credential_not_bindable` (param `credentials.credentialIds`), 400 `too_many_credentials`, 409 `session_id_taken` (a custom sessionId that already has a session or credential bindings).
+    #[serde(
+        rename = "credentialIds",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub credential_ids: Option<Vec<String>>,
     /// Credential provider to use for runtime credential resolution. Defaults to "steel".
     #[serde(
         rename = "credentialProvider",
@@ -597,15 +639,78 @@ pub struct SessionCreateParamsCredentials {
         skip_serializing_if = "Option::is_none"
     )]
     pub credential_provider: Option<String>,
+    /// Allow any script on the page, including third-party scripts, to request credential form operations through DOM events. Disabled by default.
+    #[serde(
+        rename = "domTrigger",
+        default,
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub dom_trigger: Option<bool>,
+    /// Set to false to disable credential injection for this session.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    /// Deprecated and ignored: credentials only ever match their own origin or their additionalOrigins.
     #[serde(
         rename = "exactOrigin",
         default,
         skip_serializing_if = "Option::is_none"
     )]
     pub exact_origin: Option<bool>,
+    /// `implicit` (default without credentialIds or bindings): fill credentials stored for the session's namespace and the page origin. `explicit` (default when credentialIds or bindings is supplied): fill only direct credentials and credentials in bound Vaults, including future members; with none bound, nothing is filled until some are attached.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub lookup: Option<SessionCreateParamsCredentialsLookup>,
     /// Optional allowlist of credential origins to inject into this session.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub origins: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SessionCreateParamsCredentialsBinding {
+    String(String),
+    UnionMember1(SessionCreateParamsCredentialsBindingUnionMember1),
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCreateParamsCredentialsBindingUnionMember1 {
+    #[serde(rename = "allowedOrigins")]
+    pub allowed_origins: Vec<String>,
+    pub reference: String,
+}
+
+impl SessionCreateParamsCredentialsBindingUnionMember1 {
+    pub fn new(reference: String, allowed_origins: Vec<String>) -> Self {
+        SessionCreateParamsCredentialsBindingUnionMember1 {
+            reference,
+            allowed_origins,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCreateParamsCredentialsLookup {
+    #[serde(rename = "implicit")]
+    Implicit,
+    #[serde(rename = "explicit")]
+    Explicit,
+    #[serde(other)]
+    Unknown,
+}
+
+impl SessionCreateParamsCredentialsLookup {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Implicit => "implicit",
+            Self::Explicit => "explicit",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCreateParamsCredentialsLookup {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -638,6 +743,22 @@ pub enum SessionCreateParamsDeviceConfigDevice {
     Unknown,
 }
 
+impl SessionCreateParamsDeviceConfigDevice {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Desktop => "desktop",
+            Self::Mobile => "mobile",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCreateParamsDeviceConfigDevice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCreateParamsDimensions {
     /// Height of the session
@@ -647,8 +768,8 @@ pub struct SessionCreateParamsDimensions {
 }
 
 impl SessionCreateParamsDimensions {
-    pub fn new(height: i64, width: i64) -> Self {
-        SessionCreateParamsDimensions { height, width }
+    pub fn new(width: i64, height: i64) -> Self {
+        SessionCreateParamsDimensions { width, height }
     }
 }
 
@@ -824,10 +945,10 @@ pub struct SessionCreateParamsSessionContextCookiePartitionKey {
 }
 
 impl SessionCreateParamsSessionContextCookiePartitionKey {
-    pub fn new(has_cross_site_ancestor: bool, top_level_site: String) -> Self {
+    pub fn new(top_level_site: String, has_cross_site_ancestor: bool) -> Self {
         SessionCreateParamsSessionContextCookiePartitionKey {
-            has_cross_site_ancestor,
             top_level_site,
+            has_cross_site_ancestor,
         }
     }
 }
@@ -844,6 +965,23 @@ pub enum SessionCreateParamsSessionContextCookiePriority {
     Unknown,
 }
 
+impl SessionCreateParamsSessionContextCookiePriority {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Low => "Low",
+            Self::Medium => "Medium",
+            Self::High => "High",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCreateParamsSessionContextCookiePriority {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCreateParamsSessionContextCookieSameSite {
     #[serde(rename = "Strict")]
@@ -854,6 +992,23 @@ pub enum SessionCreateParamsSessionContextCookieSameSite {
     None,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCreateParamsSessionContextCookieSameSite {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Strict => "Strict",
+            Self::Lax => "Lax",
+            Self::None => "None",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCreateParamsSessionContextCookieSameSite {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -868,6 +1023,23 @@ pub enum SessionCreateParamsSessionContextCookieSourceScheme {
     Unknown,
 }
 
+impl SessionCreateParamsSessionContextCookieSourceScheme {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Unset => "Unset",
+            Self::NonSecure => "NonSecure",
+            Self::Secure => "Secure",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCreateParamsSessionContextCookieSourceScheme {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCreateParamsSessionContextIndexedDb {
     pub id: f64,
@@ -878,10 +1050,10 @@ pub struct SessionCreateParamsSessionContextIndexedDb {
 impl SessionCreateParamsSessionContextIndexedDb {
     pub fn new(
         id: f64,
-        data: Vec<SessionCreateParamsSessionContextIndexedDbData>,
         name: String,
+        data: Vec<SessionCreateParamsSessionContextIndexedDbData>,
     ) -> Self {
-        SessionCreateParamsSessionContextIndexedDb { id, data, name }
+        SessionCreateParamsSessionContextIndexedDb { id, name, data }
     }
 }
 
@@ -1019,6 +1191,27 @@ pub enum SessionListParamsReleaseReason {
     Unknown,
 }
 
+impl SessionListParamsReleaseReason {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::UserRequested => "user_requested",
+            Self::Timeout => "timeout",
+            Self::InactivityTimeout => "inactivity_timeout",
+            Self::CreationTimeout => "creation_timeout",
+            Self::StartupFailed => "startup_failed",
+            Self::BrowserClosed => "browser_closed",
+            Self::BrowserCrashed => "browser_crashed",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionListParamsReleaseReason {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionListParamsSignal {
     #[serde(rename = "captcha_encountered")]
@@ -1035,6 +1228,25 @@ pub enum SessionListParamsSignal {
     Unknown,
 }
 
+impl SessionListParamsSignal {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::CaptchaEncountered => "captcha_encountered",
+            Self::ProxyConnectionFailed => "proxy_connection_failed",
+            Self::SessionTimeoutExceeded => "session_timeout_exceeded",
+            Self::BotDetectionTriggered => "bot_detection_triggered",
+            Self::ContextRestored => "context_restored",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionListParamsSignal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionListParamsStatus {
     #[serde(rename = "live")]
@@ -1045,6 +1257,23 @@ pub enum SessionListParamsStatus {
     Failed,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionListParamsStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Live => "live",
+            Self::Released => "released",
+            Self::Failed => "failed",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionListParamsStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1182,6 +1411,23 @@ pub enum SessionslistSessionBrowserMode {
     Other,
 }
 
+impl SessionslistSessionBrowserMode {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Stealth => "stealth",
+            Self::Standard => "standard",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionslistSessionBrowserMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionslistSessionDimensions {
     /// Height of the browser window
@@ -1234,6 +1480,22 @@ pub enum SessionslistSessionProxySource {
     Unknown,
 }
 
+impl SessionslistSessionProxySource {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Steel => "steel",
+            Self::External => "external",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionslistSessionProxySource {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionslistSessionSignal {
     #[serde(rename = "captcha_encountered")]
@@ -1250,6 +1512,25 @@ pub enum SessionslistSessionSignal {
     Unknown,
 }
 
+impl SessionslistSessionSignal {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::CaptchaEncountered => "captcha_encountered",
+            Self::ProxyConnectionFailed => "proxy_connection_failed",
+            Self::SessionTimeoutExceeded => "session_timeout_exceeded",
+            Self::BotDetectionTriggered => "bot_detection_triggered",
+            Self::ContextRestored => "context_restored",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionslistSessionSignal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionslistSessionStatus {
     #[serde(rename = "live")]
@@ -1260,6 +1541,23 @@ pub enum SessionslistSessionStatus {
     Failed,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionslistSessionStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Live => "live",
+            Self::Released => "released",
+            Self::Failed => "failed",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionslistSessionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1292,6 +1590,22 @@ pub enum SessionslistSessionDeviceConfigDevice {
     Unknown,
 }
 
+impl SessionslistSessionDeviceConfigDevice {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Desktop => "desktop",
+            Self::Mobile => "mobile",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionslistSessionDeviceConfigDevice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionslistSessionReleaseReason {
     #[serde(rename = "user_requested")]
@@ -1310,6 +1624,27 @@ pub enum SessionslistSessionReleaseReason {
     BrowserCrashed,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionslistSessionReleaseReason {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::UserRequested => "user_requested",
+            Self::Timeout => "timeout",
+            Self::InactivityTimeout => "inactivity_timeout",
+            Self::CreationTimeout => "creation_timeout",
+            Self::StartupFailed => "startup_failed",
+            Self::BrowserClosed => "browser_closed",
+            Self::BrowserCrashed => "browser_crashed",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionslistSessionReleaseReason {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1387,14 +1722,13 @@ pub enum SessionCommandsParamsCommands {
     ReloadCommand(SessionCommandsParamsCommandsReloadCommand),
     SnapshotCommand(SessionCommandsParamsCommandsSnapshotCommand),
     ClickCommand(SessionCommandsParamsCommandsClickCommand),
-    DblclickCommand(SessionCommandsParamsCommandsDblclickCommand),
     HoverCommand(SessionCommandsParamsCommandsHoverCommand),
     FocusCommand(SessionCommandsParamsCommandsFocusCommand),
     TypeCommand(SessionCommandsParamsCommandsTypeCommand),
     FillCommand(SessionCommandsParamsCommandsFillCommand),
     PressCommand(SessionCommandsParamsCommandsPressCommand),
-    KeydownCommand(SessionCommandsParamsCommandsKeydownCommand),
-    KeyupCommand(SessionCommandsParamsCommandsKeyupCommand),
+    KeyboardCommand(SessionCommandsParamsCommandsKeyboardCommand),
+    ReleaseCommand(SessionCommandsParamsCommandsReleaseCommand),
     MouseCommand(SessionCommandsParamsCommandsMouseCommand),
     SelectCommand(SessionCommandsParamsCommandsSelectCommand),
     CheckCommand(SessionCommandsParamsCommandsCheckCommand),
@@ -1410,6 +1744,7 @@ pub enum SessionCommandsParamsCommands {
     ScrollCommand(SessionCommandsParamsCommandsScrollCommand),
     FindCommand(SessionCommandsParamsCommandsFindCommand),
     TabCommand(SessionCommandsParamsCommandsTabCommand),
+    DialogCommand(SessionCommandsParamsCommandsDialogCommand),
     Array(Vec<crate::Command>),
 }
 
@@ -1439,6 +1774,20 @@ pub enum SessionCommandsParamsCommandsNavigateCommandCommand {
     Navigate,
 }
 
+impl SessionCommandsParamsCommandsNavigateCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Navigate => "navigate",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsNavigateCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsBackCommand {
     pub command: SessionCommandsParamsCommandsBackCommandCommand,
@@ -1452,6 +1801,20 @@ pub enum SessionCommandsParamsCommandsBackCommandCommand {
     #[default]
     #[serde(rename = "back")]
     Back,
+}
+
+impl SessionCommandsParamsCommandsBackCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Back => "back",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsBackCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1469,6 +1832,20 @@ pub enum SessionCommandsParamsCommandsForwardCommandCommand {
     Forward,
 }
 
+impl SessionCommandsParamsCommandsForwardCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Forward => "forward",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsForwardCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsReloadCommand {
     pub command: SessionCommandsParamsCommandsReloadCommandCommand,
@@ -1482,6 +1859,20 @@ pub enum SessionCommandsParamsCommandsReloadCommandCommand {
     #[default]
     #[serde(rename = "reload")]
     Reload,
+}
+
+impl SessionCommandsParamsCommandsReloadCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Reload => "reload",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsReloadCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -1508,11 +1899,31 @@ pub enum SessionCommandsParamsCommandsSnapshotCommandCommand {
     Snapshot,
 }
 
+impl SessionCommandsParamsCommandsSnapshotCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Snapshot => "snapshot",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsSnapshotCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsClickCommand {
     pub command: SessionCommandsParamsCommandsClickCommandCommand,
     /// A ref from a snapshot such as e12, a CSS selector, or a locator.
     pub target: crate::CommandTarget,
+    /// left by default.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub button: Option<SessionCommandsParamsCommandsClickCommandButton>,
+    /// 2 makes a double click and 3 a triple click. 1 by default.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clicks: Option<i64>,
     /// Fails the command when the element does not have this role or name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub expect: Option<crate::CommandExpectation>,
@@ -1529,6 +1940,8 @@ impl SessionCommandsParamsCommandsClickCommand {
         SessionCommandsParamsCommandsClickCommand {
             target,
             command: Default::default(),
+            button: None,
+            clicks: None,
             expect: None,
             frame: None,
             tab: None,
@@ -1543,39 +1956,47 @@ pub enum SessionCommandsParamsCommandsClickCommandCommand {
     Click,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsParamsCommandsDblclickCommand {
-    pub command: SessionCommandsParamsCommandsDblclickCommandCommand,
-    /// A ref from a snapshot such as e12, a CSS selector, or a locator.
-    pub target: crate::CommandTarget,
-    /// Fails the command when the element does not have this role or name.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expect: Option<crate::CommandExpectation>,
-    /// The iframe to look in. List nested iframes from the outside in.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub frame: Option<crate::CommandFrame>,
-    /// A tab id such as t2. A command on a ref does not need it.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tab: Option<String>,
-}
-
-impl SessionCommandsParamsCommandsDblclickCommand {
-    pub fn new(target: crate::CommandTarget) -> Self {
-        SessionCommandsParamsCommandsDblclickCommand {
-            target,
-            command: Default::default(),
-            expect: None,
-            frame: None,
-            tab: None,
+impl SessionCommandsParamsCommandsClickCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Click => "click",
         }
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsDblclickCommandCommand {
-    #[default]
-    #[serde(rename = "dblclick")]
-    Dblclick,
+impl std::fmt::Display for SessionCommandsParamsCommandsClickCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCommandsParamsCommandsClickCommandButton {
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "middle")]
+    Middle,
+    #[serde(other)]
+    Unknown,
+}
+
+impl SessionCommandsParamsCommandsClickCommandButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsClickCommandButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1613,6 +2034,20 @@ pub enum SessionCommandsParamsCommandsHoverCommandCommand {
     Hover,
 }
 
+impl SessionCommandsParamsCommandsHoverCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Hover => "hover",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsHoverCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsFocusCommand {
     pub command: SessionCommandsParamsCommandsFocusCommandCommand,
@@ -1646,6 +2081,20 @@ pub enum SessionCommandsParamsCommandsFocusCommandCommand {
     #[default]
     #[serde(rename = "focus")]
     Focus,
+}
+
+impl SessionCommandsParamsCommandsFocusCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Focus => "focus",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsFocusCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1693,6 +2142,20 @@ pub enum SessionCommandsParamsCommandsTypeCommandCommand {
     Type,
 }
 
+impl SessionCommandsParamsCommandsTypeCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Type => "type",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsTypeCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsFillCommand {
     pub command: SessionCommandsParamsCommandsFillCommandCommand,
@@ -1728,6 +2191,20 @@ pub enum SessionCommandsParamsCommandsFillCommandCommand {
     #[default]
     #[serde(rename = "fill")]
     Fill,
+}
+
+impl SessionCommandsParamsCommandsFillCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Fill => "fill",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsFillCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1768,18 +2245,35 @@ pub enum SessionCommandsParamsCommandsPressCommandCommand {
     Press,
 }
 
+impl SessionCommandsParamsCommandsPressCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Press => "press",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsPressCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsParamsCommandsKeydownCommand {
-    pub command: SessionCommandsParamsCommandsKeydownCommandCommand,
+pub struct SessionCommandsParamsCommandsKeyboardCommand {
+    pub action: SessionCommandsParamsCommandsKeyboardCommandAction,
+    pub command: SessionCommandsParamsCommandsKeyboardCommandCommand,
+    /// One key, not a combination such as Control+a.
     pub key: String,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
 }
 
-impl SessionCommandsParamsCommandsKeydownCommand {
-    pub fn new(key: String) -> Self {
-        SessionCommandsParamsCommandsKeydownCommand {
+impl SessionCommandsParamsCommandsKeyboardCommand {
+    pub fn new(action: SessionCommandsParamsCommandsKeyboardCommandAction, key: String) -> Self {
+        SessionCommandsParamsCommandsKeyboardCommand {
+            action,
             key,
             command: Default::default(),
             tab: None,
@@ -1787,37 +2281,80 @@ impl SessionCommandsParamsCommandsKeydownCommand {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsKeydownCommandCommand {
-    #[default]
-    #[serde(rename = "keydown")]
-    Keydown,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCommandsParamsCommandsKeyboardCommandAction {
+    #[serde(rename = "down")]
+    Down,
+    #[serde(rename = "up")]
+    Up,
+    #[serde(other)]
+    Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsParamsCommandsKeyupCommand {
-    pub command: SessionCommandsParamsCommandsKeyupCommandCommand,
-    pub key: String,
+impl SessionCommandsParamsCommandsKeyboardCommandAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Down => "down",
+            Self::Up => "up",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsKeyboardCommandAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCommandsParamsCommandsKeyboardCommandCommand {
+    #[default]
+    #[serde(rename = "keyboard")]
+    Keyboard,
+}
+
+impl SessionCommandsParamsCommandsKeyboardCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Keyboard => "keyboard",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsKeyboardCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct SessionCommandsParamsCommandsReleaseCommand {
+    pub command: SessionCommandsParamsCommandsReleaseCommandCommand,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
 }
 
-impl SessionCommandsParamsCommandsKeyupCommand {
-    pub fn new(key: String) -> Self {
-        SessionCommandsParamsCommandsKeyupCommand {
-            key,
-            command: Default::default(),
-            tab: None,
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCommandsParamsCommandsReleaseCommandCommand {
+    #[default]
+    #[serde(rename = "release")]
+    Release,
+}
+
+impl SessionCommandsParamsCommandsReleaseCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Release => "release",
         }
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsParamsCommandsKeyupCommandCommand {
-    #[default]
-    #[serde(rename = "keyup")]
-    Keyup,
+impl std::fmt::Display for SessionCommandsParamsCommandsReleaseCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1873,11 +2410,44 @@ pub enum SessionCommandsParamsCommandsMouseCommandAction {
     Unknown,
 }
 
+impl SessionCommandsParamsCommandsMouseCommandAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Move => "move",
+            Self::Down => "down",
+            Self::Up => "up",
+            Self::Click => "click",
+            Self::Wheel => "wheel",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsMouseCommandAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsMouseCommandCommand {
     #[default]
     #[serde(rename = "mouse")]
     Mouse,
+}
+
+impl SessionCommandsParamsCommandsMouseCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Mouse => "mouse",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsMouseCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -1890,6 +2460,23 @@ pub enum SessionCommandsParamsCommandsMouseCommandButton {
     Middle,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCommandsParamsCommandsMouseCommandButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsMouseCommandButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1930,6 +2517,20 @@ pub enum SessionCommandsParamsCommandsSelectCommandCommand {
     #[default]
     #[serde(rename = "select")]
     Select,
+}
+
+impl SessionCommandsParamsCommandsSelectCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Select => "select",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsSelectCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -1974,6 +2575,20 @@ pub enum SessionCommandsParamsCommandsCheckCommandCommand {
     Check,
 }
 
+impl SessionCommandsParamsCommandsCheckCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Check => "check",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsCheckCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsUploadCommand {
     pub command: SessionCommandsParamsCommandsUploadCommandCommand,
@@ -1993,12 +2608,12 @@ pub struct SessionCommandsParamsCommandsUploadCommand {
 
 impl SessionCommandsParamsCommandsUploadCommand {
     pub fn new(
-        files: SessionCommandsParamsCommandsUploadCommandFiles,
         target: crate::CommandTarget,
+        files: SessionCommandsParamsCommandsUploadCommandFiles,
     ) -> Self {
         SessionCommandsParamsCommandsUploadCommand {
-            files,
             target,
+            files,
             command: Default::default(),
             expect: None,
             frame: None,
@@ -2012,6 +2627,20 @@ pub enum SessionCommandsParamsCommandsUploadCommandCommand {
     #[default]
     #[serde(rename = "upload")]
     Upload,
+}
+
+impl SessionCommandsParamsCommandsUploadCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Upload => "upload",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsUploadCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2055,6 +2684,20 @@ pub enum SessionCommandsParamsCommandsDragCommandCommand {
     Drag,
 }
 
+impl SessionCommandsParamsCommandsDragCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Drag => "drag",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsDragCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsUncheckCommand {
     pub command: SessionCommandsParamsCommandsUncheckCommandCommand,
@@ -2088,6 +2731,20 @@ pub enum SessionCommandsParamsCommandsUncheckCommandCommand {
     #[default]
     #[serde(rename = "uncheck")]
     Uncheck,
+}
+
+impl SessionCommandsParamsCommandsUncheckCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uncheck => "uncheck",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsUncheckCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2132,6 +2789,20 @@ pub enum SessionCommandsParamsCommandsGetCommandCommand {
     Get,
 }
 
+impl SessionCommandsParamsCommandsGetCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Get => "get",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsGetCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsGetCommandWhat {
     #[serde(rename = "text")]
@@ -2158,6 +2829,30 @@ pub enum SessionCommandsParamsCommandsGetCommandWhat {
     Unknown,
 }
 
+impl SessionCommandsParamsCommandsGetCommandWhat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Text => "text",
+            Self::Html => "html",
+            Self::Markdown => "markdown",
+            Self::Value => "value",
+            Self::Attr => "attr",
+            Self::Title => "title",
+            Self::Url => "url",
+            Self::Count => "count",
+            Self::Box => "box",
+            Self::Locator => "locator",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsGetCommandWhat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsIsCommand {
     pub command: SessionCommandsParamsCommandsIsCommandCommand,
@@ -2177,12 +2872,12 @@ pub struct SessionCommandsParamsCommandsIsCommand {
 
 impl SessionCommandsParamsCommandsIsCommand {
     pub fn new(
-        target: crate::CommandTarget,
         what: SessionCommandsParamsCommandsIsCommandWhat,
+        target: crate::CommandTarget,
     ) -> Self {
         SessionCommandsParamsCommandsIsCommand {
-            target,
             what,
+            target,
             command: Default::default(),
             expect: None,
             frame: None,
@@ -2198,6 +2893,20 @@ pub enum SessionCommandsParamsCommandsIsCommandCommand {
     Is,
 }
 
+impl SessionCommandsParamsCommandsIsCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Is => "is",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsIsCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsIsCommandWhat {
     #[serde(rename = "visible")]
@@ -2208,6 +2917,23 @@ pub enum SessionCommandsParamsCommandsIsCommandWhat {
     Checked,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCommandsParamsCommandsIsCommandWhat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Visible => "visible",
+            Self::Enabled => "enabled",
+            Self::Checked => "checked",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsIsCommandWhat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -2251,6 +2977,20 @@ pub enum SessionCommandsParamsCommandsWaitCommandCommand {
     Wait,
 }
 
+impl SessionCommandsParamsCommandsWaitCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Wait => "wait",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsWaitCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsWaitCommandLoad {
     #[serde(rename = "load")]
@@ -2261,6 +3001,23 @@ pub enum SessionCommandsParamsCommandsWaitCommandLoad {
     Networkidle,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCommandsParamsCommandsWaitCommandLoad {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Load => "load",
+            Self::Domcontentloaded => "domcontentloaded",
+            Self::Networkidle => "networkidle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsWaitCommandLoad {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -2275,6 +3032,24 @@ pub enum SessionCommandsParamsCommandsWaitCommandState {
     Detached,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCommandsParamsCommandsWaitCommandState {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Visible => "visible",
+            Self::Hidden => "hidden",
+            Self::Attached => "attached",
+            Self::Detached => "detached",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsWaitCommandState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -2307,6 +3082,20 @@ pub enum SessionCommandsParamsCommandsScreenshotCommandCommand {
     Screenshot,
 }
 
+impl SessionCommandsParamsCommandsScreenshotCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Screenshot => "screenshot",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsScreenshotCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsScreenshotCommandFormat {
     #[serde(rename = "png")]
@@ -2319,9 +3108,27 @@ pub enum SessionCommandsParamsCommandsScreenshotCommandFormat {
     Unknown,
 }
 
+impl SessionCommandsParamsCommandsScreenshotCommandFormat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Png => "png",
+            Self::Jpeg => "jpeg",
+            Self::Webp => "webp",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsScreenshotCommandFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsEvalCommand {
     pub command: SessionCommandsParamsCommandsEvalCommandCommand,
+    /// An expression, or an async function body that gives its value with return. A promise result is awaited.
     pub script: String,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2349,6 +3156,20 @@ pub enum SessionCommandsParamsCommandsEvalCommandCommand {
     Eval,
 }
 
+impl SessionCommandsParamsCommandsEvalCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Eval => "eval",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsEvalCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsParamsCommandsPdfCommand {
     pub command: SessionCommandsParamsCommandsPdfCommandCommand,
@@ -2370,6 +3191,20 @@ pub enum SessionCommandsParamsCommandsPdfCommandCommand {
     #[default]
     #[serde(rename = "pdf")]
     Pdf,
+}
+
+impl SessionCommandsParamsCommandsPdfCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Pdf => "pdf",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsPdfCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -2401,6 +3236,20 @@ pub enum SessionCommandsParamsCommandsScrollCommandCommand {
     Scroll,
 }
 
+impl SessionCommandsParamsCommandsScrollCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Scroll => "scroll",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsScrollCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsScrollCommandDirection {
     #[serde(rename = "up")]
@@ -2413,6 +3262,24 @@ pub enum SessionCommandsParamsCommandsScrollCommandDirection {
     Right,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCommandsParamsCommandsScrollCommandDirection {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Up => "up",
+            Self::Down => "down",
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsScrollCommandDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2444,6 +3311,20 @@ pub enum SessionCommandsParamsCommandsFindCommandCommand {
     #[default]
     #[serde(rename = "find")]
     Find,
+}
+
+impl SessionCommandsParamsCommandsFindCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Find => "find",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsFindCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2480,11 +3361,111 @@ pub enum SessionCommandsParamsCommandsTabCommandAction {
     Unknown,
 }
 
+impl SessionCommandsParamsCommandsTabCommandAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::List => "list",
+            Self::New => "new",
+            Self::Close => "close",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsTabCommandAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsCommandsTabCommandCommand {
     #[default]
     #[serde(rename = "tab")]
     Tab,
+}
+
+impl SessionCommandsParamsCommandsTabCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Tab => "tab",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsTabCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCommandsParamsCommandsDialogCommand {
+    pub action: SessionCommandsParamsCommandsDialogCommandAction,
+    pub command: SessionCommandsParamsCommandsDialogCommandCommand,
+    /// The id of the dialog, such as d-3, from dialog in a response.
+    pub dialog: String,
+    /// The answer to a prompt. Works only with accept. A prompt gets its default text without it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+}
+
+impl SessionCommandsParamsCommandsDialogCommand {
+    pub fn new(dialog: String, action: SessionCommandsParamsCommandsDialogCommandAction) -> Self {
+        SessionCommandsParamsCommandsDialogCommand {
+            dialog,
+            action,
+            command: Default::default(),
+            text: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCommandsParamsCommandsDialogCommandAction {
+    #[serde(rename = "accept")]
+    Accept,
+    #[serde(rename = "dismiss")]
+    Dismiss,
+    #[serde(other)]
+    Unknown,
+}
+
+impl SessionCommandsParamsCommandsDialogCommandAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Accept => "accept",
+            Self::Dismiss => "dismiss",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsDialogCommandAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCommandsParamsCommandsDialogCommandCommand {
+    #[default]
+    #[serde(rename = "dialog")]
+    Dialog,
+}
+
+impl SessionCommandsParamsCommandsDialogCommandCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Dialog => "dialog",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsCommandsDialogCommandCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2522,8 +3503,6 @@ impl SessionCommandsParamsObserve {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCommandsParamsObserveMode {
-    #[serde(rename = "none")]
-    None,
     #[serde(rename = "snapshot")]
     Snapshot,
     #[serde(rename = "diff")]
@@ -2532,15 +3511,37 @@ pub enum SessionCommandsParamsObserveMode {
     Unknown,
 }
 
+impl SessionCommandsParamsObserveMode {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Snapshot => "snapshot",
+            Self::Diff => "diff",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsParamsObserveMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandsResponse {
-    /// The id of this execution, the same as execution.id. Use it to get or cancel the execution.
+    /// The id of this execution. Use it to get or cancel the execution.
     pub id: String,
-    pub execution: SessionCommandsResponseExecution,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: SessionCommandsResponseEffect,
     /// The tab the execution used.
     #[serde(default)]
     pub page: Option<SessionCommandsResponsePage>,
+    /// Commands started.
+    pub ran: i64,
+    /// This is the stored result of an earlier request. Nothing ran again.
+    pub replayed: bool,
     pub results: Vec<crate::CommandResult>,
+    pub state: SessionCommandsResponseState,
     #[serde(
         rename = "bodyExpired",
         default,
@@ -2557,28 +3558,21 @@ pub struct SessionCommandsResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub epoch_changed: Option<bool>,
+    /// Tabs with keys or a mouse button still held down. Left out when nothing is held.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub held: Option<Vec<crate::CommandHeld>>,
     /// Send it as after in the next request.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub next: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub observe: Option<SessionCommandsResponseObserve>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponseExecution {
-    pub id: String,
-    /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: SessionCommandsResponseExecutionEffect,
-    /// Commands started.
-    pub ran: i64,
-    pub replayed: bool,
-    pub state: SessionCommandsResponseExecutionState,
+    /// Why the execution stopped early, such as a cancel, a timeout, or a browser restart. A failed command has its error in results instead.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error: Option<crate::CommandErrorInfo>,
+    pub stopped: Option<crate::CommandErrorInfo>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsResponseExecutionEffect {
+pub enum SessionCommandsResponseEffect {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "applied")]
@@ -2589,10 +3583,32 @@ pub enum SessionCommandsResponseExecutionEffect {
     Other,
 }
 
+impl SessionCommandsResponseEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsResponseEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCommandsResponsePage {
+    pub tab: String,
+    pub title: String,
+    pub url: String,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandsResponseExecutionState {
-    #[serde(rename = "queued")]
-    Queued,
+pub enum SessionCommandsResponseState {
     #[serde(rename = "running")]
     Running,
     #[serde(rename = "completed")]
@@ -2603,17 +3619,27 @@ pub enum SessionCommandsResponseExecutionState {
     Cancelled,
     #[serde(rename = "timeout")]
     Timeout,
-    #[serde(rename = "expired")]
-    Expired,
     #[serde(other)]
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandsResponsePage {
-    pub tab: String,
-    pub title: String,
-    pub url: String,
+impl SessionCommandsResponseState {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Running => "running",
+            Self::Completed => "completed",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+            Self::Timeout => "timeout",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandsResponseState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -2723,6 +3749,25 @@ pub enum SessionComputerParamsClickMouseButton {
     Unknown,
 }
 
+impl SessionComputerParamsClickMouseButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Back => "back",
+            Self::Forward => "forward",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionComputerParamsClickMouseButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionComputerParamsClickMouseClickType {
     #[serde(rename = "down")]
@@ -2733,6 +3778,23 @@ pub enum SessionComputerParamsClickMouseClickType {
     Click,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionComputerParamsClickMouseClickType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Down => "down",
+            Self::Up => "up",
+            Self::Click => "click",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionComputerParamsClickMouseClickType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2883,12 +3945,42 @@ pub enum SessionCostResponseCurrency {
     Unknown,
 }
 
+impl SessionCostResponseCurrency {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Usd => "usd",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCostResponseCurrency {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionCostResponseUnit {
     #[serde(rename = "dollar")]
     Dollar,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCostResponseUnit {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Dollar => "dollar",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCostResponseUnit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -2914,6 +4006,22 @@ pub enum SessionCostResponseUsageBrowserUnit {
     Second,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionCostResponseUsageBrowserUnit {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Minute => "minute",
+            Self::Second => "second",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCostResponseUsageBrowserUnit {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -3068,6 +4176,24 @@ pub enum SessionSignalCatalogResponseSignalSeverity {
     Unknown,
 }
 
+impl SessionSignalCatalogResponseSignalSeverity {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Info => "info",
+            Self::Warning => "warning",
+            Self::Danger => "danger",
+            Self::Success => "success",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionSignalCatalogResponseSignalSeverity {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionSignalCatalogResponseSignalSource {
     #[serde(rename = "manual")]
@@ -3076,6 +4202,22 @@ pub enum SessionSignalCatalogResponseSignalSource {
     Derived,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionSignalCatalogResponseSignalSource {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Manual => "manual",
+            Self::Derived => "derived",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionSignalCatalogResponseSignalSource {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -3092,6 +4234,25 @@ pub enum SessionSignalCatalogResponseSignalValue {
     ContextRestored,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionSignalCatalogResponseSignalValue {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::CaptchaEncountered => "captcha_encountered",
+            Self::ProxyConnectionFailed => "proxy_connection_failed",
+            Self::SessionTimeoutExceeded => "session_timeout_exceeded",
+            Self::BotDetectionTriggered => "bot_detection_triggered",
+            Self::ContextRestored => "context_restored",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionSignalCatalogResponseSignalValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -3137,8 +4298,6 @@ pub enum Command {
     Snapshot(CommandSnapshot),
     #[serde(rename = "click")]
     Click(CommandClick),
-    #[serde(rename = "dblclick")]
-    Dblclick(CommandDblclick),
     #[serde(rename = "hover")]
     Hover(CommandHover),
     #[serde(rename = "focus")]
@@ -3149,10 +4308,10 @@ pub enum Command {
     Fill(CommandFill),
     #[serde(rename = "press")]
     Press(CommandPress),
-    #[serde(rename = "keydown")]
-    Keydown(CommandKeydown),
-    #[serde(rename = "keyup")]
-    Keyup(CommandKeyup),
+    #[serde(rename = "keyboard")]
+    Keyboard(CommandKeyboard),
+    #[serde(rename = "release")]
+    Release(CommandRelease),
     #[serde(rename = "mouse")]
     Mouse(CommandMouse),
     #[serde(rename = "select")]
@@ -3183,6 +4342,8 @@ pub enum Command {
     Find(CommandFind),
     #[serde(rename = "tab")]
     Tab(CommandTab),
+    #[serde(rename = "dialog")]
+    Dialog(CommandDialogInline),
 }
 
 /// Opens a URL in the tab. Only http, https, and about:blank. A URL without a scheme gets https://.
@@ -3246,6 +4407,12 @@ pub struct CommandSnapshot {
 pub struct CommandClick {
     /// A ref from a snapshot such as e12, a CSS selector, or a locator.
     pub target: crate::CommandTarget,
+    /// left by default.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub button: Option<CommandClickButton>,
+    /// 2 makes a double click and 3 a triple click. 1 by default.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clicks: Option<i64>,
     /// Fails the command when the element does not have this role or name.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub expect: Option<crate::CommandExpectation>,
@@ -3261,6 +4428,8 @@ impl CommandClick {
     pub fn new(target: crate::CommandTarget) -> Self {
         CommandClick {
             target,
+            button: None,
+            clicks: None,
             expect: None,
             frame: None,
             tab: None,
@@ -3268,30 +4437,32 @@ impl CommandClick {
     }
 }
 
-/// Double-clicks the element with the mouse.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandDblclick {
-    /// A ref from a snapshot such as e12, a CSS selector, or a locator.
-    pub target: crate::CommandTarget,
-    /// Fails the command when the element does not have this role or name.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub expect: Option<crate::CommandExpectation>,
-    /// The iframe to look in. List nested iframes from the outside in.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub frame: Option<crate::CommandFrame>,
-    /// A tab id such as t2. A command on a ref does not need it.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub tab: Option<String>,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandClickButton {
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "middle")]
+    Middle,
+    #[serde(other)]
+    Unknown,
 }
 
-impl CommandDblclick {
-    pub fn new(target: crate::CommandTarget) -> Self {
-        CommandDblclick {
-            target,
-            expect: None,
-            frame: None,
-            tab: None,
+impl CommandClickButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Unknown => "Unknown",
         }
+    }
+}
+
+impl std::fmt::Display for CommandClickButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
     }
 }
 
@@ -3415,7 +4586,7 @@ impl CommandFill {
     }
 }
 
-/// Presses a key, such as Enter, or a combination such as Control+a.
+/// Presses a key, such as Enter, or a combination such as Control+a. On a tab with an open dialog, Enter without a target accepts the dialog and Escape dismisses it.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandPress {
     pub key: String,
@@ -3445,34 +4616,59 @@ impl CommandPress {
     }
 }
 
-/// Holds a key down until its keyup.
+/// Holds a key down, or lets go of a key held down.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandKeydown {
+pub struct CommandKeyboard {
+    pub action: CommandKeyboardAction,
+    /// One key, not a combination such as Control+a.
     pub key: String,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
 }
 
-impl CommandKeydown {
-    pub fn new(key: String) -> Self {
-        CommandKeydown { key, tab: None }
+impl CommandKeyboard {
+    pub fn new(action: CommandKeyboardAction, key: String) -> Self {
+        CommandKeyboard {
+            action,
+            key,
+            tab: None,
+        }
     }
 }
 
-/// Lets go of a key held with keydown.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandKeyup {
-    pub key: String,
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandKeyboardAction {
+    #[serde(rename = "down")]
+    Down,
+    #[serde(rename = "up")]
+    Up,
+    #[serde(other)]
+    Unknown,
+}
+
+impl CommandKeyboardAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Down => "down",
+            Self::Up => "up",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandKeyboardAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Lets go of every key and mouse button held on the tab.
+#[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
+pub struct CommandRelease {
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
-}
-
-impl CommandKeyup {
-    pub fn new(key: String) -> Self {
-        CommandKeyup { key, tab: None }
-    }
 }
 
 /// Mouse input at a point in CSS pixels of the visible part of the page, for pages without useful elements such as a canvas.
@@ -3527,6 +4723,25 @@ pub enum CommandMouseAction {
     Unknown,
 }
 
+impl CommandMouseAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Move => "move",
+            Self::Down => "down",
+            Self::Up => "up",
+            Self::Click => "click",
+            Self::Wheel => "wheel",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandMouseAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandMouseButton {
     #[serde(rename = "left")]
@@ -3537,6 +4752,23 @@ pub enum CommandMouseButton {
     Middle,
     #[serde(other)]
     Unknown,
+}
+
+impl CommandMouseButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandMouseButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Selects options. Matches by value, then by label.
@@ -3620,10 +4852,10 @@ pub struct CommandUpload {
 }
 
 impl CommandUpload {
-    pub fn new(files: CommandUploadFiles, target: crate::CommandTarget) -> Self {
+    pub fn new(target: crate::CommandTarget, files: CommandUploadFiles) -> Self {
         CommandUpload {
-            files,
             target,
+            files,
             expect: None,
             frame: None,
             tab: None,
@@ -3751,6 +4983,30 @@ pub enum CommandGetWhat {
     Unknown,
 }
 
+impl CommandGetWhat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Text => "text",
+            Self::Html => "html",
+            Self::Markdown => "markdown",
+            Self::Value => "value",
+            Self::Attr => "attr",
+            Self::Title => "title",
+            Self::Url => "url",
+            Self::Count => "count",
+            Self::Box => "box",
+            Self::Locator => "locator",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandGetWhat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Checks the state of an element.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandIs {
@@ -3769,10 +5025,10 @@ pub struct CommandIs {
 }
 
 impl CommandIs {
-    pub fn new(target: crate::CommandTarget, what: CommandIsWhat) -> Self {
+    pub fn new(what: CommandIsWhat, target: crate::CommandTarget) -> Self {
         CommandIs {
-            target,
             what,
+            target,
             expect: None,
             frame: None,
             tab: None,
@@ -3790,6 +5046,23 @@ pub enum CommandIsWhat {
     Checked,
     #[serde(other)]
     Unknown,
+}
+
+impl CommandIsWhat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Visible => "visible",
+            Self::Enabled => "enabled",
+            Self::Checked => "checked",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandIsWhat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Waits for one of an element, text, a URL, a load state, a download, or a fixed time.
@@ -3838,6 +5111,23 @@ pub enum CommandWaitLoad {
     Unknown,
 }
 
+impl CommandWaitLoad {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Load => "load",
+            Self::Domcontentloaded => "domcontentloaded",
+            Self::Networkidle => "networkidle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandWaitLoad {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandWaitState {
     #[serde(rename = "visible")]
@@ -3850,6 +5140,24 @@ pub enum CommandWaitState {
     Detached,
     #[serde(other)]
     Unknown,
+}
+
+impl CommandWaitState {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Visible => "visible",
+            Self::Hidden => "hidden",
+            Self::Attached => "attached",
+            Self::Detached => "detached",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandWaitState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Captures the page or an element as base64 data.
@@ -3887,9 +5195,27 @@ pub enum CommandScreenshotFormat {
     Unknown,
 }
 
+impl CommandScreenshotFormat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Png => "png",
+            Self::Jpeg => "jpeg",
+            Self::Webp => "webp",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandScreenshotFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Runs JavaScript in the page and returns the result as JSON.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandEval {
+    /// An expression, or an async function body that gives its value with return. A promise result is awaited.
     pub script: String,
     /// A tab id such as t2. A command on a ref does not need it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -3961,6 +5287,24 @@ pub enum CommandScrollDirection {
     Unknown,
 }
 
+impl CommandScrollDirection {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Up => "up",
+            Self::Down => "down",
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandScrollDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Finds elements and returns refs for up to 50 matches. With nth, it returns that one match.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandFind {
@@ -4017,6 +5361,70 @@ pub enum CommandTabAction {
     Unknown,
 }
 
+impl CommandTabAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::List => "list",
+            Self::New => "new",
+            Self::Close => "close",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandTabAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Answers an open dialog. It never sends a key to the page, and fails if the dialog is not open.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandDialogInline {
+    pub action: CommandDialogInlineAction,
+    /// The id of the dialog, such as d-3, from dialog in a response.
+    pub dialog: String,
+    /// The answer to a prompt. Works only with accept. A prompt gets its default text without it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+}
+
+impl CommandDialogInline {
+    pub fn new(dialog: String, action: CommandDialogInlineAction) -> Self {
+        CommandDialogInline {
+            dialog,
+            action,
+            text: None,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandDialogInlineAction {
+    #[serde(rename = "accept")]
+    Accept,
+    #[serde(rename = "dismiss")]
+    Dismiss,
+    #[serde(other)]
+    Unknown,
+}
+
+impl CommandDialogInlineAction {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Accept => "accept",
+            Self::Dismiss => "dismiss",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandDialogInlineAction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// A JavaScript dialog: alert, confirm, prompt, or beforeunload.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandDialog {
@@ -4046,6 +5454,24 @@ pub enum CommandDialogType {
     Unknown,
 }
 
+impl CommandDialogType {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Alert => "alert",
+            Self::Confirm => "confirm",
+            Self::Prompt => "prompt",
+            Self::Beforeunload => "beforeunload",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandDialogType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandErrorInfo {
     /// Error code, such as stale_ref or not_actionable.
@@ -4072,6 +5498,46 @@ pub enum CommandFrame {
     String(String),
     CommandLocator(crate::CommandLocator),
     Array(Vec<crate::CommandTarget>),
+}
+
+/// Input still held down on a tab. It applies to later input until released.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandHeld {
+    /// Keys still held down, for example with keyboard down.
+    pub keys: Vec<String>,
+    pub tab: String,
+    /// A mouse button held down with mouse down.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub button: Option<CommandHeldButton>,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandHeldButton {
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "middle")]
+    Middle,
+    #[serde(other)]
+    Unknown,
+}
+
+impl CommandHeldButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandHeldButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Finds an element. Set exactly one of role, text, label, placeholder, alt, title, testid, css.
@@ -4114,15 +5580,14 @@ pub enum CommandResult {
     Reload(CommandResultReload),
     Snapshot(CommandResultSnapshot),
     Click(CommandResultClick),
-    Dblclick(CommandResultDblclick),
     Hover(CommandResultHover),
     Focus(CommandResultFocus),
     Type(CommandResultType),
     Fill(CommandResultFill),
     Press(CommandResultPress),
-    Keydown(CommandResultKeydown),
-    Keyup(CommandResultKeyup),
+    Keyboard(CommandResultKeyboard),
     Mouse(CommandResultMouse),
+    Release(CommandResultRelease),
     Select(CommandResultSelect),
     Check(CommandResultCheck),
     Uncheck(CommandResultUncheck),
@@ -4137,6 +5602,7 @@ pub enum CommandResult {
     Scroll(CommandResultScroll),
     Find(CommandResultFind),
     Tab(CommandResultTab),
+    Dialog(CommandResultDialog),
     Unknown(serde_json::Value),
 }
 
@@ -4149,6 +5615,9 @@ pub struct CommandResultNavigate {
     pub ok: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
@@ -4158,6 +5627,20 @@ pub enum CommandResultNavigateCommand {
     #[default]
     #[serde(rename = "navigate")]
     Navigate,
+}
+
+impl CommandResultNavigateCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Navigate => "navigate",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultNavigateCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4172,6 +5655,23 @@ pub enum CommandResultNavigateEffect {
     Other,
 }
 
+impl CommandResultNavigateEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultNavigateEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a back command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultBack {
@@ -4181,6 +5681,9 @@ pub struct CommandResultBack {
     pub ok: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
     /// False when there was no history entry.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub navigated: Option<bool>,
@@ -4195,6 +5698,20 @@ pub enum CommandResultBackCommand {
     Back,
 }
 
+impl CommandResultBackCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Back => "back",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultBackCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultBackEffect {
     #[serde(rename = "none")]
@@ -4207,6 +5724,23 @@ pub enum CommandResultBackEffect {
     Other,
 }
 
+impl CommandResultBackEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultBackEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a forward command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultForward {
@@ -4216,6 +5750,9 @@ pub struct CommandResultForward {
     pub ok: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
     /// False when there was no history entry.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub navigated: Option<bool>,
@@ -4230,6 +5767,20 @@ pub enum CommandResultForwardCommand {
     Forward,
 }
 
+impl CommandResultForwardCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Forward => "forward",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultForwardCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultForwardEffect {
     #[serde(rename = "none")]
@@ -4242,6 +5793,23 @@ pub enum CommandResultForwardEffect {
     Other,
 }
 
+impl CommandResultForwardEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultForwardEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a reload command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultReload {
@@ -4251,6 +5819,9 @@ pub struct CommandResultReload {
     pub ok: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
 }
@@ -4260,6 +5831,20 @@ pub enum CommandResultReloadCommand {
     #[default]
     #[serde(rename = "reload")]
     Reload,
+}
+
+impl CommandResultReloadCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Reload => "reload",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultReloadCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4272,6 +5857,23 @@ pub enum CommandResultReloadEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultReloadEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultReloadEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a snapshot command.
@@ -4300,6 +5902,20 @@ pub enum CommandResultSnapshotCommand {
     Snapshot,
 }
 
+impl CommandResultSnapshotCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Snapshot => "snapshot",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultSnapshotCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultSnapshotEffect {
     #[serde(rename = "none")]
@@ -4310,6 +5926,23 @@ pub enum CommandResultSnapshotEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultSnapshotEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultSnapshotEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a click command.
@@ -4324,9 +5957,12 @@ pub struct CommandResultClick {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4334,6 +5970,20 @@ pub enum CommandResultClickCommand {
     #[default]
     #[serde(rename = "click")]
     Click,
+}
+
+impl CommandResultClickCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Click => "click",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultClickCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4348,40 +5998,21 @@ pub enum CommandResultClickEffect {
     Other,
 }
 
-/// Result of a dblclick command.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandResultDblclick {
-    pub command: CommandResultDblclickCommand,
-    /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: CommandResultDblclickEffect,
-    pub ok: bool,
-    /// A dialog that the command opened. It blocks the tab until it closes.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dialog: Option<crate::CommandDialog>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub loading: Option<bool>,
+impl CommandResultClickEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandResultDblclickCommand {
-    #[default]
-    #[serde(rename = "dblclick")]
-    Dblclick,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandResultDblclickEffect {
-    #[serde(rename = "none")]
-    None,
-    #[serde(rename = "applied")]
-    Applied,
-    #[serde(rename = "unknown")]
-    Unknown,
-    #[serde(other)]
-    Other,
+impl std::fmt::Display for CommandResultClickEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a hover command.
@@ -4405,6 +6036,20 @@ pub enum CommandResultHoverCommand {
     Hover,
 }
 
+impl CommandResultHoverCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Hover => "hover",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultHoverCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultHoverEffect {
     #[serde(rename = "none")]
@@ -4415,6 +6060,23 @@ pub enum CommandResultHoverEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultHoverEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultHoverEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a focus command.
@@ -4435,6 +6097,20 @@ pub enum CommandResultFocusCommand {
     Focus,
 }
 
+impl CommandResultFocusCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Focus => "focus",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultFocusCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultFocusEffect {
     #[serde(rename = "none")]
@@ -4445,6 +6121,23 @@ pub enum CommandResultFocusEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultFocusEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultFocusEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a type command.
@@ -4459,9 +6152,12 @@ pub struct CommandResultType {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4469,6 +6165,20 @@ pub enum CommandResultTypeCommand {
     #[default]
     #[serde(rename = "type")]
     Type,
+}
+
+impl CommandResultTypeCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Type => "type",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultTypeCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4483,6 +6193,23 @@ pub enum CommandResultTypeEffect {
     Other,
 }
 
+impl CommandResultTypeEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultTypeEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a fill command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultFill {
@@ -4495,9 +6222,12 @@ pub struct CommandResultFill {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4505,6 +6235,20 @@ pub enum CommandResultFillCommand {
     #[default]
     #[serde(rename = "fill")]
     Fill,
+}
+
+impl CommandResultFillCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Fill => "fill",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultFillCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4519,6 +6263,23 @@ pub enum CommandResultFillEffect {
     Other,
 }
 
+impl CommandResultFillEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultFillEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a press command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultPress {
@@ -4526,14 +6287,20 @@ pub struct CommandResultPress {
     /// What happened to the page: nothing, a change, or a possible change.
     pub effect: CommandResultPressEffect,
     pub ok: bool,
+    /// The id of the dialog that the key answered. Absent when the key went to the page.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub answered: Option<String>,
     /// A dialog that the command opened. It blocks the tab until it closes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4541,6 +6308,20 @@ pub enum CommandResultPressCommand {
     #[default]
     #[serde(rename = "press")]
     Press,
+}
+
+impl CommandResultPressCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Press => "press",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultPressCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4555,32 +6336,66 @@ pub enum CommandResultPressEffect {
     Other,
 }
 
-/// Result of a keydown command.
+impl CommandResultPressEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultPressEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Result of a keyboard command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandResultKeydown {
-    pub command: CommandResultKeydownCommand,
+pub struct CommandResultKeyboard {
+    pub command: CommandResultKeyboardCommand,
     /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: CommandResultKeydownEffect,
+    pub effect: CommandResultKeyboardEffect,
     pub ok: bool,
     /// A dialog that the command opened. It blocks the tab until it closes.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandResultKeydownCommand {
+pub enum CommandResultKeyboardCommand {
     #[default]
-    #[serde(rename = "keydown")]
-    Keydown,
+    #[serde(rename = "keyboard")]
+    Keyboard,
+}
+
+impl CommandResultKeyboardCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Keyboard => "keyboard",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultKeyboardCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandResultKeydownEffect {
+pub enum CommandResultKeyboardEffect {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "applied")]
@@ -4591,40 +6406,21 @@ pub enum CommandResultKeydownEffect {
     Other,
 }
 
-/// Result of a keyup command.
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct CommandResultKeyup {
-    pub command: CommandResultKeyupCommand,
-    /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: CommandResultKeyupEffect,
-    pub ok: bool,
-    /// A dialog that the command opened. It blocks the tab until it closes.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub dialog: Option<crate::CommandDialog>,
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub loading: Option<bool>,
+impl CommandResultKeyboardEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandResultKeyupCommand {
-    #[default]
-    #[serde(rename = "keyup")]
-    Keyup,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum CommandResultKeyupEffect {
-    #[serde(rename = "none")]
-    None,
-    #[serde(rename = "applied")]
-    Applied,
-    #[serde(rename = "unknown")]
-    Unknown,
-    #[serde(other)]
-    Other,
+impl std::fmt::Display for CommandResultKeyboardEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a mouse command.
@@ -4639,9 +6435,12 @@ pub struct CommandResultMouse {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4649,6 +6448,20 @@ pub enum CommandResultMouseCommand {
     #[default]
     #[serde(rename = "mouse")]
     Mouse,
+}
+
+impl CommandResultMouseCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Mouse => "mouse",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultMouseCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4663,6 +6476,128 @@ pub enum CommandResultMouseEffect {
     Other,
 }
 
+impl CommandResultMouseEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultMouseEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+/// Result of a release command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultRelease {
+    pub command: CommandResultReleaseCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultReleaseEffect,
+    pub ok: bool,
+    /// The mouse button that was let go.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub button: Option<CommandResultReleaseButton>,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The keys that were let go.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub keys: Option<Vec<String>>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultReleaseCommand {
+    #[default]
+    #[serde(rename = "release")]
+    Release,
+}
+
+impl CommandResultReleaseCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Release => "release",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultReleaseCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultReleaseEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+impl CommandResultReleaseEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultReleaseEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultReleaseButton {
+    #[serde(rename = "left")]
+    Left,
+    #[serde(rename = "right")]
+    Right,
+    #[serde(rename = "middle")]
+    Middle,
+    #[serde(other)]
+    Unknown,
+}
+
+impl CommandResultReleaseButton {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Left => "left",
+            Self::Right => "right",
+            Self::Middle => "middle",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultReleaseButton {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a select command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultSelect {
@@ -4675,9 +6610,12 @@ pub struct CommandResultSelect {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
     /// The values of the selected options.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selected: Option<Vec<String>>,
@@ -4690,6 +6628,20 @@ pub enum CommandResultSelectCommand {
     Select,
 }
 
+impl CommandResultSelectCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Select => "select",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultSelectCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultSelectEffect {
     #[serde(rename = "none")]
@@ -4700,6 +6652,23 @@ pub enum CommandResultSelectEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultSelectEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultSelectEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a check command.
@@ -4716,9 +6685,12 @@ pub struct CommandResultCheck {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4726,6 +6698,20 @@ pub enum CommandResultCheckCommand {
     #[default]
     #[serde(rename = "check")]
     Check,
+}
+
+impl CommandResultCheckCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Check => "check",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultCheckCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4738,6 +6724,23 @@ pub enum CommandResultCheckEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultCheckEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultCheckEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a uncheck command.
@@ -4754,9 +6757,12 @@ pub struct CommandResultUncheck {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4764,6 +6770,20 @@ pub enum CommandResultUncheckCommand {
     #[default]
     #[serde(rename = "uncheck")]
     Uncheck,
+}
+
+impl CommandResultUncheckCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Uncheck => "uncheck",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultUncheckCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4776,6 +6796,23 @@ pub enum CommandResultUncheckEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultUncheckEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultUncheckEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a upload command.
@@ -4792,9 +6829,12 @@ pub struct CommandResultUpload {
     pub error: Option<crate::CommandErrorInfo>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub files: Option<Vec<String>>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4802,6 +6842,20 @@ pub enum CommandResultUploadCommand {
     #[default]
     #[serde(rename = "upload")]
     Upload,
+}
+
+impl CommandResultUploadCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Upload => "upload",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultUploadCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4816,6 +6870,23 @@ pub enum CommandResultUploadEffect {
     Other,
 }
 
+impl CommandResultUploadEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultUploadEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a drag command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultDrag {
@@ -4828,9 +6899,12 @@ pub struct CommandResultDrag {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4838,6 +6912,20 @@ pub enum CommandResultDragCommand {
     #[default]
     #[serde(rename = "drag")]
     Drag,
+}
+
+impl CommandResultDragCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Drag => "drag",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultDragCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4850,6 +6938,23 @@ pub enum CommandResultDragEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultDragEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultDragEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a get command.
@@ -4867,6 +6972,9 @@ pub struct CommandResultGet {
     /// A string for text, html, markdown, value, attr, title, and url. A number for count. { x, y, width, height } or null for box. A list of locators for locator.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
+    /// What was read. It tells the type of value.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub what: Option<CommandResultGetWhat>,
 }
 
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4874,6 +6982,20 @@ pub enum CommandResultGetCommand {
     #[default]
     #[serde(rename = "get")]
     Get,
+}
+
+impl CommandResultGetCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Get => "get",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultGetCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4886,6 +7008,73 @@ pub enum CommandResultGetEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultGetEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultGetEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultGetWhat {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "html")]
+    Html,
+    #[serde(rename = "markdown")]
+    Markdown,
+    #[serde(rename = "value")]
+    Value,
+    #[serde(rename = "attr")]
+    Attr,
+    #[serde(rename = "title")]
+    Title,
+    #[serde(rename = "url")]
+    Url,
+    #[serde(rename = "count")]
+    Count,
+    #[serde(rename = "box")]
+    Box,
+    #[serde(rename = "locator")]
+    Locator,
+    #[serde(other)]
+    Unknown,
+}
+
+impl CommandResultGetWhat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Text => "text",
+            Self::Html => "html",
+            Self::Markdown => "markdown",
+            Self::Value => "value",
+            Self::Attr => "attr",
+            Self::Title => "title",
+            Self::Url => "url",
+            Self::Count => "count",
+            Self::Box => "box",
+            Self::Locator => "locator",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultGetWhat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a is command.
@@ -4908,6 +7097,20 @@ pub enum CommandResultIsCommand {
     Is,
 }
 
+impl CommandResultIsCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Is => "is",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultIsCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultIsEffect {
     #[serde(rename = "none")]
@@ -4918,6 +7121,23 @@ pub enum CommandResultIsEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultIsEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultIsEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a wait command.
@@ -4945,6 +7165,20 @@ pub enum CommandResultWaitCommand {
     Wait,
 }
 
+impl CommandResultWaitCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Wait => "wait",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultWaitCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultWaitEffect {
     #[serde(rename = "none")]
@@ -4955,6 +7189,23 @@ pub enum CommandResultWaitEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultWaitEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultWaitEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -4973,6 +7224,26 @@ pub enum CommandResultWaitWaited {
     Download,
     #[serde(other)]
     Unknown,
+}
+
+impl CommandResultWaitWaited {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Ms => "ms",
+            Self::Target => "target",
+            Self::Text => "text",
+            Self::Url => "url",
+            Self::Load => "load",
+            Self::Download => "download",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultWaitWaited {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a screenshot command.
@@ -4997,6 +7268,20 @@ pub enum CommandResultScreenshotCommand {
     Screenshot,
 }
 
+impl CommandResultScreenshotCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Screenshot => "screenshot",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultScreenshotCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultScreenshotEffect {
     #[serde(rename = "none")]
@@ -5007,6 +7292,23 @@ pub enum CommandResultScreenshotEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultScreenshotEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultScreenshotEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -5021,6 +7323,23 @@ pub enum CommandResultScreenshotFormat {
     Unknown,
 }
 
+impl CommandResultScreenshotFormat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Png => "png",
+            Self::Jpeg => "jpeg",
+            Self::Webp => "webp",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultScreenshotFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 /// Result of a eval command.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultEval {
@@ -5033,9 +7352,12 @@ pub struct CommandResultEval {
     pub dialog: Option<crate::CommandDialog>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
-    /// The command started a navigation that was still loading when it returned.
+    /// The page was still loading when the command returned.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
     /// The result of the script as JSON.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub value: Option<serde_json::Value>,
@@ -5048,6 +7370,20 @@ pub enum CommandResultEvalCommand {
     Eval,
 }
 
+impl CommandResultEvalCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Eval => "eval",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultEvalCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultEvalEffect {
     #[serde(rename = "none")]
@@ -5058,6 +7394,23 @@ pub enum CommandResultEvalEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultEvalEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultEvalEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a pdf command.
@@ -5082,6 +7435,20 @@ pub enum CommandResultPdfCommand {
     Pdf,
 }
 
+impl CommandResultPdfCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Pdf => "pdf",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultPdfCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultPdfEffect {
     #[serde(rename = "none")]
@@ -5094,12 +7461,44 @@ pub enum CommandResultPdfEffect {
     Other,
 }
 
+impl CommandResultPdfEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultPdfEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultPdfFormat {
     #[serde(rename = "pdf")]
     Pdf,
     #[serde(other)]
     Unknown,
+}
+
+impl CommandResultPdfFormat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Pdf => "pdf",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultPdfFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a scroll command.
@@ -5126,6 +7525,20 @@ pub enum CommandResultScrollCommand {
     Scroll,
 }
 
+impl CommandResultScrollCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Scroll => "scroll",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultScrollCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultScrollEffect {
     #[serde(rename = "none")]
@@ -5136,6 +7549,23 @@ pub enum CommandResultScrollEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultScrollEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultScrollEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Result of a find command.
@@ -5160,6 +7590,20 @@ pub enum CommandResultFindCommand {
     Find,
 }
 
+impl CommandResultFindCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Find => "find",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultFindCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum CommandResultFindEffect {
     #[serde(rename = "none")]
@@ -5170,6 +7614,23 @@ pub enum CommandResultFindEffect {
     Unknown,
     #[serde(other)]
     Other,
+}
+
+impl CommandResultFindEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultFindEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5188,6 +7649,9 @@ pub struct CommandResultTab {
     pub ok: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub error: Option<crate::CommandErrorInfo>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub tab: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -5199,6 +7663,20 @@ pub enum CommandResultTabCommand {
     #[default]
     #[serde(rename = "tab")]
     Tab,
+}
+
+impl CommandResultTabCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Tab => "tab",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultTabCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
@@ -5213,11 +7691,98 @@ pub enum CommandResultTabEffect {
     Other,
 }
 
+impl CommandResultTabEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultTabEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CommandResultTabTab {
     pub tab: String,
     pub title: String,
     pub url: String,
+}
+
+/// Result of a dialog command.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct CommandResultDialog {
+    pub command: CommandResultDialogCommand,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: CommandResultDialogEffect,
+    pub ok: bool,
+    /// A dialog that the command opened. It blocks the tab until it closes.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dialog: Option<crate::CommandDialog>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<crate::CommandErrorInfo>,
+    /// The page was still loading when the command returned.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub loading: Option<bool>,
+    /// The ids of tabs that opened while the command ran.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub opened: Option<Vec<String>>,
+}
+
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultDialogCommand {
+    #[default]
+    #[serde(rename = "dialog")]
+    Dialog,
+}
+
+impl CommandResultDialogCommand {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Dialog => "dialog",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultDialogCommand {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum CommandResultDialogEffect {
+    #[serde(rename = "none")]
+    None,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "unknown")]
+    Unknown,
+    #[serde(other)]
+    Other,
+}
+
+impl CommandResultDialogEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for CommandResultDialogEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// A ref from a snapshot such as e12, a CSS selector, or a locator.
@@ -5364,6 +7929,23 @@ pub enum SessionBrowserMode {
     Other,
 }
 
+impl SessionBrowserMode {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Stealth => "stealth",
+            Self::Standard => "standard",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionBrowserMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionDimensions {
     /// Height of the browser window
@@ -5416,6 +7998,22 @@ pub enum SessionProxySource {
     Unknown,
 }
 
+impl SessionProxySource {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Steel => "steel",
+            Self::External => "external",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionProxySource {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionSignal {
     #[serde(rename = "captcha_encountered")]
@@ -5432,6 +8030,25 @@ pub enum SessionSignal {
     Unknown,
 }
 
+impl SessionSignal {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::CaptchaEncountered => "captcha_encountered",
+            Self::ProxyConnectionFailed => "proxy_connection_failed",
+            Self::SessionTimeoutExceeded => "session_timeout_exceeded",
+            Self::BotDetectionTriggered => "bot_detection_triggered",
+            Self::ContextRestored => "context_restored",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionSignal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionStatus {
     #[serde(rename = "live")]
@@ -5442,6 +8059,23 @@ pub enum SessionStatus {
     Failed,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionStatus {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Live => "live",
+            Self::Released => "released",
+            Self::Failed => "failed",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -5474,6 +8108,22 @@ pub enum SessionDeviceConfigDevice {
     Unknown,
 }
 
+impl SessionDeviceConfigDevice {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Desktop => "desktop",
+            Self::Mobile => "mobile",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionDeviceConfigDevice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionReleaseReason {
     #[serde(rename = "user_requested")]
@@ -5492,6 +8142,27 @@ pub enum SessionReleaseReason {
     BrowserCrashed,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionReleaseReason {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::UserRequested => "user_requested",
+            Self::Timeout => "timeout",
+            Self::InactivityTimeout => "inactivity_timeout",
+            Self::CreationTimeout => "creation_timeout",
+            Self::StartupFailed => "startup_failed",
+            Self::BrowserClosed => "browser_closed",
+            Self::BrowserCrashed => "browser_crashed",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionReleaseReason {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -5630,6 +8301,23 @@ pub enum SessionContextCookiePriority {
     Unknown,
 }
 
+impl SessionContextCookiePriority {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Low => "Low",
+            Self::Medium => "Medium",
+            Self::High => "High",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionContextCookiePriority {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionContextCookieSameSite {
     #[serde(rename = "Strict")]
@@ -5642,6 +8330,23 @@ pub enum SessionContextCookieSameSite {
     Unknown,
 }
 
+impl SessionContextCookieSameSite {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Strict => "Strict",
+            Self::Lax => "Lax",
+            Self::None => "None",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionContextCookieSameSite {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum SessionContextCookieSourceScheme {
     #[serde(rename = "Unset")]
@@ -5652,6 +8357,23 @@ pub enum SessionContextCookieSourceScheme {
     Secure,
     #[serde(other)]
     Unknown,
+}
+
+impl SessionContextCookieSourceScheme {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Unset => "Unset",
+            Self::NonSecure => "NonSecure",
+            Self::Secure => "Secure",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionContextCookieSourceScheme {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -5693,6 +8415,76 @@ pub struct SessionContextIndexedDbDataRecordBlobFile {
     pub last_modified: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub path: Option<String>,
+}
+
+/// The credentials a session is bound to
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCredentials {
+    /// Bindings, including KV references with their allowed origins and soft-deleted targets.
+    pub bindings: Vec<SessionCredentialsBinding>,
+    /// Live credentials bound to the session, oldest binding first. No values.
+    pub credentials: Vec<SessionCredentialsCredential>,
+    /// Whether the session was created with a `credentials` configuration. Only then can credentials be attached; otherwise attach and replace answer 409 `credentials_not_enabled`.
+    #[serde(rename = "credentialsEnabled")]
+    pub credentials_enabled: bool,
+    /// `explicit`: the session fills only the credentials listed here. `implicit`: it fills credentials stored for its namespace and the page origin.
+    pub lookup: SessionCredentialsLookup,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum SessionCredentialsBinding {
+    String(String),
+    UnionMember1(SessionCredentialsBindingUnionMember1),
+    Unknown(serde_json::Value),
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCredentialsBindingUnionMember1 {
+    #[serde(rename = "allowedOrigins")]
+    pub allowed_origins: Vec<String>,
+    pub reference: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCredentialsCredential {
+    /// The credential's id (a Secret of kind `credential`)
+    pub id: String,
+    /// Other origins the credential may be filled on
+    #[serde(rename = "additionalOrigins")]
+    pub additional_origins: Vec<String>,
+    /// The credential's name
+    pub name: String,
+    /// The credential's namespace
+    pub namespace: String,
+    /// The website origin the credential is for
+    pub origin: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub enum SessionCredentialsLookup {
+    #[serde(rename = "implicit")]
+    Implicit,
+    #[serde(rename = "explicit")]
+    Explicit,
+    #[serde(other)]
+    Unknown,
+}
+
+impl SessionCredentialsLookup {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Implicit => "implicit",
+            Self::Explicit => "explicit",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCredentialsLookup {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 /// Response containing a list of browser sessions with pagination details.

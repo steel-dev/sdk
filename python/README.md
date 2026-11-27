@@ -3,13 +3,13 @@
 <!-- prettier-ignore -->
 [![PyPI version](https://img.shields.io/pypi/v/steel-sdk.svg?label=pypi%20(stable))](https://pypi.org/project/steel-sdk/)
 
-The Steel Python library provides convenient access to the Steel REST API from any Python 3.9+
+The Steel Python library provides convenient access to the Steel REST API from any Python 3.10+
 application. The library includes type definitions for all request params and response fields,
 and offers both synchronous and asynchronous clients powered by [httpx](https://github.com/encode/httpx).
 
 ## Documentation
 
-The REST API documentation can be found on [docs.steel.dev](https://docs.steel.dev). The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/python/api.md).
+The REST API documentation can be found on [steel.dev/docs](https://steel.dev/docs). The full API of this library can be found in [api.md](https://github.com/steel-dev/sdk/tree/main/python/api.md).
 
 ## Installation
 
@@ -468,7 +468,7 @@ print(steel.__version__)
 
 ## Requirements
 
-Python 3.9 or higher.
+Python 3.10 or higher.
 
 ## Contributing
 

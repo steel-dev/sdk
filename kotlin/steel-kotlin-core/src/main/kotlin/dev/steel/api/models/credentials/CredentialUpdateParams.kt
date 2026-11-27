@@ -9,6 +9,7 @@ import dev.steel.api.core.JsonField
 import dev.steel.api.core.JsonMissing
 import dev.steel.api.core.JsonValue
 import dev.steel.api.core.Params
+import dev.steel.api.core.checkKnown
 import dev.steel.api.core.http.Headers
 import dev.steel.api.core.http.QueryParams
 import dev.steel.api.core.toImmutable
@@ -26,6 +27,14 @@ private constructor(
     private val additionalQueryParams: QueryParams,
 ) : Params {
 
+    /**
+     * Canonical http(s) origins, besides `origin`, this credential may be filled on, such as its
+     * login host or identity provider (e.g. `https://login.example.com`). Only the credential's
+     * origin and these ever match a page, exactly; at most 20. Replaces the current list; [] clears
+     * it.
+     */
+    fun additionalOrigins(): List<String>? = body.additionalOrigins()
+
     /** Label for the credential */
     fun label(): String? = body.label()
 
@@ -40,6 +49,8 @@ private constructor(
 
     /** Value for the credential */
     fun value(): Value? = body.value()
+
+    fun _additionalOrigins(): JsonField<List<String>> = body._additionalOrigins()
 
     fun _label(): JsonField<String> = body._label()
 
@@ -82,6 +93,36 @@ private constructor(
         }
 
         fun body(body: Body) = apply { this.body = body.toBuilder() }
+
+        /**
+         * Canonical http(s) origins, besides `origin`, this credential may be filled on, such as
+         * its login host or identity provider (e.g. `https://login.example.com`). Only the
+         * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+         * current list; [] clears it.
+         */
+        fun additionalOrigins(additionalOrigins: List<String>) = apply {
+            body.additionalOrigins(additionalOrigins)
+        }
+
+        /**
+         * Canonical http(s) origins, besides `origin`, this credential may be filled on, such as
+         * its login host or identity provider (e.g. `https://login.example.com`). Only the
+         * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+         * current list; [] clears it.
+         */
+        fun additionalOrigins(additionalOrigins: JsonField<List<String>>) = apply {
+            body.additionalOrigins(additionalOrigins)
+        }
+
+        /**
+         * Canonical http(s) origins, besides `origin`, this credential may be filled on, such as
+         * its login host or identity provider (e.g. `https://login.example.com`). Only the
+         * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+         * current list; [] clears it.
+         */
+        fun addAdditionalOrigin(additionalOrigin: String) = apply {
+            body.addAdditionalOrigin(additionalOrigin)
+        }
 
         /** Label for the credential */
         fun label(label: String) = apply { body.label(label) }
@@ -247,6 +288,7 @@ private constructor(
     class Body
     @JsonCreator(mode = JsonCreator.Mode.DISABLED)
     private constructor(
+        private val additionalOrigins: JsonField<List<String>>,
         private val label: JsonField<String>,
         private val namespace: JsonField<String>,
         private val origin: JsonField<String>,
@@ -257,6 +299,9 @@ private constructor(
 
         @JsonCreator
         private constructor(
+            @JsonProperty("additionalOrigins")
+            @ExcludeMissing
+            additionalOrigins: JsonField<List<String>> = JsonMissing.of(),
             @JsonProperty("label") @ExcludeMissing label: JsonField<String> = JsonMissing.of(),
             @JsonProperty("namespace")
             @ExcludeMissing
@@ -266,7 +311,15 @@ private constructor(
             @ExcludeMissing
             projectId: JsonField<String> = JsonMissing.of(),
             @JsonProperty("value") @ExcludeMissing value: JsonField<Value> = JsonMissing.of(),
-        ) : this(label, namespace, origin, projectId, value, mutableMapOf())
+        ) : this(additionalOrigins, label, namespace, origin, projectId, value, mutableMapOf())
+
+        /**
+         * Canonical http(s) origins, besides `origin`, this credential may be filled on, such as
+         * its login host or identity provider (e.g. `https://login.example.com`). Only the
+         * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+         * current list; [] clears it.
+         */
+        fun additionalOrigins(): List<String>? = additionalOrigins.getNullable("additionalOrigins")
 
         /** Label for the credential */
         fun label(): String? = label.getNullable("label")
@@ -282,6 +335,10 @@ private constructor(
 
         /** Value for the credential */
         fun value(): Value? = value.getNullable("value")
+
+        @JsonProperty("additionalOrigins")
+        @ExcludeMissing
+        fun _additionalOrigins(): JsonField<List<String>> = additionalOrigins
 
         @JsonProperty("label") @ExcludeMissing fun _label(): JsonField<String> = label
 
@@ -314,6 +371,7 @@ private constructor(
         /** A builder for [Body]. */
         class Builder internal constructor() {
 
+            private var additionalOrigins: JsonField<MutableList<String>>? = null
             private var label: JsonField<String> = JsonMissing.of()
             private var namespace: JsonField<String> = JsonMissing.of()
             private var origin: JsonField<String> = JsonMissing.of()
@@ -323,12 +381,45 @@ private constructor(
 
             @JvmSynthetic
             internal fun from(body_: Body) = apply {
+                this.additionalOrigins = body_.additionalOrigins.map { it.toMutableList() }
                 this.label = body_.label
                 this.namespace = body_.namespace
                 this.origin = body_.origin
                 this.projectId = body_.projectId
                 this.value = body_.value
                 this.additionalProperties = body_.additionalProperties.toMutableMap()
+            }
+
+            /**
+             * Canonical http(s) origins, besides `origin`, this credential may be filled on, such
+             * as its login host or identity provider (e.g. `https://login.example.com`). Only the
+             * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+             * current list; [] clears it.
+             */
+            fun additionalOrigins(additionalOrigins: List<String>) =
+                additionalOrigins(JsonField.of(additionalOrigins))
+
+            /**
+             * Canonical http(s) origins, besides `origin`, this credential may be filled on, such
+             * as its login host or identity provider (e.g. `https://login.example.com`). Only the
+             * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+             * current list; [] clears it.
+             */
+            fun additionalOrigins(additionalOrigins: JsonField<List<String>>) = apply {
+                this.additionalOrigins = additionalOrigins.map { it.toMutableList() }
+            }
+
+            /**
+             * Canonical http(s) origins, besides `origin`, this credential may be filled on, such
+             * as its login host or identity provider (e.g. `https://login.example.com`). Only the
+             * credential's origin and these ever match a page, exactly; at most 20. Replaces the
+             * current list; [] clears it.
+             */
+            fun addAdditionalOrigin(additionalOrigin: String) = apply {
+                this.additionalOrigins =
+                    (this.additionalOrigins ?: JsonField.of(mutableListOf())).also {
+                        checkKnown("additionalOrigins", it).add(additionalOrigin)
+                    }
             }
 
             /** Label for the credential */
@@ -382,6 +473,7 @@ private constructor(
 
             fun build(): Body =
                 Body(
+                    (additionalOrigins ?: JsonMissing.of()).map { it.toImmutable() },
                     label,
                     namespace,
                     origin,
@@ -406,6 +498,7 @@ private constructor(
                 return@apply
             }
 
+            additionalOrigins()
             label()
             namespace()
             origin()
@@ -416,7 +509,8 @@ private constructor(
 
         @JvmSynthetic
         internal fun validity(): Int =
-            (if (label.asKnown().isPresent) 1 else 0) +
+            (additionalOrigins.asKnown().getOrNull()?.let { it.size } ?: 0) +
+                (if (label.asKnown().isPresent) 1 else 0) +
                 (if (namespace.asKnown().isPresent) 1 else 0) +
                 (if (origin.asKnown().isPresent) 1 else 0) +
                 (if (projectId.asKnown().isPresent) 1 else 0) +
@@ -428,6 +522,7 @@ private constructor(
             }
 
             return other is Body &&
+                this.additionalOrigins == other.additionalOrigins &&
                 this.label == other.label &&
                 this.namespace == other.namespace &&
                 this.origin == other.origin &&
@@ -437,13 +532,21 @@ private constructor(
         }
 
         private val hashCode: Int by lazy {
-            Objects.hash(label, namespace, origin, projectId, value, additionalProperties)
+            Objects.hash(
+                additionalOrigins,
+                label,
+                namespace,
+                origin,
+                projectId,
+                value,
+                additionalProperties,
+            )
         }
 
         override fun hashCode(): Int = hashCode
 
         override fun toString() =
-            "Body{label=$label, namespace=$namespace, origin=$origin, projectId=$projectId, value=$value, additionalProperties=$additionalProperties}"
+            "Body{additionalOrigins=$additionalOrigins, label=$label, namespace=$namespace, origin=$origin, projectId=$projectId, value=$value, additionalProperties=$additionalProperties}"
     }
 
     class Value

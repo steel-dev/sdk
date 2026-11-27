@@ -4,7 +4,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let session = client
         .sessions()
-        .create(steel_rs::SessionCreateParams::default())
+        .create(steel_rs::SessionCreateParams {
+            inactivity_timeout: Some(3 * 60 * 1000),
+            ..Default::default()
+        })
         .await?;
     println!("Watch the session live at {}", session.session_viewer_url);
     println!(

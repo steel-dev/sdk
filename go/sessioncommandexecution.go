@@ -52,38 +52,54 @@ func (r *SessionCommandExecutionService) Get(ctx context.Context, sessionID stri
 }
 
 type SessionCommandExecutionGetResponse struct {
-	// The id of this execution, the same as execution.id. Use it to get or cancel
-	// the execution.
-	ID        string                                      `json:"id" api:"required"`
-	Execution SessionCommandExecutionGetResponseExecution `json:"execution" api:"required"`
+	// The id of this execution. Use it to get or cancel the execution.
+	ID string `json:"id" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect SessionCommandExecutionGetResponseEffect `json:"effect" api:"required"`
 	// The tab the execution used.
-	Page        SessionCommandExecutionGetResponsePage `json:"page" api:"required,nullable"`
-	Results     []CommandResult                        `json:"results" api:"required"`
-	BodyExpired bool                                   `json:"bodyExpired"`
+	Page SessionCommandExecutionGetResponsePage `json:"page" api:"required,nullable"`
+	// Commands started.
+	Ran int64 `json:"ran" api:"required"`
+	// This is the stored result of an earlier request. Nothing ran again.
+	Replayed    bool                                    `json:"replayed" api:"required"`
+	Results     []CommandResult                         `json:"results" api:"required"`
+	State       SessionCommandExecutionGetResponseState `json:"state" api:"required"`
+	BodyExpired bool                                    `json:"bodyExpired"`
 	// A dialog that is open on the tab and blocks it until it closes.
 	Dialog CommandDialog `json:"dialog"`
 	// Set when the execution ran with after. Whether another execution, a quick
 	// action, or a browser restart changed the session since then. Input from CDP
 	// clients or the live view does not count.
 	EpochChanged bool `json:"epochChanged"`
+	// Tabs with keys or a mouse button still held down. Left out when nothing is
+	// held.
+	Held []CommandHeld `json:"held"`
 	// Send it as after in the next request.
 	Next    string                                    `json:"next"`
 	Observe SessionCommandExecutionGetResponseObserve `json:"observe"`
-	JSON    sessionCommandExecutionGetResponseJSON    `json:"-"`
+	// Why the execution stopped early, such as a cancel, a timeout, or a browser
+	// restart. A failed command has its error in results instead.
+	Stopped CommandErrorInfo                       `json:"stopped"`
+	JSON    sessionCommandExecutionGetResponseJSON `json:"-"`
 }
 
 // sessionCommandExecutionGetResponseJSON contains the JSON metadata for the
 // struct [SessionCommandExecutionGetResponse]
 type sessionCommandExecutionGetResponseJSON struct {
 	ID           apijson.Field
-	Execution    apijson.Field
+	Effect       apijson.Field
 	Page         apijson.Field
+	Ran          apijson.Field
+	Replayed     apijson.Field
 	Results      apijson.Field
+	State        apijson.Field
 	BodyExpired  apijson.Field
 	Dialog       apijson.Field
 	EpochChanged apijson.Field
+	Held         apijson.Field
 	Next         apijson.Field
 	Observe      apijson.Field
+	Stopped      apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
 }
@@ -96,71 +112,18 @@ func (r sessionCommandExecutionGetResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-type SessionCommandExecutionGetResponseExecution struct {
-	ID string `json:"id" api:"required"`
-	// What happened to the page: nothing, a change, or a possible change.
-	Effect SessionCommandExecutionGetResponseExecutionEffect `json:"effect" api:"required"`
-	// Commands started.
-	Ran      int64                                            `json:"ran" api:"required"`
-	Replayed bool                                             `json:"replayed" api:"required"`
-	State    SessionCommandExecutionGetResponseExecutionState `json:"state" api:"required"`
-	Error    CommandErrorInfo                                 `json:"error"`
-	JSON     sessionCommandExecutionGetResponseExecutionJSON  `json:"-"`
-}
-
-// sessionCommandExecutionGetResponseExecutionJSON contains the JSON metadata
-// for the struct [SessionCommandExecutionGetResponseExecution]
-type sessionCommandExecutionGetResponseExecutionJSON struct {
-	ID          apijson.Field
-	Effect      apijson.Field
-	Ran         apijson.Field
-	Replayed    apijson.Field
-	State       apijson.Field
-	Error       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *SessionCommandExecutionGetResponseExecution) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r sessionCommandExecutionGetResponseExecutionJSON) RawJSON() string {
-	return r.raw
-}
-
 // What happened to the page: nothing, a change, or a possible change.
-type SessionCommandExecutionGetResponseExecutionEffect string
+type SessionCommandExecutionGetResponseEffect string
 
 const (
-	SessionCommandExecutionGetResponseExecutionEffectNone    SessionCommandExecutionGetResponseExecutionEffect = "none"
-	SessionCommandExecutionGetResponseExecutionEffectApplied SessionCommandExecutionGetResponseExecutionEffect = "applied"
-	SessionCommandExecutionGetResponseExecutionEffectUnknown SessionCommandExecutionGetResponseExecutionEffect = "unknown"
+	SessionCommandExecutionGetResponseEffectNone    SessionCommandExecutionGetResponseEffect = "none"
+	SessionCommandExecutionGetResponseEffectApplied SessionCommandExecutionGetResponseEffect = "applied"
+	SessionCommandExecutionGetResponseEffectUnknown SessionCommandExecutionGetResponseEffect = "unknown"
 )
 
-func (r SessionCommandExecutionGetResponseExecutionEffect) IsKnown() bool {
+func (r SessionCommandExecutionGetResponseEffect) IsKnown() bool {
 	switch r {
-	case SessionCommandExecutionGetResponseExecutionEffectNone, SessionCommandExecutionGetResponseExecutionEffectApplied, SessionCommandExecutionGetResponseExecutionEffectUnknown:
-		return true
-	}
-	return false
-}
-
-type SessionCommandExecutionGetResponseExecutionState string
-
-const (
-	SessionCommandExecutionGetResponseExecutionStateQueued    SessionCommandExecutionGetResponseExecutionState = "queued"
-	SessionCommandExecutionGetResponseExecutionStateRunning   SessionCommandExecutionGetResponseExecutionState = "running"
-	SessionCommandExecutionGetResponseExecutionStateCompleted SessionCommandExecutionGetResponseExecutionState = "completed"
-	SessionCommandExecutionGetResponseExecutionStateFailed    SessionCommandExecutionGetResponseExecutionState = "failed"
-	SessionCommandExecutionGetResponseExecutionStateCancelled SessionCommandExecutionGetResponseExecutionState = "cancelled"
-	SessionCommandExecutionGetResponseExecutionStateTimeout   SessionCommandExecutionGetResponseExecutionState = "timeout"
-	SessionCommandExecutionGetResponseExecutionStateExpired   SessionCommandExecutionGetResponseExecutionState = "expired"
-)
-
-func (r SessionCommandExecutionGetResponseExecutionState) IsKnown() bool {
-	switch r {
-	case SessionCommandExecutionGetResponseExecutionStateQueued, SessionCommandExecutionGetResponseExecutionStateRunning, SessionCommandExecutionGetResponseExecutionStateCompleted, SessionCommandExecutionGetResponseExecutionStateFailed, SessionCommandExecutionGetResponseExecutionStateCancelled, SessionCommandExecutionGetResponseExecutionStateTimeout, SessionCommandExecutionGetResponseExecutionStateExpired:
+	case SessionCommandExecutionGetResponseEffectNone, SessionCommandExecutionGetResponseEffectApplied, SessionCommandExecutionGetResponseEffectUnknown:
 		return true
 	}
 	return false
@@ -190,6 +153,24 @@ func (r *SessionCommandExecutionGetResponsePage) UnmarshalJSON(data []byte) (err
 
 func (r sessionCommandExecutionGetResponsePageJSON) RawJSON() string {
 	return r.raw
+}
+
+type SessionCommandExecutionGetResponseState string
+
+const (
+	SessionCommandExecutionGetResponseStateRunning   SessionCommandExecutionGetResponseState = "running"
+	SessionCommandExecutionGetResponseStateCompleted SessionCommandExecutionGetResponseState = "completed"
+	SessionCommandExecutionGetResponseStateFailed    SessionCommandExecutionGetResponseState = "failed"
+	SessionCommandExecutionGetResponseStateCancelled SessionCommandExecutionGetResponseState = "cancelled"
+	SessionCommandExecutionGetResponseStateTimeout   SessionCommandExecutionGetResponseState = "timeout"
+)
+
+func (r SessionCommandExecutionGetResponseState) IsKnown() bool {
+	switch r {
+	case SessionCommandExecutionGetResponseStateRunning, SessionCommandExecutionGetResponseStateCompleted, SessionCommandExecutionGetResponseStateFailed, SessionCommandExecutionGetResponseStateCancelled, SessionCommandExecutionGetResponseStateTimeout:
+		return true
+	}
+	return false
 }
 
 type SessionCommandExecutionGetResponseObserve struct {
@@ -245,38 +226,54 @@ func (r *SessionCommandExecutionService) Cancel(ctx context.Context, sessionID s
 }
 
 type SessionCommandExecutionCancelResponse struct {
-	// The id of this execution, the same as execution.id. Use it to get or cancel
-	// the execution.
-	ID        string                                         `json:"id" api:"required"`
-	Execution SessionCommandExecutionCancelResponseExecution `json:"execution" api:"required"`
+	// The id of this execution. Use it to get or cancel the execution.
+	ID string `json:"id" api:"required"`
+	// What happened to the page: nothing, a change, or a possible change.
+	Effect SessionCommandExecutionCancelResponseEffect `json:"effect" api:"required"`
 	// The tab the execution used.
-	Page        SessionCommandExecutionCancelResponsePage `json:"page" api:"required,nullable"`
-	Results     []CommandResult                           `json:"results" api:"required"`
-	BodyExpired bool                                      `json:"bodyExpired"`
+	Page SessionCommandExecutionCancelResponsePage `json:"page" api:"required,nullable"`
+	// Commands started.
+	Ran int64 `json:"ran" api:"required"`
+	// This is the stored result of an earlier request. Nothing ran again.
+	Replayed    bool                                       `json:"replayed" api:"required"`
+	Results     []CommandResult                            `json:"results" api:"required"`
+	State       SessionCommandExecutionCancelResponseState `json:"state" api:"required"`
+	BodyExpired bool                                       `json:"bodyExpired"`
 	// A dialog that is open on the tab and blocks it until it closes.
 	Dialog CommandDialog `json:"dialog"`
 	// Set when the execution ran with after. Whether another execution, a quick
 	// action, or a browser restart changed the session since then. Input from CDP
 	// clients or the live view does not count.
 	EpochChanged bool `json:"epochChanged"`
+	// Tabs with keys or a mouse button still held down. Left out when nothing is
+	// held.
+	Held []CommandHeld `json:"held"`
 	// Send it as after in the next request.
 	Next    string                                       `json:"next"`
 	Observe SessionCommandExecutionCancelResponseObserve `json:"observe"`
-	JSON    sessionCommandExecutionCancelResponseJSON    `json:"-"`
+	// Why the execution stopped early, such as a cancel, a timeout, or a browser
+	// restart. A failed command has its error in results instead.
+	Stopped CommandErrorInfo                          `json:"stopped"`
+	JSON    sessionCommandExecutionCancelResponseJSON `json:"-"`
 }
 
 // sessionCommandExecutionCancelResponseJSON contains the JSON metadata for the
 // struct [SessionCommandExecutionCancelResponse]
 type sessionCommandExecutionCancelResponseJSON struct {
 	ID           apijson.Field
-	Execution    apijson.Field
+	Effect       apijson.Field
 	Page         apijson.Field
+	Ran          apijson.Field
+	Replayed     apijson.Field
 	Results      apijson.Field
+	State        apijson.Field
 	BodyExpired  apijson.Field
 	Dialog       apijson.Field
 	EpochChanged apijson.Field
+	Held         apijson.Field
 	Next         apijson.Field
 	Observe      apijson.Field
+	Stopped      apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
 }
@@ -289,71 +286,18 @@ func (r sessionCommandExecutionCancelResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-type SessionCommandExecutionCancelResponseExecution struct {
-	ID string `json:"id" api:"required"`
-	// What happened to the page: nothing, a change, or a possible change.
-	Effect SessionCommandExecutionCancelResponseExecutionEffect `json:"effect" api:"required"`
-	// Commands started.
-	Ran      int64                                               `json:"ran" api:"required"`
-	Replayed bool                                                `json:"replayed" api:"required"`
-	State    SessionCommandExecutionCancelResponseExecutionState `json:"state" api:"required"`
-	Error    CommandErrorInfo                                    `json:"error"`
-	JSON     sessionCommandExecutionCancelResponseExecutionJSON  `json:"-"`
-}
-
-// sessionCommandExecutionCancelResponseExecutionJSON contains the JSON metadata
-// for the struct [SessionCommandExecutionCancelResponseExecution]
-type sessionCommandExecutionCancelResponseExecutionJSON struct {
-	ID          apijson.Field
-	Effect      apijson.Field
-	Ran         apijson.Field
-	Replayed    apijson.Field
-	State       apijson.Field
-	Error       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *SessionCommandExecutionCancelResponseExecution) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r sessionCommandExecutionCancelResponseExecutionJSON) RawJSON() string {
-	return r.raw
-}
-
 // What happened to the page: nothing, a change, or a possible change.
-type SessionCommandExecutionCancelResponseExecutionEffect string
+type SessionCommandExecutionCancelResponseEffect string
 
 const (
-	SessionCommandExecutionCancelResponseExecutionEffectNone    SessionCommandExecutionCancelResponseExecutionEffect = "none"
-	SessionCommandExecutionCancelResponseExecutionEffectApplied SessionCommandExecutionCancelResponseExecutionEffect = "applied"
-	SessionCommandExecutionCancelResponseExecutionEffectUnknown SessionCommandExecutionCancelResponseExecutionEffect = "unknown"
+	SessionCommandExecutionCancelResponseEffectNone    SessionCommandExecutionCancelResponseEffect = "none"
+	SessionCommandExecutionCancelResponseEffectApplied SessionCommandExecutionCancelResponseEffect = "applied"
+	SessionCommandExecutionCancelResponseEffectUnknown SessionCommandExecutionCancelResponseEffect = "unknown"
 )
 
-func (r SessionCommandExecutionCancelResponseExecutionEffect) IsKnown() bool {
+func (r SessionCommandExecutionCancelResponseEffect) IsKnown() bool {
 	switch r {
-	case SessionCommandExecutionCancelResponseExecutionEffectNone, SessionCommandExecutionCancelResponseExecutionEffectApplied, SessionCommandExecutionCancelResponseExecutionEffectUnknown:
-		return true
-	}
-	return false
-}
-
-type SessionCommandExecutionCancelResponseExecutionState string
-
-const (
-	SessionCommandExecutionCancelResponseExecutionStateQueued    SessionCommandExecutionCancelResponseExecutionState = "queued"
-	SessionCommandExecutionCancelResponseExecutionStateRunning   SessionCommandExecutionCancelResponseExecutionState = "running"
-	SessionCommandExecutionCancelResponseExecutionStateCompleted SessionCommandExecutionCancelResponseExecutionState = "completed"
-	SessionCommandExecutionCancelResponseExecutionStateFailed    SessionCommandExecutionCancelResponseExecutionState = "failed"
-	SessionCommandExecutionCancelResponseExecutionStateCancelled SessionCommandExecutionCancelResponseExecutionState = "cancelled"
-	SessionCommandExecutionCancelResponseExecutionStateTimeout   SessionCommandExecutionCancelResponseExecutionState = "timeout"
-	SessionCommandExecutionCancelResponseExecutionStateExpired   SessionCommandExecutionCancelResponseExecutionState = "expired"
-)
-
-func (r SessionCommandExecutionCancelResponseExecutionState) IsKnown() bool {
-	switch r {
-	case SessionCommandExecutionCancelResponseExecutionStateQueued, SessionCommandExecutionCancelResponseExecutionStateRunning, SessionCommandExecutionCancelResponseExecutionStateCompleted, SessionCommandExecutionCancelResponseExecutionStateFailed, SessionCommandExecutionCancelResponseExecutionStateCancelled, SessionCommandExecutionCancelResponseExecutionStateTimeout, SessionCommandExecutionCancelResponseExecutionStateExpired:
+	case SessionCommandExecutionCancelResponseEffectNone, SessionCommandExecutionCancelResponseEffectApplied, SessionCommandExecutionCancelResponseEffectUnknown:
 		return true
 	}
 	return false
@@ -383,6 +327,24 @@ func (r *SessionCommandExecutionCancelResponsePage) UnmarshalJSON(data []byte) (
 
 func (r sessionCommandExecutionCancelResponsePageJSON) RawJSON() string {
 	return r.raw
+}
+
+type SessionCommandExecutionCancelResponseState string
+
+const (
+	SessionCommandExecutionCancelResponseStateRunning   SessionCommandExecutionCancelResponseState = "running"
+	SessionCommandExecutionCancelResponseStateCompleted SessionCommandExecutionCancelResponseState = "completed"
+	SessionCommandExecutionCancelResponseStateFailed    SessionCommandExecutionCancelResponseState = "failed"
+	SessionCommandExecutionCancelResponseStateCancelled SessionCommandExecutionCancelResponseState = "cancelled"
+	SessionCommandExecutionCancelResponseStateTimeout   SessionCommandExecutionCancelResponseState = "timeout"
+)
+
+func (r SessionCommandExecutionCancelResponseState) IsKnown() bool {
+	switch r {
+	case SessionCommandExecutionCancelResponseStateRunning, SessionCommandExecutionCancelResponseStateCompleted, SessionCommandExecutionCancelResponseStateFailed, SessionCommandExecutionCancelResponseStateCancelled, SessionCommandExecutionCancelResponseStateTimeout:
+		return true
+	}
+	return false
 }
 
 type SessionCommandExecutionCancelResponseObserve struct {

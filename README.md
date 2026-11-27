@@ -8,7 +8,7 @@
 
 <p align="center">
   <b>Official TypeScript, Python, Go and Rust clients for the Steel browser API, with Java and Kotlin in beta.</b><br />
-  Start cloud browsers for your AI agents and automations, and drive them with Playwright, Puppeteer or Selenium.
+  Start cloud browsers for your AI agents and automations, and drive them with Playwright or Puppeteer.
 </p>
 
 <div align="center">
@@ -24,8 +24,8 @@
 
 <h4 align="center">
   <a href="https://app.steel.dev/sign-up">Get an API key</a> ·
-  <a href="https://docs.steel.dev">Documentation</a> ·
-  <a href="https://docs.steel.dev/api-reference">API reference</a> ·
+  <a href="https://steel.dev/docs">Documentation</a> ·
+  <a href="https://steel.dev/docs/reference/api">API reference</a> ·
   <a href="https://github.com/steel-dev/steel-cookbook">Cookbook</a> ·
   <a href="https://discord.gg/steel-dev">Discord</a>
 </h4>
@@ -53,7 +53,7 @@ import Steel from 'steel-sdk';
 const client = new Steel();
 
 async function main() {
-  const session = await client.sessions.create();
+  const session = await client.sessions.create({ inactivityTimeout: 3 * 60 * 1000 });
   console.log(`Watch the session live at ${session.sessionViewerUrl}`);
 
   try {
@@ -92,7 +92,7 @@ client = Steel()
 
 
 def main() -> None:
-    session = client.sessions.create()
+    session = client.sessions.create(inactivity_timeout=3 * 60 * 1000)
     print(f"Watch the session live at {session.session_viewer_url}")
 
     try:
@@ -136,7 +136,9 @@ func main() {
 	ctx := context.Background()
 	client := steel.NewClient()
 
-	session, err := client.Sessions.New(ctx, steel.SessionNewParams{})
+	session, err := client.Sessions.New(ctx, steel.SessionNewParams{
+		InactivityTimeout: steel.F(int64(3 * 60 * 1000)),
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -168,7 +170,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let session = client
         .sessions()
-        .create(steel_rs::SessionCreateParams::default())
+        .create(steel_rs::SessionCreateParams {
+            inactivity_timeout: Some(3 * 60 * 1000),
+            ..Default::default()
+        })
         .await?;
     println!("Watch the session live at {}", session.session_viewer_url);
     println!(
@@ -202,7 +207,8 @@ public final class Quickstart {
     public static void main(String[] args) {
         SteelClient client = SteelOkHttpClient.fromEnv();
 
-        Session session = client.sessions().create(SessionCreateParams.none());
+        SessionCreateParams params = SessionCreateParams.builder().inactivityTimeout(3 * 60 * 1000L).build();
+        Session session = client.sessions().create(params);
         try {
             System.out.println("Watch the session live at " + session.sessionViewerUrl());
             System.out.println(
@@ -225,11 +231,13 @@ The Kotlin SDK is not on Maven Central yet. [kotlin/README.md](kotlin/README.md#
 package dev.steel.example
 
 import dev.steel.api.client.okhttp.SteelOkHttpClient
+import dev.steel.api.models.sessions.SessionCreateParams
 
 fun main() {
     val client = SteelOkHttpClient.fromEnv()
 
-    val session = client.sessions().create()
+    val params = SessionCreateParams.builder().inactivityTimeout(3 * 60 * 1000L).build()
+    val session = client.sessions().create(params)
     try {
         println("Watch the session live at ${session.sessionViewerUrl()}")
         println(
@@ -245,7 +253,7 @@ The async client has the same methods as suspend functions, and its pages stream
 
 </details>
 
-A session runs until you release it or it times out, so release it when you are done, as the examples do in `finally`.
+A session runs until you release it or it times out, so release it when you are done, as the examples do in `finally`. The examples also set an inactivity timeout, so a session that gets no commands for 3 minutes is released even when the script exits without releasing it.
 
 ## Packages
 

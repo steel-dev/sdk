@@ -25,88 +25,103 @@ impl crate::Client {
         crate::Projects { client: self }
     }
 
+    pub fn secret_connections(&self) -> crate::SecretConnections<'_> {
+        crate::SecretConnections { client: self }
+    }
+
     pub fn sessions(&self) -> crate::Sessions<'_> {
         crate::Sessions { client: self }
     }
 
+    pub fn vaults(&self) -> crate::Vaults<'_> {
+        crate::Vaults { client: self }
+    }
+
     /// Generates a PDF from a specified webpage.
-    pub async fn pdf(&self, params: PdfParams) -> Result<PdfResponse, crate::Error> {
-        let mut request = crate::client::Request::new(reqwest::Method::POST, "/v1/pdf".to_owned());
-        let mut body = serde_json::Map::new();
-        body.insert("url".to_owned(), serde_json::to_value(&params.url)?);
-        if let Some(value) = &params.delay {
-            body.insert("delay".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.region {
-            body.insert("region".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.use_proxy {
-            body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.json(request).await
+    pub fn pdf(&self, params: PdfParams) -> crate::Call<'_, PdfResponse> {
+        let client = self;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/pdf".to_owned());
+            let mut body = serde_json::Map::new();
+            body.insert("url".to_owned(), serde_json::to_value(&params.url)?);
+            if let Some(value) = &params.delay {
+                body.insert("delay".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.region {
+                body.insert("region".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.use_proxy {
+                body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Extracts content from a specified URL.
-    pub async fn scrape(&self, params: ScrapeParams) -> Result<ScrapeResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/scrape".to_owned());
-        let mut body = serde_json::Map::new();
-        body.insert("url".to_owned(), serde_json::to_value(&params.url)?);
-        if let Some(value) = &params.delay {
-            body.insert("delay".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.format {
-            body.insert("format".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.pdf {
-            body.insert("pdf".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.region {
-            body.insert("region".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.screenshot {
-            body.insert("screenshot".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.use_proxy {
-            body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.json(request).await
+    pub fn scrape(&self, params: ScrapeParams) -> crate::Call<'_, ScrapeResponse> {
+        let client = self;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/scrape".to_owned());
+            let mut body = serde_json::Map::new();
+            body.insert("url".to_owned(), serde_json::to_value(&params.url)?);
+            if let Some(value) = &params.delay {
+                body.insert("delay".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.format {
+                body.insert("format".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.pdf {
+                body.insert("pdf".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.region {
+                body.insert("region".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.screenshot {
+                body.insert("screenshot".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.use_proxy {
+                body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 
     /// Captures a screenshot of a specified webpage.
-    pub async fn screenshot(
-        &self,
-        params: ScreenshotParams,
-    ) -> Result<ScreenshotResponse, crate::Error> {
-        let mut request =
-            crate::client::Request::new(reqwest::Method::POST, "/v1/screenshot".to_owned());
-        let mut body = serde_json::Map::new();
-        body.insert("url".to_owned(), serde_json::to_value(&params.url)?);
-        if let Some(value) = &params.delay {
-            body.insert("delay".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.full_page {
-            body.insert("fullPage".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.project_id {
-            body.insert("projectId".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.region {
-            body.insert("region".to_owned(), serde_json::to_value(value)?);
-        }
-        if let Some(value) = &params.use_proxy {
-            body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
-        }
-        request.body = crate::client::Body::Json(serde_json::Value::Object(body));
-        self.json(request).await
+    pub fn screenshot(&self, params: ScreenshotParams) -> crate::Call<'_, ScreenshotResponse> {
+        let client = self;
+        crate::Call::new(async move {
+            let mut request =
+                crate::client::Request::new(reqwest::Method::POST, "/v1/screenshot".to_owned());
+            let mut body = serde_json::Map::new();
+            body.insert("url".to_owned(), serde_json::to_value(&params.url)?);
+            if let Some(value) = &params.delay {
+                body.insert("delay".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.full_page {
+                body.insert("fullPage".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.project_id {
+                body.insert("projectId".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.region {
+                body.insert("region".to_owned(), serde_json::to_value(value)?);
+            }
+            if let Some(value) = &params.use_proxy {
+                body.insert("useProxy".to_owned(), serde_json::to_value(value)?);
+            }
+            request.body = crate::client::Body::Json(serde_json::Value::Object(body));
+            client.json(request).await
+        })
     }
 }
 
@@ -189,6 +204,24 @@ pub enum ScrapeParamsFormat {
     Markdown,
     #[serde(other)]
     Unknown,
+}
+
+impl ScrapeParamsFormat {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Html => "html",
+            Self::Readability => "readability",
+            Self::CleanedHtml => "cleaned_html",
+            Self::Markdown => "markdown",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for ScrapeParamsFormat {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

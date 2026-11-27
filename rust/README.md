@@ -1,12 +1,12 @@
 # Steel Rust API Library
 
-The Steel Rust library provides access to the [Steel REST API](https://docs.steel.dev) from Rust.
+The Steel Rust library provides access to the [Steel REST API](https://steel.dev/docs) from Rust.
 
 ## Installation
 
 ```toml
 [dependencies]
-steel-rs = "0.23.0"
+steel-rs = "0.24.0"
 ```
 
 ## Usage
@@ -23,7 +23,9 @@ async fn main() -> Result<(), steel_rs::Error> {
 }
 ```
 
-Params and request objects without required fields implement `Default`. The ones with required fields have a `new` constructor that takes only those fields. Set the fields you need and fill in the rest with struct update syntax, such as `..Default::default()` or `..Params::new(required)`.
+Params and request objects without required fields implement `Default`. The ones with required fields have a `new` constructor that takes only those fields, in the order the API lists them. Set the fields you need and fill in the rest with struct update syntax, such as `..Default::default()` or `..Params::new(required)`.
+
+Enums implement `Display`. It prints the value the API uses, the same as `as_str()`.
 
 ## Pagination
 
@@ -39,6 +41,22 @@ async fn main() -> Result<(), steel_rs::Error> {
     while let Some(item) = items.next().await {
         println!("{:?}", item?);
     }
+    Ok(())
+}
+```
+
+## Response headers
+
+Awaiting a call gives the data. `with_response()` gives a `Response` instead, with the status, the headers and the data.
+
+```rust,no_run
+#[tokio::main]
+async fn main() -> Result<(), steel_rs::Error> {
+    let client = steel_rs::Client::new();
+    let response = client.sessions().create(steel_rs::SessionCreateParams { timeout: Some(20000), use_proxy: Some(serde_json::json!(true)), ..Default::default() }).with_response().await?;
+    println!("{:?}", response.headers().get("x-my-header"));
+    let session = response.into_data();
+    println!("{}", session.id);
     Ok(())
 }
 ```

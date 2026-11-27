@@ -178,14 +178,6 @@ private constructor(
          * One command, or an array of up to 50. They run in order and stop at the first failure.
          * Commands that already ran are not undone.
          */
-        fun commands(dblclickCommand: Commands.DblclickCommand) = apply {
-            body.commands(dblclickCommand)
-        }
-
-        /**
-         * One command, or an array of up to 50. They run in order and stop at the first failure.
-         * Commands that already ran are not undone.
-         */
         fun commands(hoverCommand: Commands.HoverCommand) = apply { body.commands(hoverCommand) }
 
         /**
@@ -216,15 +208,17 @@ private constructor(
          * One command, or an array of up to 50. They run in order and stop at the first failure.
          * Commands that already ran are not undone.
          */
-        fun commands(keydownCommand: Commands.KeydownCommand) = apply {
-            body.commands(keydownCommand)
+        fun commands(keyboardCommand: Commands.KeyboardCommand) = apply {
+            body.commands(keyboardCommand)
         }
 
         /**
          * One command, or an array of up to 50. They run in order and stop at the first failure.
          * Commands that already ran are not undone.
          */
-        fun commands(keyupCommand: Commands.KeyupCommand) = apply { body.commands(keyupCommand) }
+        fun commands(releaseCommand: Commands.ReleaseCommand) = apply {
+            body.commands(releaseCommand)
+        }
 
         /**
          * One command, or an array of up to 50. They run in order and stop at the first failure.
@@ -319,6 +313,12 @@ private constructor(
          * Commands that already ran are not undone.
          */
         fun commands(tabCommand: Commands.TabCommand) = apply { body.commands(tabCommand) }
+
+        /**
+         * One command, or an array of up to 50. They run in order and stop at the first failure.
+         * Commands that already ran are not undone.
+         */
+        fun commands(dialogCommand: Commands.DialogCommand) = apply { body.commands(dialogCommand) }
 
         /**
          * One command, or an array of up to 50. They run in order and stop at the first failure.
@@ -620,13 +620,6 @@ private constructor(
              * One command, or an array of up to 50. They run in order and stop at the first
              * failure. Commands that already ran are not undone.
              */
-            fun commands(dblclickCommand: Commands.DblclickCommand) =
-                commands(Commands.ofDblclickCommand(dblclickCommand))
-
-            /**
-             * One command, or an array of up to 50. They run in order and stop at the first
-             * failure. Commands that already ran are not undone.
-             */
             fun commands(hoverCommand: Commands.HoverCommand) =
                 commands(Commands.ofHoverCommand(hoverCommand))
 
@@ -662,15 +655,15 @@ private constructor(
              * One command, or an array of up to 50. They run in order and stop at the first
              * failure. Commands that already ran are not undone.
              */
-            fun commands(keydownCommand: Commands.KeydownCommand) =
-                commands(Commands.ofKeydownCommand(keydownCommand))
+            fun commands(keyboardCommand: Commands.KeyboardCommand) =
+                commands(Commands.ofKeyboardCommand(keyboardCommand))
 
             /**
              * One command, or an array of up to 50. They run in order and stop at the first
              * failure. Commands that already ran are not undone.
              */
-            fun commands(keyupCommand: Commands.KeyupCommand) =
-                commands(Commands.ofKeyupCommand(keyupCommand))
+            fun commands(releaseCommand: Commands.ReleaseCommand) =
+                commands(Commands.ofReleaseCommand(releaseCommand))
 
             /**
              * One command, or an array of up to 50. They run in order and stop at the first
@@ -775,6 +768,13 @@ private constructor(
              */
             fun commands(tabCommand: Commands.TabCommand) =
                 commands(Commands.ofTabCommand(tabCommand))
+
+            /**
+             * One command, or an array of up to 50. They run in order and stop at the first
+             * failure. Commands that already ran are not undone.
+             */
+            fun commands(dialogCommand: Commands.DialogCommand) =
+                commands(Commands.ofDialogCommand(dialogCommand))
 
             /**
              * One command, or an array of up to 50. They run in order and stop at the first
@@ -888,14 +888,13 @@ private constructor(
         private val reloadCommand: ReloadCommand? = null,
         private val snapshotCommand: SnapshotCommand? = null,
         private val clickCommand: ClickCommand? = null,
-        private val dblclickCommand: DblclickCommand? = null,
         private val hoverCommand: HoverCommand? = null,
         private val focusCommand: FocusCommand? = null,
         private val typeCommand: TypeCommand? = null,
         private val fillCommand: FillCommand? = null,
         private val pressCommand: PressCommand? = null,
-        private val keydownCommand: KeydownCommand? = null,
-        private val keyupCommand: KeyupCommand? = null,
+        private val keyboardCommand: KeyboardCommand? = null,
+        private val releaseCommand: ReleaseCommand? = null,
         private val mouseCommand: MouseCommand? = null,
         private val selectCommand: SelectCommand? = null,
         private val checkCommand: CheckCommand? = null,
@@ -911,6 +910,7 @@ private constructor(
         private val scrollCommand: ScrollCommand? = null,
         private val findCommand: FindCommand? = null,
         private val tabCommand: TabCommand? = null,
+        private val dialogCommand: DialogCommand? = null,
         private val unionMember29: List<Command>? = null,
         private val _json: JsonValue? = null,
     ) {
@@ -927,8 +927,6 @@ private constructor(
 
         fun clickCommand(): Optional<ClickCommand> = Optional.ofNullable(clickCommand)
 
-        fun dblclickCommand(): Optional<DblclickCommand> = Optional.ofNullable(dblclickCommand)
-
         fun hoverCommand(): Optional<HoverCommand> = Optional.ofNullable(hoverCommand)
 
         fun focusCommand(): Optional<FocusCommand> = Optional.ofNullable(focusCommand)
@@ -939,9 +937,9 @@ private constructor(
 
         fun pressCommand(): Optional<PressCommand> = Optional.ofNullable(pressCommand)
 
-        fun keydownCommand(): Optional<KeydownCommand> = Optional.ofNullable(keydownCommand)
+        fun keyboardCommand(): Optional<KeyboardCommand> = Optional.ofNullable(keyboardCommand)
 
-        fun keyupCommand(): Optional<KeyupCommand> = Optional.ofNullable(keyupCommand)
+        fun releaseCommand(): Optional<ReleaseCommand> = Optional.ofNullable(releaseCommand)
 
         fun mouseCommand(): Optional<MouseCommand> = Optional.ofNullable(mouseCommand)
 
@@ -974,6 +972,8 @@ private constructor(
 
         fun tabCommand(): Optional<TabCommand> = Optional.ofNullable(tabCommand)
 
+        fun dialogCommand(): Optional<DialogCommand> = Optional.ofNullable(dialogCommand)
+
         fun unionMember29(): Optional<List<Command>> = Optional.ofNullable(unionMember29)
 
         fun isNavigateCommand(): Boolean = navigateCommand != null
@@ -988,8 +988,6 @@ private constructor(
 
         fun isClickCommand(): Boolean = clickCommand != null
 
-        fun isDblclickCommand(): Boolean = dblclickCommand != null
-
         fun isHoverCommand(): Boolean = hoverCommand != null
 
         fun isFocusCommand(): Boolean = focusCommand != null
@@ -1000,9 +998,9 @@ private constructor(
 
         fun isPressCommand(): Boolean = pressCommand != null
 
-        fun isKeydownCommand(): Boolean = keydownCommand != null
+        fun isKeyboardCommand(): Boolean = keyboardCommand != null
 
-        fun isKeyupCommand(): Boolean = keyupCommand != null
+        fun isReleaseCommand(): Boolean = releaseCommand != null
 
         fun isMouseCommand(): Boolean = mouseCommand != null
 
@@ -1034,6 +1032,8 @@ private constructor(
 
         fun isTabCommand(): Boolean = tabCommand != null
 
+        fun isDialogCommand(): Boolean = dialogCommand != null
+
         fun isUnionMember29(): Boolean = unionMember29 != null
 
         fun asNavigateCommand(): NavigateCommand = navigateCommand.getOrThrow("navigateCommand")
@@ -1048,8 +1048,6 @@ private constructor(
 
         fun asClickCommand(): ClickCommand = clickCommand.getOrThrow("clickCommand")
 
-        fun asDblclickCommand(): DblclickCommand = dblclickCommand.getOrThrow("dblclickCommand")
-
         fun asHoverCommand(): HoverCommand = hoverCommand.getOrThrow("hoverCommand")
 
         fun asFocusCommand(): FocusCommand = focusCommand.getOrThrow("focusCommand")
@@ -1060,9 +1058,9 @@ private constructor(
 
         fun asPressCommand(): PressCommand = pressCommand.getOrThrow("pressCommand")
 
-        fun asKeydownCommand(): KeydownCommand = keydownCommand.getOrThrow("keydownCommand")
+        fun asKeyboardCommand(): KeyboardCommand = keyboardCommand.getOrThrow("keyboardCommand")
 
-        fun asKeyupCommand(): KeyupCommand = keyupCommand.getOrThrow("keyupCommand")
+        fun asReleaseCommand(): ReleaseCommand = releaseCommand.getOrThrow("releaseCommand")
 
         fun asMouseCommand(): MouseCommand = mouseCommand.getOrThrow("mouseCommand")
 
@@ -1095,6 +1093,8 @@ private constructor(
 
         fun asTabCommand(): TabCommand = tabCommand.getOrThrow("tabCommand")
 
+        fun asDialogCommand(): DialogCommand = dialogCommand.getOrThrow("dialogCommand")
+
         fun asUnionMember29(): List<Command> = unionMember29.getOrThrow("unionMember29")
 
         fun _json(): Optional<JsonValue> = Optional.ofNullable(_json)
@@ -1107,14 +1107,13 @@ private constructor(
                 reloadCommand != null -> visitor.visitReloadCommand(reloadCommand)
                 snapshotCommand != null -> visitor.visitSnapshotCommand(snapshotCommand)
                 clickCommand != null -> visitor.visitClickCommand(clickCommand)
-                dblclickCommand != null -> visitor.visitDblclickCommand(dblclickCommand)
                 hoverCommand != null -> visitor.visitHoverCommand(hoverCommand)
                 focusCommand != null -> visitor.visitFocusCommand(focusCommand)
                 typeCommand != null -> visitor.visitTypeCommand(typeCommand)
                 fillCommand != null -> visitor.visitFillCommand(fillCommand)
                 pressCommand != null -> visitor.visitPressCommand(pressCommand)
-                keydownCommand != null -> visitor.visitKeydownCommand(keydownCommand)
-                keyupCommand != null -> visitor.visitKeyupCommand(keyupCommand)
+                keyboardCommand != null -> visitor.visitKeyboardCommand(keyboardCommand)
+                releaseCommand != null -> visitor.visitReleaseCommand(releaseCommand)
                 mouseCommand != null -> visitor.visitMouseCommand(mouseCommand)
                 selectCommand != null -> visitor.visitSelectCommand(selectCommand)
                 checkCommand != null -> visitor.visitCheckCommand(checkCommand)
@@ -1130,6 +1129,7 @@ private constructor(
                 scrollCommand != null -> visitor.visitScrollCommand(scrollCommand)
                 findCommand != null -> visitor.visitFindCommand(findCommand)
                 tabCommand != null -> visitor.visitTabCommand(tabCommand)
+                dialogCommand != null -> visitor.visitDialogCommand(dialogCommand)
                 unionMember29 != null -> visitor.visitUnionMember29(unionMember29)
                 else -> visitor.unknown(_json)
             }
@@ -1175,10 +1175,6 @@ private constructor(
                         clickCommand.validate()
                     }
 
-                    override fun visitDblclickCommand(dblclickCommand: DblclickCommand) {
-                        dblclickCommand.validate()
-                    }
-
                     override fun visitHoverCommand(hoverCommand: HoverCommand) {
                         hoverCommand.validate()
                     }
@@ -1199,12 +1195,12 @@ private constructor(
                         pressCommand.validate()
                     }
 
-                    override fun visitKeydownCommand(keydownCommand: KeydownCommand) {
-                        keydownCommand.validate()
+                    override fun visitKeyboardCommand(keyboardCommand: KeyboardCommand) {
+                        keyboardCommand.validate()
                     }
 
-                    override fun visitKeyupCommand(keyupCommand: KeyupCommand) {
-                        keyupCommand.validate()
+                    override fun visitReleaseCommand(releaseCommand: ReleaseCommand) {
+                        releaseCommand.validate()
                     }
 
                     override fun visitMouseCommand(mouseCommand: MouseCommand) {
@@ -1267,6 +1263,10 @@ private constructor(
                         tabCommand.validate()
                     }
 
+                    override fun visitDialogCommand(dialogCommand: DialogCommand) {
+                        dialogCommand.validate()
+                    }
+
                     override fun visitUnionMember29(unionMember29: List<Command>) {
                         unionMember29.forEach { it.validate() }
                     }
@@ -1296,9 +1296,6 @@ private constructor(
                     override fun visitClickCommand(clickCommand: ClickCommand) =
                         clickCommand.validity()
 
-                    override fun visitDblclickCommand(dblclickCommand: DblclickCommand) =
-                        dblclickCommand.validity()
-
                     override fun visitHoverCommand(hoverCommand: HoverCommand) =
                         hoverCommand.validity()
 
@@ -1312,11 +1309,11 @@ private constructor(
                     override fun visitPressCommand(pressCommand: PressCommand) =
                         pressCommand.validity()
 
-                    override fun visitKeydownCommand(keydownCommand: KeydownCommand) =
-                        keydownCommand.validity()
+                    override fun visitKeyboardCommand(keyboardCommand: KeyboardCommand) =
+                        keyboardCommand.validity()
 
-                    override fun visitKeyupCommand(keyupCommand: KeyupCommand) =
-                        keyupCommand.validity()
+                    override fun visitReleaseCommand(releaseCommand: ReleaseCommand) =
+                        releaseCommand.validity()
 
                     override fun visitMouseCommand(mouseCommand: MouseCommand) =
                         mouseCommand.validity()
@@ -1355,6 +1352,9 @@ private constructor(
 
                     override fun visitTabCommand(tabCommand: TabCommand) = tabCommand.validity()
 
+                    override fun visitDialogCommand(dialogCommand: DialogCommand) =
+                        dialogCommand.validity()
+
                     override fun visitUnionMember29(unionMember29: List<Command>) =
                         unionMember29.sumOf { (it.validity()).toInt() }
 
@@ -1374,14 +1374,13 @@ private constructor(
                 this.reloadCommand == other.reloadCommand &&
                 this.snapshotCommand == other.snapshotCommand &&
                 this.clickCommand == other.clickCommand &&
-                this.dblclickCommand == other.dblclickCommand &&
                 this.hoverCommand == other.hoverCommand &&
                 this.focusCommand == other.focusCommand &&
                 this.typeCommand == other.typeCommand &&
                 this.fillCommand == other.fillCommand &&
                 this.pressCommand == other.pressCommand &&
-                this.keydownCommand == other.keydownCommand &&
-                this.keyupCommand == other.keyupCommand &&
+                this.keyboardCommand == other.keyboardCommand &&
+                this.releaseCommand == other.releaseCommand &&
                 this.mouseCommand == other.mouseCommand &&
                 this.selectCommand == other.selectCommand &&
                 this.checkCommand == other.checkCommand &&
@@ -1397,6 +1396,7 @@ private constructor(
                 this.scrollCommand == other.scrollCommand &&
                 this.findCommand == other.findCommand &&
                 this.tabCommand == other.tabCommand &&
+                this.dialogCommand == other.dialogCommand &&
                 this.unionMember29 == other.unionMember29
         }
 
@@ -1408,14 +1408,13 @@ private constructor(
                 reloadCommand,
                 snapshotCommand,
                 clickCommand,
-                dblclickCommand,
                 hoverCommand,
                 focusCommand,
                 typeCommand,
                 fillCommand,
                 pressCommand,
-                keydownCommand,
-                keyupCommand,
+                keyboardCommand,
+                releaseCommand,
                 mouseCommand,
                 selectCommand,
                 checkCommand,
@@ -1431,6 +1430,7 @@ private constructor(
                 scrollCommand,
                 findCommand,
                 tabCommand,
+                dialogCommand,
                 unionMember29,
             )
 
@@ -1442,14 +1442,13 @@ private constructor(
                 reloadCommand != null -> "Commands{reloadCommand=$reloadCommand}"
                 snapshotCommand != null -> "Commands{snapshotCommand=$snapshotCommand}"
                 clickCommand != null -> "Commands{clickCommand=$clickCommand}"
-                dblclickCommand != null -> "Commands{dblclickCommand=$dblclickCommand}"
                 hoverCommand != null -> "Commands{hoverCommand=$hoverCommand}"
                 focusCommand != null -> "Commands{focusCommand=$focusCommand}"
                 typeCommand != null -> "Commands{typeCommand=$typeCommand}"
                 fillCommand != null -> "Commands{fillCommand=$fillCommand}"
                 pressCommand != null -> "Commands{pressCommand=$pressCommand}"
-                keydownCommand != null -> "Commands{keydownCommand=$keydownCommand}"
-                keyupCommand != null -> "Commands{keyupCommand=$keyupCommand}"
+                keyboardCommand != null -> "Commands{keyboardCommand=$keyboardCommand}"
+                releaseCommand != null -> "Commands{releaseCommand=$releaseCommand}"
                 mouseCommand != null -> "Commands{mouseCommand=$mouseCommand}"
                 selectCommand != null -> "Commands{selectCommand=$selectCommand}"
                 checkCommand != null -> "Commands{checkCommand=$checkCommand}"
@@ -1465,6 +1464,7 @@ private constructor(
                 scrollCommand != null -> "Commands{scrollCommand=$scrollCommand}"
                 findCommand != null -> "Commands{findCommand=$findCommand}"
                 tabCommand != null -> "Commands{tabCommand=$tabCommand}"
+                dialogCommand != null -> "Commands{dialogCommand=$dialogCommand}"
                 unionMember29 != null -> "Commands{unionMember29=$unionMember29}"
                 _json != null -> "Commands{_unknown=$_json}"
                 else -> throw IllegalStateException("Invalid Commands")
@@ -1495,10 +1495,6 @@ private constructor(
             fun ofClickCommand(clickCommand: ClickCommand) = Commands(clickCommand = clickCommand)
 
             @JvmStatic
-            fun ofDblclickCommand(dblclickCommand: DblclickCommand) =
-                Commands(dblclickCommand = dblclickCommand)
-
-            @JvmStatic
             fun ofHoverCommand(hoverCommand: HoverCommand) = Commands(hoverCommand = hoverCommand)
 
             @JvmStatic
@@ -1514,11 +1510,12 @@ private constructor(
             fun ofPressCommand(pressCommand: PressCommand) = Commands(pressCommand = pressCommand)
 
             @JvmStatic
-            fun ofKeydownCommand(keydownCommand: KeydownCommand) =
-                Commands(keydownCommand = keydownCommand)
+            fun ofKeyboardCommand(keyboardCommand: KeyboardCommand) =
+                Commands(keyboardCommand = keyboardCommand)
 
             @JvmStatic
-            fun ofKeyupCommand(keyupCommand: KeyupCommand) = Commands(keyupCommand = keyupCommand)
+            fun ofReleaseCommand(releaseCommand: ReleaseCommand) =
+                Commands(releaseCommand = releaseCommand)
 
             @JvmStatic
             fun ofMouseCommand(mouseCommand: MouseCommand) = Commands(mouseCommand = mouseCommand)
@@ -1567,6 +1564,10 @@ private constructor(
             @JvmStatic fun ofTabCommand(tabCommand: TabCommand) = Commands(tabCommand = tabCommand)
 
             @JvmStatic
+            fun ofDialogCommand(dialogCommand: DialogCommand) =
+                Commands(dialogCommand = dialogCommand)
+
+            @JvmStatic
             fun ofUnionMember29(unionMember29: List<Command>) =
                 Commands(unionMember29 = unionMember29.toImmutable())
         }
@@ -1585,8 +1586,6 @@ private constructor(
 
             fun visitClickCommand(clickCommand: ClickCommand): T
 
-            fun visitDblclickCommand(dblclickCommand: DblclickCommand): T
-
             fun visitHoverCommand(hoverCommand: HoverCommand): T
 
             fun visitFocusCommand(focusCommand: FocusCommand): T
@@ -1597,9 +1596,9 @@ private constructor(
 
             fun visitPressCommand(pressCommand: PressCommand): T
 
-            fun visitKeydownCommand(keydownCommand: KeydownCommand): T
+            fun visitKeyboardCommand(keyboardCommand: KeyboardCommand): T
 
-            fun visitKeyupCommand(keyupCommand: KeyupCommand): T
+            fun visitReleaseCommand(releaseCommand: ReleaseCommand): T
 
             fun visitMouseCommand(mouseCommand: MouseCommand): T
 
@@ -1630,6 +1629,8 @@ private constructor(
             fun visitFindCommand(findCommand: FindCommand): T
 
             fun visitTabCommand(tabCommand: TabCommand): T
+
+            fun visitDialogCommand(dialogCommand: DialogCommand): T
 
             fun visitUnionMember29(unionMember29: List<Command>): T
 
@@ -1662,9 +1663,6 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<ClickCommand>())?.let {
                                 Commands(clickCommand = it, _json = json)
                             },
-                            tryDeserialize(node, jacksonTypeRef<DblclickCommand>())?.let {
-                                Commands(dblclickCommand = it, _json = json)
-                            },
                             tryDeserialize(node, jacksonTypeRef<HoverCommand>())?.let {
                                 Commands(hoverCommand = it, _json = json)
                             },
@@ -1680,11 +1678,11 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<PressCommand>())?.let {
                                 Commands(pressCommand = it, _json = json)
                             },
-                            tryDeserialize(node, jacksonTypeRef<KeydownCommand>())?.let {
-                                Commands(keydownCommand = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<KeyboardCommand>())?.let {
+                                Commands(keyboardCommand = it, _json = json)
                             },
-                            tryDeserialize(node, jacksonTypeRef<KeyupCommand>())?.let {
-                                Commands(keyupCommand = it, _json = json)
+                            tryDeserialize(node, jacksonTypeRef<ReleaseCommand>())?.let {
+                                Commands(releaseCommand = it, _json = json)
                             },
                             tryDeserialize(node, jacksonTypeRef<MouseCommand>())?.let {
                                 Commands(mouseCommand = it, _json = json)
@@ -1731,6 +1729,9 @@ private constructor(
                             tryDeserialize(node, jacksonTypeRef<TabCommand>())?.let {
                                 Commands(tabCommand = it, _json = json)
                             },
+                            tryDeserialize(node, jacksonTypeRef<DialogCommand>())?.let {
+                                Commands(dialogCommand = it, _json = json)
+                            },
                             tryDeserialize(node, jacksonTypeRef<List<Command>>())?.let {
                                 Commands(unionMember29 = it, _json = json)
                             },
@@ -1760,14 +1761,13 @@ private constructor(
                     value.reloadCommand != null -> generator.writeObject(value.reloadCommand)
                     value.snapshotCommand != null -> generator.writeObject(value.snapshotCommand)
                     value.clickCommand != null -> generator.writeObject(value.clickCommand)
-                    value.dblclickCommand != null -> generator.writeObject(value.dblclickCommand)
                     value.hoverCommand != null -> generator.writeObject(value.hoverCommand)
                     value.focusCommand != null -> generator.writeObject(value.focusCommand)
                     value.typeCommand != null -> generator.writeObject(value.typeCommand)
                     value.fillCommand != null -> generator.writeObject(value.fillCommand)
                     value.pressCommand != null -> generator.writeObject(value.pressCommand)
-                    value.keydownCommand != null -> generator.writeObject(value.keydownCommand)
-                    value.keyupCommand != null -> generator.writeObject(value.keyupCommand)
+                    value.keyboardCommand != null -> generator.writeObject(value.keyboardCommand)
+                    value.releaseCommand != null -> generator.writeObject(value.releaseCommand)
                     value.mouseCommand != null -> generator.writeObject(value.mouseCommand)
                     value.selectCommand != null -> generator.writeObject(value.selectCommand)
                     value.checkCommand != null -> generator.writeObject(value.checkCommand)
@@ -1784,6 +1784,7 @@ private constructor(
                     value.scrollCommand != null -> generator.writeObject(value.scrollCommand)
                     value.findCommand != null -> generator.writeObject(value.findCommand)
                     value.tabCommand != null -> generator.writeObject(value.tabCommand)
+                    value.dialogCommand != null -> generator.writeObject(value.dialogCommand)
                     value.unionMember29 != null -> generator.writeObject(value.unionMember29)
                     value._json != null -> generator.writeObject(value._json)
                     else -> throw IllegalStateException("Invalid Commands")
@@ -2580,6 +2581,8 @@ private constructor(
         private constructor(
             private val command: JsonValue,
             private val target: JsonField<CommandTarget>,
+            private val button: JsonField<SessionCommandsParams.Commands.ClickCommand.Button>,
+            private val clicks: JsonField<Long>,
             private val expect: JsonField<CommandExpectation>,
             private val frame: JsonField<CommandFrame>,
             private val tab: JsonField<String>,
@@ -2592,6 +2595,11 @@ private constructor(
                 @JsonProperty("target")
                 @ExcludeMissing
                 target: JsonField<CommandTarget> = JsonMissing.of(),
+                @JsonProperty("button")
+                @ExcludeMissing
+                button: JsonField<SessionCommandsParams.Commands.ClickCommand.Button> =
+                    JsonMissing.of(),
+                @JsonProperty("clicks") @ExcludeMissing clicks: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("expect")
                 @ExcludeMissing
                 expect: JsonField<CommandExpectation> = JsonMissing.of(),
@@ -2599,10 +2607,17 @@ private constructor(
                 @ExcludeMissing
                 frame: JsonField<CommandFrame> = JsonMissing.of(),
                 @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-            ) : this(command, target, expect, frame, tab, mutableMapOf())
+            ) : this(command, target, button, clicks, expect, frame, tab, mutableMapOf())
 
             /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
             fun target(): CommandTarget = target.getRequired("target")
+
+            /** left by default. */
+            fun button(): Optional<SessionCommandsParams.Commands.ClickCommand.Button> =
+                button.getOptional("button")
+
+            /** 2 makes a double click and 3 a triple click. 1 by default. */
+            fun clicks(): Optional<Long> = clicks.getOptional("clicks")
 
             /** Fails the command when the element does not have this role or name. */
             fun expect(): Optional<CommandExpectation> = expect.getOptional("expect")
@@ -2617,6 +2632,12 @@ private constructor(
             @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
             @JsonProperty("target") @ExcludeMissing fun _target(): JsonField<CommandTarget> = target
+
+            @JsonProperty("button")
+            @ExcludeMissing
+            fun _button(): JsonField<SessionCommandsParams.Commands.ClickCommand.Button> = button
+
+            @JsonProperty("clicks") @ExcludeMissing fun _clicks(): JsonField<Long> = clicks
 
             @JsonProperty("expect")
             @ExcludeMissing
@@ -2649,6 +2670,9 @@ private constructor(
 
                 private var command: JsonValue = JsonValue.from("click")
                 private var target: JsonField<CommandTarget>? = null
+                private var button: JsonField<SessionCommandsParams.Commands.ClickCommand.Button> =
+                    JsonMissing.of()
+                private var clicks: JsonField<Long> = JsonMissing.of()
                 private var expect: JsonField<CommandExpectation> = JsonMissing.of()
                 private var frame: JsonField<CommandFrame> = JsonMissing.of()
                 private var tab: JsonField<String> = JsonMissing.of()
@@ -2658,6 +2682,8 @@ private constructor(
                 internal fun from(clickCommand: ClickCommand) = apply {
                     this.command = clickCommand.command
                     this.target = clickCommand.target
+                    this.button = clickCommand.button
+                    this.clicks = clickCommand.clicks
                     this.expect = clickCommand.expect
                     this.frame = clickCommand.frame
                     this.tab = clickCommand.tab
@@ -2678,6 +2704,22 @@ private constructor(
                 /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
                 fun target(commandLocator: CommandLocator) =
                     target(CommandTarget.ofCommandLocator(commandLocator))
+
+                /** left by default. */
+                fun button(button: SessionCommandsParams.Commands.ClickCommand.Button) =
+                    button(JsonField.of(button))
+
+                /** left by default. */
+                fun button(button: JsonField<SessionCommandsParams.Commands.ClickCommand.Button>) =
+                    apply {
+                        this.button = button
+                    }
+
+                /** 2 makes a double click and 3 a triple click. 1 by default. */
+                fun clicks(clicks: Long) = clicks(JsonField.of(clicks))
+
+                /** 2 makes a double click and 3 a triple click. 1 by default. */
+                fun clicks(clicks: JsonField<Long>) = apply { this.clicks = clicks }
 
                 /** Fails the command when the element does not have this role or name. */
                 fun expect(expect: CommandExpectation) = expect(JsonField.of(expect))
@@ -2734,6 +2776,8 @@ private constructor(
                     ClickCommand(
                         command,
                         checkRequired("target", target),
+                        button,
+                        clicks,
                         expect,
                         frame,
                         tab,
@@ -2762,6 +2806,8 @@ private constructor(
                     }
                 }
                 target().validate()
+                button().ifPresent { it.validate() }
+                clicks()
                 expect().ifPresent { it.validate() }
                 frame().ifPresent { it.validate() }
                 tab()
@@ -2772,9 +2818,95 @@ private constructor(
             internal fun validity(): Int =
                 (command.let { if (it == JsonValue.from("click")) 1 else 0 }) +
                     (target.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                    (button.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                    (if (clicks.asKnown().isPresent) 1 else 0) +
                     (expect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                     (frame.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
                     (if (tab.asKnown().isPresent) 1 else 0)
+
+            class Button @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val LEFT = of("left")
+
+                    @JvmField val RIGHT = of("right")
+
+                    @JvmField val MIDDLE = of("middle")
+
+                    @JvmStatic fun of(value: String) = Button(JsonField.of(value))
+                }
+
+                enum class Known {
+                    LEFT,
+                    RIGHT,
+                    MIDDLE,
+                }
+
+                enum class Value {
+                    LEFT,
+                    RIGHT,
+                    MIDDLE,
+                    _UNKNOWN,
+                }
+
+                fun value(): Value =
+                    when (this) {
+                        LEFT -> Value.LEFT
+                        RIGHT -> Value.RIGHT
+                        MIDDLE -> Value.MIDDLE
+                        else -> Value._UNKNOWN
+                    }
+
+                fun known(): Known =
+                    when (this) {
+                        LEFT -> Known.LEFT
+                        RIGHT -> Known.RIGHT
+                        MIDDLE -> Known.MIDDLE
+                        else -> throw SteelInvalidDataException("Unknown Button: $value")
+                    }
+
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        SteelInvalidDataException("Value is not a String")
+                    }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: SteelInvalidDataException) {
+                        false
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): Button = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Button && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
@@ -2784,6 +2916,8 @@ private constructor(
                 return other is ClickCommand &&
                     this.command == other.command &&
                     this.target == other.target &&
+                    this.button == other.button &&
+                    this.clicks == other.clicks &&
                     this.expect == other.expect &&
                     this.frame == other.frame &&
                     this.tab == other.tab &&
@@ -2791,239 +2925,22 @@ private constructor(
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(command, target, expect, frame, tab, additionalProperties)
+                Objects.hash(
+                    command,
+                    target,
+                    button,
+                    clicks,
+                    expect,
+                    frame,
+                    tab,
+                    additionalProperties,
+                )
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "ClickCommand{command=$command, target=$target, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
-        }
-
-        /** Double-clicks the element with the mouse. */
-        class DblclickCommand
-        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
-        private constructor(
-            private val command: JsonValue,
-            private val target: JsonField<CommandTarget>,
-            private val expect: JsonField<CommandExpectation>,
-            private val frame: JsonField<CommandFrame>,
-            private val tab: JsonField<String>,
-            private val additionalProperties: MutableMap<String, JsonValue>,
-        ) {
-
-            @JsonCreator
-            private constructor(
-                @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-                @JsonProperty("target")
-                @ExcludeMissing
-                target: JsonField<CommandTarget> = JsonMissing.of(),
-                @JsonProperty("expect")
-                @ExcludeMissing
-                expect: JsonField<CommandExpectation> = JsonMissing.of(),
-                @JsonProperty("frame")
-                @ExcludeMissing
-                frame: JsonField<CommandFrame> = JsonMissing.of(),
-                @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-            ) : this(command, target, expect, frame, tab, mutableMapOf())
-
-            /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-            fun target(): CommandTarget = target.getRequired("target")
-
-            /** Fails the command when the element does not have this role or name. */
-            fun expect(): Optional<CommandExpectation> = expect.getOptional("expect")
-
-            /** The iframe to look in. List nested iframes from the outside in. */
-            fun frame(): Optional<CommandFrame> = frame.getOptional("frame")
-
-            /** A tab id such as t2. A command on a ref does not need it. */
-            fun tab(): Optional<String> = tab.getOptional("tab")
-
-            /** Expected to always return `JsonValue.from("dblclick")`. It is set by default. */
-            @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-            @JsonProperty("target") @ExcludeMissing fun _target(): JsonField<CommandTarget> = target
-
-            @JsonProperty("expect")
-            @ExcludeMissing
-            fun _expect(): JsonField<CommandExpectation> = expect
-
-            @JsonProperty("frame") @ExcludeMissing fun _frame(): JsonField<CommandFrame> = frame
-
-            @JsonProperty("tab") @ExcludeMissing fun _tab(): JsonField<String> = tab
-
-            @JsonAnySetter
-            private fun putAdditionalProperty(key: String, value: JsonValue) {
-                additionalProperties.put(key, value)
-            }
-
-            @JsonAnyGetter
-            @ExcludeMissing
-            fun _additionalProperties(): Map<String, JsonValue> =
-                Collections.unmodifiableMap(additionalProperties)
-
-            fun toBuilder() = Builder().from(this)
-
-            companion object {
-
-                /** Returns a mutable builder for constructing an instance of [DblclickCommand]. */
-                @JvmStatic fun builder() = Builder()
-            }
-
-            /** A builder for [DblclickCommand]. */
-            class Builder internal constructor() {
-
-                private var command: JsonValue = JsonValue.from("dblclick")
-                private var target: JsonField<CommandTarget>? = null
-                private var expect: JsonField<CommandExpectation> = JsonMissing.of()
-                private var frame: JsonField<CommandFrame> = JsonMissing.of()
-                private var tab: JsonField<String> = JsonMissing.of()
-                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
-
-                @JvmSynthetic
-                internal fun from(dblclickCommand: DblclickCommand) = apply {
-                    this.command = dblclickCommand.command
-                    this.target = dblclickCommand.target
-                    this.expect = dblclickCommand.expect
-                    this.frame = dblclickCommand.frame
-                    this.tab = dblclickCommand.tab
-                    this.additionalProperties = dblclickCommand.additionalProperties.toMutableMap()
-                }
-
-                fun command(command: JsonValue) = apply { this.command = command }
-
-                /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-                fun target(target: CommandTarget) = target(JsonField.of(target))
-
-                /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-                fun target(target: JsonField<CommandTarget>) = apply { this.target = target }
-
-                /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-                fun target(string: String) = target(CommandTarget.ofString(string))
-
-                /** A ref from a snapshot such as e12, a CSS selector, or a locator. */
-                fun target(commandLocator: CommandLocator) =
-                    target(CommandTarget.ofCommandLocator(commandLocator))
-
-                /** Fails the command when the element does not have this role or name. */
-                fun expect(expect: CommandExpectation) = expect(JsonField.of(expect))
-
-                /** Fails the command when the element does not have this role or name. */
-                fun expect(expect: JsonField<CommandExpectation>) = apply { this.expect = expect }
-
-                /** The iframe to look in. List nested iframes from the outside in. */
-                fun frame(frame: CommandFrame) = frame(JsonField.of(frame))
-
-                /** The iframe to look in. List nested iframes from the outside in. */
-                fun frame(frame: JsonField<CommandFrame>) = apply { this.frame = frame }
-
-                /** The iframe to look in. List nested iframes from the outside in. */
-                fun frame(string: String) = frame(CommandFrame.ofString(string))
-
-                /** The iframe to look in. List nested iframes from the outside in. */
-                fun frame(commandLocator: CommandLocator) =
-                    frame(CommandFrame.ofCommandLocator(commandLocator))
-
-                /** The iframe to look in. List nested iframes from the outside in. */
-                fun frame(unionMember2: List<CommandTarget>) =
-                    frame(CommandFrame.ofUnionMember2(unionMember2))
-
-                /** A tab id such as t2. A command on a ref does not need it. */
-                fun tab(tab: String) = tab(JsonField.of(tab))
-
-                /** A tab id such as t2. A command on a ref does not need it. */
-                fun tab(tab: JsonField<String>) = apply { this.tab = tab }
-
-                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
-                    this.additionalProperties.clear()
-                    putAllAdditionalProperties(additionalProperties)
-                }
-
-                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
-                    additionalProperties.put(key, value)
-                }
-
-                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
-                    apply {
-                        this.additionalProperties.putAll(additionalProperties)
-                    }
-
-                fun removeAdditionalProperty(key: String) = apply {
-                    additionalProperties.remove(key)
-                }
-
-                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
-                    keys.forEach(::removeAdditionalProperty)
-                }
-
-                fun build(): DblclickCommand =
-                    DblclickCommand(
-                        command,
-                        checkRequired("target", target),
-                        expect,
-                        frame,
-                        tab,
-                        additionalProperties.toMutableMap(),
-                    )
-            }
-
-            fun isValid(): Boolean =
-                try {
-                    validate()
-                    true
-                } catch (e: SteelInvalidDataException) {
-                    false
-                }
-
-            private var validated: Boolean = false
-
-            fun validate(): DblclickCommand = apply {
-                if (validated) {
-                    return@apply
-                }
-
-                _command().let {
-                    if (it != JsonValue.from("dblclick")) {
-                        throw SteelInvalidDataException("'command' is invalid, received $it")
-                    }
-                }
-                target().validate()
-                expect().ifPresent { it.validate() }
-                frame().ifPresent { it.validate() }
-                tab()
-                validated = true
-            }
-
-            @JvmSynthetic
-            internal fun validity(): Int =
-                (command.let { if (it == JsonValue.from("dblclick")) 1 else 0 }) +
-                    (target.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                    (expect.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                    (frame.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
-                    (if (tab.asKnown().isPresent) 1 else 0)
-
-            override fun equals(other: Any?): Boolean {
-                if (this === other) {
-                    return true
-                }
-
-                return other is DblclickCommand &&
-                    this.command == other.command &&
-                    this.target == other.target &&
-                    this.expect == other.expect &&
-                    this.frame == other.frame &&
-                    this.tab == other.tab &&
-                    this.additionalProperties == other.additionalProperties
-            }
-
-            private val hashCode: Int by lazy {
-                Objects.hash(command, target, expect, frame, tab, additionalProperties)
-            }
-
-            override fun hashCode(): Int = hashCode
-
-            override fun toString() =
-                "DblclickCommand{command=$command, target=$target, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
+                "ClickCommand{command=$command, target=$target, button=$button, clicks=$clicks, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
         }
 
         /** Moves the mouse onto the element. */
@@ -4010,7 +3927,10 @@ private constructor(
                 "FillCommand{command=$command, target=$target, value=$value, expect=$expect, frame=$frame, tab=$tab, additionalProperties=$additionalProperties}"
         }
 
-        /** Presses a key, such as Enter, or a combination such as Control+a. */
+        /**
+         * Presses a key, such as Enter, or a combination such as Control+a. On a tab with an open
+         * dialog, Enter without a target accepts the dialog and Escape dismisses it.
+         */
         class PressCommand
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
@@ -4252,10 +4172,11 @@ private constructor(
                 "PressCommand{command=$command, key=$key, expect=$expect, frame=$frame, tab=$tab, target=$target, additionalProperties=$additionalProperties}"
         }
 
-        /** Holds a key down until its keyup. */
-        class KeydownCommand
+        /** Holds a key down, or lets go of a key held down. */
+        class KeyboardCommand
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
+            private val action: JsonField<SessionCommandsParams.Commands.KeyboardCommand.Action>,
             private val command: JsonValue,
             private val key: JsonField<String>,
             private val tab: JsonField<String>,
@@ -4264,17 +4185,29 @@ private constructor(
 
             @JsonCreator
             private constructor(
+                @JsonProperty("action")
+                @ExcludeMissing
+                action: JsonField<SessionCommandsParams.Commands.KeyboardCommand.Action> =
+                    JsonMissing.of(),
                 @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
                 @JsonProperty("key") @ExcludeMissing key: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-            ) : this(command, key, tab, mutableMapOf())
+            ) : this(action, command, key, tab, mutableMapOf())
 
+            fun action(): SessionCommandsParams.Commands.KeyboardCommand.Action =
+                action.getRequired("action")
+
+            /** One key, not a combination such as Control+a. */
             fun key(): String = key.getRequired("key")
 
             /** A tab id such as t2. A command on a ref does not need it. */
             fun tab(): Optional<String> = tab.getOptional("tab")
 
-            /** Expected to always return `JsonValue.from("keydown")`. It is set by default. */
+            @JsonProperty("action")
+            @ExcludeMissing
+            fun _action(): JsonField<SessionCommandsParams.Commands.KeyboardCommand.Action> = action
+
+            /** Expected to always return `JsonValue.from("keyboard")`. It is set by default. */
             @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
             @JsonProperty("key") @ExcludeMissing fun _key(): JsonField<String> = key
@@ -4295,30 +4228,43 @@ private constructor(
 
             companion object {
 
-                /** Returns a mutable builder for constructing an instance of [KeydownCommand]. */
+                /** Returns a mutable builder for constructing an instance of [KeyboardCommand]. */
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [KeydownCommand]. */
+            /** A builder for [KeyboardCommand]. */
             class Builder internal constructor() {
 
-                private var command: JsonValue = JsonValue.from("keydown")
+                private var action:
+                    JsonField<SessionCommandsParams.Commands.KeyboardCommand.Action>? =
+                    null
+                private var command: JsonValue = JsonValue.from("keyboard")
                 private var key: JsonField<String>? = null
                 private var tab: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(keydownCommand: KeydownCommand) = apply {
-                    this.command = keydownCommand.command
-                    this.key = keydownCommand.key
-                    this.tab = keydownCommand.tab
-                    this.additionalProperties = keydownCommand.additionalProperties.toMutableMap()
+                internal fun from(keyboardCommand: KeyboardCommand) = apply {
+                    this.action = keyboardCommand.action
+                    this.command = keyboardCommand.command
+                    this.key = keyboardCommand.key
+                    this.tab = keyboardCommand.tab
+                    this.additionalProperties = keyboardCommand.additionalProperties.toMutableMap()
                 }
+
+                fun action(action: SessionCommandsParams.Commands.KeyboardCommand.Action) =
+                    action(JsonField.of(action))
+
+                fun action(
+                    action: JsonField<SessionCommandsParams.Commands.KeyboardCommand.Action>
+                ) = apply { this.action = action }
 
                 fun command(command: JsonValue) = apply { this.command = command }
 
+                /** One key, not a combination such as Control+a. */
                 fun key(key: String) = key(JsonField.of(key))
 
+                /** One key, not a combination such as Control+a. */
                 fun key(key: JsonField<String>) = apply { this.key = key }
 
                 /** A tab id such as t2. A command on a ref does not need it. */
@@ -4349,8 +4295,9 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
-                fun build(): KeydownCommand =
-                    KeydownCommand(
+                fun build(): KeyboardCommand =
+                    KeyboardCommand(
+                        checkRequired("action", action),
                         command,
                         checkRequired("key", key),
                         tab,
@@ -4368,13 +4315,14 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): KeydownCommand = apply {
+            fun validate(): KeyboardCommand = apply {
                 if (validated) {
                     return@apply
                 }
 
+                action().validate()
                 _command().let {
-                    if (it != JsonValue.from("keydown")) {
+                    if (it != JsonValue.from("keyboard")) {
                         throw SteelInvalidDataException("'command' is invalid, received $it")
                     }
                 }
@@ -4385,16 +4333,96 @@ private constructor(
 
             @JvmSynthetic
             internal fun validity(): Int =
-                (command.let { if (it == JsonValue.from("keydown")) 1 else 0 }) +
+                (action.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                    (command.let { if (it == JsonValue.from("keyboard")) 1 else 0 }) +
                     (if (key.asKnown().isPresent) 1 else 0) +
                     (if (tab.asKnown().isPresent) 1 else 0)
+
+            class Action @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val DOWN = of("down")
+
+                    @JvmField val UP = of("up")
+
+                    @JvmStatic fun of(value: String) = Action(JsonField.of(value))
+                }
+
+                enum class Known {
+                    DOWN,
+                    UP,
+                }
+
+                enum class Value {
+                    DOWN,
+                    UP,
+                    _UNKNOWN,
+                }
+
+                fun value(): Value =
+                    when (this) {
+                        DOWN -> Value.DOWN
+                        UP -> Value.UP
+                        else -> Value._UNKNOWN
+                    }
+
+                fun known(): Known =
+                    when (this) {
+                        DOWN -> Known.DOWN
+                        UP -> Known.UP
+                        else -> throw SteelInvalidDataException("Unknown Action: $value")
+                    }
+
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        SteelInvalidDataException("Value is not a String")
+                    }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: SteelInvalidDataException) {
+                        false
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): Action = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Action && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
 
             override fun equals(other: Any?): Boolean {
                 if (this === other) {
                     return true
                 }
 
-                return other is KeydownCommand &&
+                return other is KeyboardCommand &&
+                    this.action == other.action &&
                     this.command == other.command &&
                     this.key == other.key &&
                     this.tab == other.tab &&
@@ -4402,21 +4430,20 @@ private constructor(
             }
 
             private val hashCode: Int by lazy {
-                Objects.hash(command, key, tab, additionalProperties)
+                Objects.hash(action, command, key, tab, additionalProperties)
             }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "KeydownCommand{command=$command, key=$key, tab=$tab, additionalProperties=$additionalProperties}"
+                "KeyboardCommand{action=$action, command=$command, key=$key, tab=$tab, additionalProperties=$additionalProperties}"
         }
 
-        /** Lets go of a key held with keydown. */
-        class KeyupCommand
+        /** Lets go of every key and mouse button held on the tab. */
+        class ReleaseCommand
         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
         private constructor(
             private val command: JsonValue,
-            private val key: JsonField<String>,
             private val tab: JsonField<String>,
             private val additionalProperties: MutableMap<String, JsonValue>,
         ) {
@@ -4424,19 +4451,14 @@ private constructor(
             @JsonCreator
             private constructor(
                 @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
-                @JsonProperty("key") @ExcludeMissing key: JsonField<String> = JsonMissing.of(),
                 @JsonProperty("tab") @ExcludeMissing tab: JsonField<String> = JsonMissing.of(),
-            ) : this(command, key, tab, mutableMapOf())
-
-            fun key(): String = key.getRequired("key")
+            ) : this(command, tab, mutableMapOf())
 
             /** A tab id such as t2. A command on a ref does not need it. */
             fun tab(): Optional<String> = tab.getOptional("tab")
 
-            /** Expected to always return `JsonValue.from("keyup")`. It is set by default. */
+            /** Expected to always return `JsonValue.from("release")`. It is set by default. */
             @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
-
-            @JsonProperty("key") @ExcludeMissing fun _key(): JsonField<String> = key
 
             @JsonProperty("tab") @ExcludeMissing fun _tab(): JsonField<String> = tab
 
@@ -4454,31 +4476,25 @@ private constructor(
 
             companion object {
 
-                /** Returns a mutable builder for constructing an instance of [KeyupCommand]. */
+                /** Returns a mutable builder for constructing an instance of [ReleaseCommand]. */
                 @JvmStatic fun builder() = Builder()
             }
 
-            /** A builder for [KeyupCommand]. */
+            /** A builder for [ReleaseCommand]. */
             class Builder internal constructor() {
 
-                private var command: JsonValue = JsonValue.from("keyup")
-                private var key: JsonField<String>? = null
+                private var command: JsonValue = JsonValue.from("release")
                 private var tab: JsonField<String> = JsonMissing.of()
                 private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
 
                 @JvmSynthetic
-                internal fun from(keyupCommand: KeyupCommand) = apply {
-                    this.command = keyupCommand.command
-                    this.key = keyupCommand.key
-                    this.tab = keyupCommand.tab
-                    this.additionalProperties = keyupCommand.additionalProperties.toMutableMap()
+                internal fun from(releaseCommand: ReleaseCommand) = apply {
+                    this.command = releaseCommand.command
+                    this.tab = releaseCommand.tab
+                    this.additionalProperties = releaseCommand.additionalProperties.toMutableMap()
                 }
 
                 fun command(command: JsonValue) = apply { this.command = command }
-
-                fun key(key: String) = key(JsonField.of(key))
-
-                fun key(key: JsonField<String>) = apply { this.key = key }
 
                 /** A tab id such as t2. A command on a ref does not need it. */
                 fun tab(tab: String) = tab(JsonField.of(tab))
@@ -4508,13 +4524,8 @@ private constructor(
                     keys.forEach(::removeAdditionalProperty)
                 }
 
-                fun build(): KeyupCommand =
-                    KeyupCommand(
-                        command,
-                        checkRequired("key", key),
-                        tab,
-                        additionalProperties.toMutableMap(),
-                    )
+                fun build(): ReleaseCommand =
+                    ReleaseCommand(command, tab, additionalProperties.toMutableMap())
             }
 
             fun isValid(): Boolean =
@@ -4527,25 +4538,23 @@ private constructor(
 
             private var validated: Boolean = false
 
-            fun validate(): KeyupCommand = apply {
+            fun validate(): ReleaseCommand = apply {
                 if (validated) {
                     return@apply
                 }
 
                 _command().let {
-                    if (it != JsonValue.from("keyup")) {
+                    if (it != JsonValue.from("release")) {
                         throw SteelInvalidDataException("'command' is invalid, received $it")
                     }
                 }
-                key()
                 tab()
                 validated = true
             }
 
             @JvmSynthetic
             internal fun validity(): Int =
-                (command.let { if (it == JsonValue.from("keyup")) 1 else 0 }) +
-                    (if (key.asKnown().isPresent) 1 else 0) +
+                (command.let { if (it == JsonValue.from("release")) 1 else 0 }) +
                     (if (tab.asKnown().isPresent) 1 else 0)
 
             override fun equals(other: Any?): Boolean {
@@ -4553,21 +4562,18 @@ private constructor(
                     return true
                 }
 
-                return other is KeyupCommand &&
+                return other is ReleaseCommand &&
                     this.command == other.command &&
-                    this.key == other.key &&
                     this.tab == other.tab &&
                     this.additionalProperties == other.additionalProperties
             }
 
-            private val hashCode: Int by lazy {
-                Objects.hash(command, key, tab, additionalProperties)
-            }
+            private val hashCode: Int by lazy { Objects.hash(command, tab, additionalProperties) }
 
             override fun hashCode(): Int = hashCode
 
             override fun toString() =
-                "KeyupCommand{command=$command, key=$key, tab=$tab, additionalProperties=$additionalProperties}"
+                "ReleaseCommand{command=$command, tab=$tab, additionalProperties=$additionalProperties}"
         }
 
         /**
@@ -4579,7 +4585,7 @@ private constructor(
         private constructor(
             private val action: JsonField<SessionCommandsParams.Commands.MouseCommand.Action>,
             private val command: JsonValue,
-            private val button: JsonField<Button>,
+            private val button: JsonField<SessionCommandsParams.Commands.MouseCommand.Button>,
             private val clicks: JsonField<Long>,
             private val deltaX: JsonField<Double>,
             private val deltaY: JsonField<Double>,
@@ -4598,7 +4604,8 @@ private constructor(
                 @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
                 @JsonProperty("button")
                 @ExcludeMissing
-                button: JsonField<Button> = JsonMissing.of(),
+                button: JsonField<SessionCommandsParams.Commands.MouseCommand.Button> =
+                    JsonMissing.of(),
                 @JsonProperty("clicks") @ExcludeMissing clicks: JsonField<Long> = JsonMissing.of(),
                 @JsonProperty("deltaX")
                 @ExcludeMissing
@@ -4614,7 +4621,8 @@ private constructor(
             fun action(): SessionCommandsParams.Commands.MouseCommand.Action =
                 action.getRequired("action")
 
-            fun button(): Optional<Button> = button.getOptional("button")
+            fun button(): Optional<SessionCommandsParams.Commands.MouseCommand.Button> =
+                button.getOptional("button")
 
             fun clicks(): Optional<Long> = clicks.getOptional("clicks")
 
@@ -4636,7 +4644,9 @@ private constructor(
             /** Expected to always return `JsonValue.from("mouse")`. It is set by default. */
             @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
 
-            @JsonProperty("button") @ExcludeMissing fun _button(): JsonField<Button> = button
+            @JsonProperty("button")
+            @ExcludeMissing
+            fun _button(): JsonField<SessionCommandsParams.Commands.MouseCommand.Button> = button
 
             @JsonProperty("clicks") @ExcludeMissing fun _clicks(): JsonField<Long> = clicks
 
@@ -4674,7 +4684,8 @@ private constructor(
                 private var action: JsonField<SessionCommandsParams.Commands.MouseCommand.Action>? =
                     null
                 private var command: JsonValue = JsonValue.from("mouse")
-                private var button: JsonField<Button> = JsonMissing.of()
+                private var button: JsonField<SessionCommandsParams.Commands.MouseCommand.Button> =
+                    JsonMissing.of()
                 private var clicks: JsonField<Long> = JsonMissing.of()
                 private var deltaX: JsonField<Double> = JsonMissing.of()
                 private var deltaY: JsonField<Double> = JsonMissing.of()
@@ -4707,9 +4718,13 @@ private constructor(
 
                 fun command(command: JsonValue) = apply { this.command = command }
 
-                fun button(button: Button) = button(JsonField.of(button))
+                fun button(button: SessionCommandsParams.Commands.MouseCommand.Button) =
+                    button(JsonField.of(button))
 
-                fun button(button: JsonField<Button>) = apply { this.button = button }
+                fun button(button: JsonField<SessionCommandsParams.Commands.MouseCommand.Button>) =
+                    apply {
+                        this.button = button
+                    }
 
                 fun clicks(clicks: Long) = clicks(JsonField.of(clicks))
 
@@ -8198,6 +8213,10 @@ private constructor(
                 @JsonProperty("timeout") @ExcludeMissing timeout: JsonField<Long> = JsonMissing.of(),
             ) : this(command, script, tab, timeout, mutableMapOf())
 
+            /**
+             * An expression, or an async function body that gives its value with return. A promise
+             * result is awaited.
+             */
             fun script(): String = script.getRequired("script")
 
             /** A tab id such as t2. A command on a ref does not need it. */
@@ -8253,8 +8272,16 @@ private constructor(
 
                 fun command(command: JsonValue) = apply { this.command = command }
 
+                /**
+                 * An expression, or an async function body that gives its value with return. A
+                 * promise result is awaited.
+                 */
                 fun script(script: String) = script(JsonField.of(script))
 
+                /**
+                 * An expression, or an async function body that gives its value with return. A
+                 * promise result is awaited.
+                 */
                 fun script(script: JsonField<String>) = apply { this.script = script }
 
                 /** A tab id such as t2. A command on a ref does not need it. */
@@ -9387,6 +9414,288 @@ private constructor(
             override fun toString() =
                 "TabCommand{action=$action, command=$command, tab=$tab, url=$url, additionalProperties=$additionalProperties}"
         }
+
+        /**
+         * Answers an open dialog. It never sends a key to the page, and fails if the dialog is not
+         * open.
+         */
+        class DialogCommand
+        @JsonCreator(mode = JsonCreator.Mode.DISABLED)
+        private constructor(
+            private val action: JsonField<SessionCommandsParams.Commands.DialogCommand.Action>,
+            private val command: JsonValue,
+            private val dialog: JsonField<String>,
+            private val text: JsonField<String>,
+            private val additionalProperties: MutableMap<String, JsonValue>,
+        ) {
+
+            @JsonCreator
+            private constructor(
+                @JsonProperty("action")
+                @ExcludeMissing
+                action: JsonField<SessionCommandsParams.Commands.DialogCommand.Action> =
+                    JsonMissing.of(),
+                @JsonProperty("command") @ExcludeMissing command: JsonValue = JsonMissing.of(),
+                @JsonProperty("dialog")
+                @ExcludeMissing
+                dialog: JsonField<String> = JsonMissing.of(),
+                @JsonProperty("text") @ExcludeMissing text: JsonField<String> = JsonMissing.of(),
+            ) : this(action, command, dialog, text, mutableMapOf())
+
+            fun action(): SessionCommandsParams.Commands.DialogCommand.Action =
+                action.getRequired("action")
+
+            /** The id of the dialog, such as d-3, from dialog in a response. */
+            fun dialog(): String = dialog.getRequired("dialog")
+
+            /**
+             * The answer to a prompt. Works only with accept. A prompt gets its default text
+             * without it.
+             */
+            fun text(): Optional<String> = text.getOptional("text")
+
+            @JsonProperty("action")
+            @ExcludeMissing
+            fun _action(): JsonField<SessionCommandsParams.Commands.DialogCommand.Action> = action
+
+            /** Expected to always return `JsonValue.from("dialog")`. It is set by default. */
+            @JsonProperty("command") @ExcludeMissing fun _command(): JsonValue = command
+
+            @JsonProperty("dialog") @ExcludeMissing fun _dialog(): JsonField<String> = dialog
+
+            @JsonProperty("text") @ExcludeMissing fun _text(): JsonField<String> = text
+
+            @JsonAnySetter
+            private fun putAdditionalProperty(key: String, value: JsonValue) {
+                additionalProperties.put(key, value)
+            }
+
+            @JsonAnyGetter
+            @ExcludeMissing
+            fun _additionalProperties(): Map<String, JsonValue> =
+                Collections.unmodifiableMap(additionalProperties)
+
+            fun toBuilder() = Builder().from(this)
+
+            companion object {
+
+                /** Returns a mutable builder for constructing an instance of [DialogCommand]. */
+                @JvmStatic fun builder() = Builder()
+            }
+
+            /** A builder for [DialogCommand]. */
+            class Builder internal constructor() {
+
+                private var action:
+                    JsonField<SessionCommandsParams.Commands.DialogCommand.Action>? =
+                    null
+                private var command: JsonValue = JsonValue.from("dialog")
+                private var dialog: JsonField<String>? = null
+                private var text: JsonField<String> = JsonMissing.of()
+                private var additionalProperties: MutableMap<String, JsonValue> = mutableMapOf()
+
+                @JvmSynthetic
+                internal fun from(dialogCommand: DialogCommand) = apply {
+                    this.action = dialogCommand.action
+                    this.command = dialogCommand.command
+                    this.dialog = dialogCommand.dialog
+                    this.text = dialogCommand.text
+                    this.additionalProperties = dialogCommand.additionalProperties.toMutableMap()
+                }
+
+                fun action(action: SessionCommandsParams.Commands.DialogCommand.Action) =
+                    action(JsonField.of(action))
+
+                fun action(action: JsonField<SessionCommandsParams.Commands.DialogCommand.Action>) =
+                    apply {
+                        this.action = action
+                    }
+
+                fun command(command: JsonValue) = apply { this.command = command }
+
+                /** The id of the dialog, such as d-3, from dialog in a response. */
+                fun dialog(dialog: String) = dialog(JsonField.of(dialog))
+
+                /** The id of the dialog, such as d-3, from dialog in a response. */
+                fun dialog(dialog: JsonField<String>) = apply { this.dialog = dialog }
+
+                /**
+                 * The answer to a prompt. Works only with accept. A prompt gets its default text
+                 * without it.
+                 */
+                fun text(text: String) = text(JsonField.of(text))
+
+                /**
+                 * The answer to a prompt. Works only with accept. A prompt gets its default text
+                 * without it.
+                 */
+                fun text(text: JsonField<String>) = apply { this.text = text }
+
+                fun additionalProperties(additionalProperties: Map<String, JsonValue>) = apply {
+                    this.additionalProperties.clear()
+                    putAllAdditionalProperties(additionalProperties)
+                }
+
+                fun putAdditionalProperty(key: String, value: JsonValue) = apply {
+                    additionalProperties.put(key, value)
+                }
+
+                fun putAllAdditionalProperties(additionalProperties: Map<String, JsonValue>) =
+                    apply {
+                        this.additionalProperties.putAll(additionalProperties)
+                    }
+
+                fun removeAdditionalProperty(key: String) = apply {
+                    additionalProperties.remove(key)
+                }
+
+                fun removeAllAdditionalProperties(keys: Set<String>) = apply {
+                    keys.forEach(::removeAdditionalProperty)
+                }
+
+                fun build(): DialogCommand =
+                    DialogCommand(
+                        checkRequired("action", action),
+                        command,
+                        checkRequired("dialog", dialog),
+                        text,
+                        additionalProperties.toMutableMap(),
+                    )
+            }
+
+            fun isValid(): Boolean =
+                try {
+                    validate()
+                    true
+                } catch (e: SteelInvalidDataException) {
+                    false
+                }
+
+            private var validated: Boolean = false
+
+            fun validate(): DialogCommand = apply {
+                if (validated) {
+                    return@apply
+                }
+
+                action().validate()
+                _command().let {
+                    if (it != JsonValue.from("dialog")) {
+                        throw SteelInvalidDataException("'command' is invalid, received $it")
+                    }
+                }
+                dialog()
+                text()
+                validated = true
+            }
+
+            @JvmSynthetic
+            internal fun validity(): Int =
+                (action.asKnown().getOrNull()?.let { it.validity() } ?: 0) +
+                    (command.let { if (it == JsonValue.from("dialog")) 1 else 0 }) +
+                    (if (dialog.asKnown().isPresent) 1 else 0) +
+                    (if (text.asKnown().isPresent) 1 else 0)
+
+            class Action @JsonCreator private constructor(private val value: JsonField<String>) :
+                Enum {
+
+                @com.fasterxml.jackson.annotation.JsonValue fun _value(): JsonField<String> = value
+
+                companion object {
+
+                    @JvmField val ACCEPT = of("accept")
+
+                    @JvmField val DISMISS = of("dismiss")
+
+                    @JvmStatic fun of(value: String) = Action(JsonField.of(value))
+                }
+
+                enum class Known {
+                    ACCEPT,
+                    DISMISS,
+                }
+
+                enum class Value {
+                    ACCEPT,
+                    DISMISS,
+                    _UNKNOWN,
+                }
+
+                fun value(): Value =
+                    when (this) {
+                        ACCEPT -> Value.ACCEPT
+                        DISMISS -> Value.DISMISS
+                        else -> Value._UNKNOWN
+                    }
+
+                fun known(): Known =
+                    when (this) {
+                        ACCEPT -> Known.ACCEPT
+                        DISMISS -> Known.DISMISS
+                        else -> throw SteelInvalidDataException("Unknown Action: $value")
+                    }
+
+                fun asString(): String =
+                    _value().asString().orElseThrow {
+                        SteelInvalidDataException("Value is not a String")
+                    }
+
+                fun isValid(): Boolean =
+                    try {
+                        validate()
+                        true
+                    } catch (e: SteelInvalidDataException) {
+                        false
+                    }
+
+                private var validated: Boolean = false
+
+                fun validate(): Action = apply {
+                    if (validated) {
+                        return@apply
+                    }
+
+                    known()
+                    validated = true
+                }
+
+                @JvmSynthetic internal fun validity(): Int = if (value() == Value._UNKNOWN) 0 else 1
+
+                override fun equals(other: Any?): Boolean {
+                    if (this === other) {
+                        return true
+                    }
+
+                    return other is Action && value == other.value
+                }
+
+                override fun hashCode() = value.hashCode()
+
+                override fun toString() = value.toString()
+            }
+
+            override fun equals(other: Any?): Boolean {
+                if (this === other) {
+                    return true
+                }
+
+                return other is DialogCommand &&
+                    this.action == other.action &&
+                    this.command == other.command &&
+                    this.dialog == other.dialog &&
+                    this.text == other.text &&
+                    this.additionalProperties == other.additionalProperties
+            }
+
+            private val hashCode: Int by lazy {
+                Objects.hash(action, command, dialog, text, additionalProperties)
+            }
+
+            override fun hashCode(): Int = hashCode
+
+            override fun toString() =
+                "DialogCommand{action=$action, command=$command, dialog=$dialog, text=$text, additionalProperties=$additionalProperties}"
+        }
     }
 
     /** Returns a snapshot, or a diff against the last one, after the commands. */
@@ -9591,8 +9900,6 @@ private constructor(
 
             companion object {
 
-                @JvmField val NONE = of("none")
-
                 @JvmField val SNAPSHOT = of("snapshot")
 
                 @JvmField val DIFF = of("diff")
@@ -9601,13 +9908,11 @@ private constructor(
             }
 
             enum class Known {
-                NONE,
                 SNAPSHOT,
                 DIFF,
             }
 
             enum class Value {
-                NONE,
                 SNAPSHOT,
                 DIFF,
                 _UNKNOWN,
@@ -9615,7 +9920,6 @@ private constructor(
 
             fun value(): Value =
                 when (this) {
-                    NONE -> Value.NONE
                     SNAPSHOT -> Value.SNAPSHOT
                     DIFF -> Value.DIFF
                     else -> Value._UNKNOWN
@@ -9623,7 +9927,6 @@ private constructor(
 
             fun known(): Known =
                 when (this) {
-                    NONE -> Known.NONE
                     SNAPSHOT -> Known.SNAPSHOT
                     DIFF -> Known.DIFF
                     else -> throw SteelInvalidDataException("Unknown Mode: $value")

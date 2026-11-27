@@ -16,7 +16,9 @@ import dev.steel.api.services.blocking.ExtensionService
 import dev.steel.api.services.blocking.FileService
 import dev.steel.api.services.blocking.ProfileService
 import dev.steel.api.services.blocking.ProjectService
+import dev.steel.api.services.blocking.SecretConnectionService
 import dev.steel.api.services.blocking.SessionService
+import dev.steel.api.services.blocking.VaultService
 import java.util.function.Consumer
 
 interface SteelClient {
@@ -47,7 +49,11 @@ interface SteelClient {
 
     fun projects(): ProjectService
 
+    fun secretConnections(): SecretConnectionService
+
     fun sessions(): SessionService
+
+    fun vaults(): VaultService
 
     /** Generates a PDF from a specified webpage. */
     fun pdf(params: ClientPdfParams, requestOptions: RequestOptions): ClientPdfResponse
@@ -91,7 +97,11 @@ interface SteelClient {
 
         fun projects(): ProjectService.WithRawResponse
 
+        fun secretConnections(): SecretConnectionService.WithRawResponse
+
         fun sessions(): SessionService.WithRawResponse
+
+        fun vaults(): VaultService.WithRawResponse
 
         /** Generates a PDF from a specified webpage. */
         @MustBeClosed

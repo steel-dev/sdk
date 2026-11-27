@@ -2,10 +2,12 @@
 
 package dev.steel.api.services.async
 
+import com.github.tomakehurst.wiremock.client.WireMock.delete
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import dev.steel.api.TestServerExtension
 import dev.steel.api.client.okhttp.SteelOkHttpClientAsync
 import dev.steel.api.models.profiles.ProfileCreateParams
+import dev.steel.api.models.profiles.ProfileDeleteParams
 import dev.steel.api.models.profiles.ProfileGetParams
 import dev.steel.api.models.profiles.ProfileListParams
 import dev.steel.api.models.profiles.ProfileUpdateParams
@@ -81,6 +83,26 @@ internal class ProfileServiceAsyncTest {
             service
                 .list(
                     ProfileListParams.builder()
+                        .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+                        .build()
+                )
+                .get()
+        response.validate()
+    }
+
+    @Test
+    fun delete() {
+        val client =
+            SteelOkHttpClientAsync.builder()
+                .baseUrl(TestServerExtension.BASE_URL)
+                .steelApiKey("My Steel API Key")
+                .build()
+        val service = client.profiles()
+        val response =
+            service
+                .delete(
+                    ProfileDeleteParams.builder()
+                        .id("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .projectId("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
                         .build()
                 )

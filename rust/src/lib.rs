@@ -9,12 +9,12 @@ mod error;
 pub mod resources;
 mod upload;
 
-pub use client::{Client, ClientBuilder, Page};
+pub use client::{Call, Client, ClientBuilder, Page, Response};
 pub use error::Error;
 pub use resources::*;
 pub use upload::Upload;
 
-pub const VERSION: &str = "0.23.0";
+pub const VERSION: &str = "0.24.0";
 pub const DEFAULT_BASE_URL: &str = "https://api.steel.dev";
 pub(crate) const CLIENT: &str = "Steel";
 pub(crate) const API_KEY_HEADER: &str = "steel-api-key";

@@ -10,6 +10,9 @@ func (UnionString) ImplementsCommandTargetUnionParam()                          
 func (UnionString) ImplementsCommandUploadFilesUnionParam()                          {}
 func (UnionString) ImplementsSessionCommandsParamsCommandsSelectCommandValuesUnion() {}
 func (UnionString) ImplementsSessionCommandsParamsCommandsUploadCommandFilesUnion()  {}
+func (UnionString) ImplementsSessionCredentialAttachParamsBindingUnion()             {}
+func (UnionString) ImplementsSessionCredentialReplaceParamsBindingUnion()            {}
+func (UnionString) ImplementsSessionNewParamsCredentialsBindingUnion()               {}
 func (UnionString) ImplementsSessionNewParamsMetadataUnion()                         {}
 func (UnionString) ImplementsSessionReplaceMetadataParamsMetadataUnion()             {}
 func (UnionString) ImplementsSessionUpdateMetadataParamsMetadataUnion()              {}

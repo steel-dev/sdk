@@ -871,7 +871,7 @@ private constructor(
 
                 fun audioCodecs(): AudioCodecs = audioCodecs.getRequired("audioCodecs")
 
-                fun battery(): Battery = battery.getRequired("battery")
+                fun battery(): Optional<Battery> = battery.getOptional("battery")
 
                 fun fonts(): List<String> = fonts.getRequired("fonts")
 
@@ -990,7 +990,9 @@ private constructor(
                         this.audioCodecs = audioCodecs
                     }
 
-                    fun battery(battery: Battery) = battery(JsonField.of(battery))
+                    fun battery(battery: Battery?) = battery(JsonField.ofNullable(battery))
+
+                    fun battery(battery: Optional<Battery>) = battery(battery.getOrNull())
 
                     fun battery(battery: JsonField<Battery>) = apply { this.battery = battery }
 
@@ -1119,7 +1121,7 @@ private constructor(
                     }
 
                     audioCodecs().validate()
-                    battery().validate()
+                    battery().ifPresent { it.validate() }
                     fonts()
                     mockWebRtc()
                     multimediaDevices().validate()
@@ -3853,9 +3855,9 @@ private constructor(
                         @JsonCreator(mode = JsonCreator.Mode.DISABLED)
                         private constructor(
                             private val description: JsonField<String>,
-                            private val enabledPlugin: JsonField<String>,
                             private val suffixes: JsonField<String>,
                             private val type: JsonField<String>,
+                            private val enabledPlugin: JsonField<String>,
                             private val additionalProperties: MutableMap<String, JsonValue>,
                         ) {
 
@@ -3864,34 +3866,30 @@ private constructor(
                                 @JsonProperty("description")
                                 @ExcludeMissing
                                 description: JsonField<String> = JsonMissing.of(),
-                                @JsonProperty("enabledPlugin")
-                                @ExcludeMissing
-                                enabledPlugin: JsonField<String> = JsonMissing.of(),
                                 @JsonProperty("suffixes")
                                 @ExcludeMissing
                                 suffixes: JsonField<String> = JsonMissing.of(),
                                 @JsonProperty("type")
                                 @ExcludeMissing
                                 type: JsonField<String> = JsonMissing.of(),
-                            ) : this(description, enabledPlugin, suffixes, type, mutableMapOf())
+                                @JsonProperty("enabledPlugin")
+                                @ExcludeMissing
+                                enabledPlugin: JsonField<String> = JsonMissing.of(),
+                            ) : this(description, suffixes, type, enabledPlugin, mutableMapOf())
 
                             fun description(): Optional<String> =
                                 description.getOptional("description")
-
-                            fun enabledPlugin(): Optional<String> =
-                                enabledPlugin.getOptional("enabledPlugin")
 
                             fun suffixes(): Optional<String> = suffixes.getOptional("suffixes")
 
                             fun type(): Optional<String> = type.getOptional("type")
 
+                            fun enabledPlugin(): Optional<String> =
+                                enabledPlugin.getOptional("enabledPlugin")
+
                             @JsonProperty("description")
                             @ExcludeMissing
                             fun _description(): JsonField<String> = description
-
-                            @JsonProperty("enabledPlugin")
-                            @ExcludeMissing
-                            fun _enabledPlugin(): JsonField<String> = enabledPlugin
 
                             @JsonProperty("suffixes")
                             @ExcludeMissing
@@ -3900,6 +3898,10 @@ private constructor(
                             @JsonProperty("type")
                             @ExcludeMissing
                             fun _type(): JsonField<String> = type
+
+                            @JsonProperty("enabledPlugin")
+                            @ExcludeMissing
+                            fun _enabledPlugin(): JsonField<String> = enabledPlugin
 
                             @JsonAnySetter
                             private fun putAdditionalProperty(key: String, value: JsonValue) {
@@ -3926,18 +3928,18 @@ private constructor(
                             class Builder internal constructor() {
 
                                 private var description: JsonField<String>? = null
-                                private var enabledPlugin: JsonField<String>? = null
                                 private var suffixes: JsonField<String>? = null
                                 private var type: JsonField<String>? = null
+                                private var enabledPlugin: JsonField<String> = JsonMissing.of()
                                 private var additionalProperties: MutableMap<String, JsonValue> =
                                     mutableMapOf()
 
                                 @JvmSynthetic
                                 internal fun from(mimeType: MimeType) = apply {
                                     this.description = mimeType.description
-                                    this.enabledPlugin = mimeType.enabledPlugin
                                     this.suffixes = mimeType.suffixes
                                     this.type = mimeType.type
+                                    this.enabledPlugin = mimeType.enabledPlugin
                                     this.additionalProperties =
                                         mimeType.additionalProperties.toMutableMap()
                                 }
@@ -3950,16 +3952,6 @@ private constructor(
 
                                 fun description(description: JsonField<String>) = apply {
                                     this.description = description
-                                }
-
-                                fun enabledPlugin(enabledPlugin: String?) =
-                                    enabledPlugin(JsonField.ofNullable(enabledPlugin))
-
-                                fun enabledPlugin(enabledPlugin: Optional<String>) =
-                                    enabledPlugin(enabledPlugin.getOrNull())
-
-                                fun enabledPlugin(enabledPlugin: JsonField<String>) = apply {
-                                    this.enabledPlugin = enabledPlugin
                                 }
 
                                 fun suffixes(suffixes: String?) =
@@ -3977,6 +3969,16 @@ private constructor(
                                 fun type(type: Optional<String>) = type(type.getOrNull())
 
                                 fun type(type: JsonField<String>) = apply { this.type = type }
+
+                                fun enabledPlugin(enabledPlugin: String?) =
+                                    enabledPlugin(JsonField.ofNullable(enabledPlugin))
+
+                                fun enabledPlugin(enabledPlugin: Optional<String>) =
+                                    enabledPlugin(enabledPlugin.getOrNull())
+
+                                fun enabledPlugin(enabledPlugin: JsonField<String>) = apply {
+                                    this.enabledPlugin = enabledPlugin
+                                }
 
                                 fun additionalProperties(
                                     additionalProperties: Map<String, JsonValue>
@@ -4004,9 +4006,9 @@ private constructor(
                                 fun build(): MimeType =
                                     MimeType(
                                         checkRequired("description", description),
-                                        checkRequired("enabledPlugin", enabledPlugin),
                                         checkRequired("suffixes", suffixes),
                                         checkRequired("type", type),
+                                        enabledPlugin,
                                         additionalProperties.toMutableMap(),
                                     )
                             }
@@ -4027,18 +4029,18 @@ private constructor(
                                 }
 
                                 description()
-                                enabledPlugin()
                                 suffixes()
                                 type()
+                                enabledPlugin()
                                 validated = true
                             }
 
                             @JvmSynthetic
                             internal fun validity(): Int =
                                 (if (description.asKnown().isPresent) 1 else 0) +
-                                    (if (enabledPlugin.asKnown().isPresent) 1 else 0) +
                                     (if (suffixes.asKnown().isPresent) 1 else 0) +
-                                    (if (type.asKnown().isPresent) 1 else 0)
+                                    (if (type.asKnown().isPresent) 1 else 0) +
+                                    (if (enabledPlugin.asKnown().isPresent) 1 else 0)
 
                             override fun equals(other: Any?): Boolean {
                                 if (this === other) {
@@ -4047,18 +4049,18 @@ private constructor(
 
                                 return other is MimeType &&
                                     this.description == other.description &&
-                                    this.enabledPlugin == other.enabledPlugin &&
                                     this.suffixes == other.suffixes &&
                                     this.type == other.type &&
+                                    this.enabledPlugin == other.enabledPlugin &&
                                     this.additionalProperties == other.additionalProperties
                             }
 
                             private val hashCode: Int by lazy {
                                 Objects.hash(
                                     description,
-                                    enabledPlugin,
                                     suffixes,
                                     type,
+                                    enabledPlugin,
                                     additionalProperties,
                                 )
                             }
@@ -4066,7 +4068,7 @@ private constructor(
                             override fun hashCode(): Int = hashCode
 
                             override fun toString() =
-                                "MimeType{description=$description, enabledPlugin=$enabledPlugin, suffixes=$suffixes, type=$type, additionalProperties=$additionalProperties}"
+                                "MimeType{description=$description, suffixes=$suffixes, type=$type, enabledPlugin=$enabledPlugin, additionalProperties=$additionalProperties}"
                         }
 
                         override fun equals(other: Any?): Boolean {
@@ -5570,6 +5572,10 @@ private constructor(
 
                 @JvmField val FAILED = of("FAILED")
 
+                @JvmField val DELETING = of("DELETING")
+
+                @JvmField val DELETED = of("DELETED")
+
                 @JvmStatic fun of(value: String) = Status(JsonField.of(value))
             }
 
@@ -5577,12 +5583,16 @@ private constructor(
                 UPLOADING,
                 READY,
                 FAILED,
+                DELETING,
+                DELETED,
             }
 
             enum class Value {
                 UPLOADING,
                 READY,
                 FAILED,
+                DELETING,
+                DELETED,
                 _UNKNOWN,
             }
 
@@ -5591,6 +5601,8 @@ private constructor(
                     UPLOADING -> Value.UPLOADING
                     READY -> Value.READY
                     FAILED -> Value.FAILED
+                    DELETING -> Value.DELETING
+                    DELETED -> Value.DELETED
                     else -> Value._UNKNOWN
                 }
 
@@ -5599,6 +5611,8 @@ private constructor(
                     UPLOADING -> Known.UPLOADING
                     READY -> Known.READY
                     FAILED -> Known.FAILED
+                    DELETING -> Known.DELETING
+                    DELETED -> Known.DELETED
                     else -> throw SteelInvalidDataException("Unknown Status: $value")
                 }
 

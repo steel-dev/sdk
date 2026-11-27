@@ -13,6 +13,12 @@ export {
   type CommandExecutionRetrieveResponse,
   type CommandExecutionCancelResponse,
 } from './command-executions';
+export {
+  Credentials,
+  type CredentialAttachParams,
+  type CredentialDetachBindingParams,
+  type CredentialReplaceParams,
+} from './credentials';
 export { Files, type FileUploadParams } from './files';
 export {
   SessionslistSessionsSessionsCursor,
@@ -22,11 +28,13 @@ export {
   type CommandErrorInfo,
   type CommandExpectation,
   type CommandFrame,
+  type CommandHeld,
   type CommandLocator,
   type CommandResult,
   type CommandTarget,
   type Session,
   type SessionContext,
+  type SessionCredentials,
   type Sessionslist,
   type SessionAgentTracesResponse,
   type SessionCommandsResponse,

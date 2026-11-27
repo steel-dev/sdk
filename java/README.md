@@ -4,7 +4,7 @@ The Steel Java SDK gives Java applications typed access to the Steel REST API. I
 
 > **Beta.** Every release generates and tests this SDK, but any release can change its API, and support goes to the TypeScript, Python, Go and Rust SDKs first.
 
-The REST API documentation lives at [docs.steel.dev](https://docs.steel.dev).
+The REST API documentation lives at [steel.dev/docs](https://steel.dev/docs).
 
 ## Installation
 
@@ -23,7 +23,7 @@ repositories {
 }
 
 dependencies {
-    implementation("dev.steel:steel-java:0.23.0")
+    implementation("dev.steel:steel-java:0.24.0")
 }
 ```
 
@@ -35,7 +35,7 @@ Maven reads the local repository by default.
 <dependency>
   <groupId>dev.steel</groupId>
   <artifactId>steel-java</artifactId>
-  <version>0.23.0</version>
+  <version>0.24.0</version>
 </dependency>
 ```
 

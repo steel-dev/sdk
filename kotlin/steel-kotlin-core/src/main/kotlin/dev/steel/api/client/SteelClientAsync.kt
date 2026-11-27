@@ -15,7 +15,9 @@ import dev.steel.api.services.async.ExtensionServiceAsync
 import dev.steel.api.services.async.FileServiceAsync
 import dev.steel.api.services.async.ProfileServiceAsync
 import dev.steel.api.services.async.ProjectServiceAsync
+import dev.steel.api.services.async.SecretConnectionServiceAsync
 import dev.steel.api.services.async.SessionServiceAsync
+import dev.steel.api.services.async.VaultServiceAsync
 import java.util.function.Consumer
 
 interface SteelClientAsync {
@@ -46,7 +48,11 @@ interface SteelClientAsync {
 
     fun projects(): ProjectServiceAsync
 
+    fun secretConnections(): SecretConnectionServiceAsync
+
     fun sessions(): SessionServiceAsync
+
+    fun vaults(): VaultServiceAsync
 
     /** Generates a PDF from a specified webpage. */
     suspend fun pdf(params: ClientPdfParams, requestOptions: RequestOptions): ClientPdfResponse
@@ -93,7 +99,11 @@ interface SteelClientAsync {
 
         fun projects(): ProjectServiceAsync.WithRawResponse
 
+        fun secretConnections(): SecretConnectionServiceAsync.WithRawResponse
+
         fun sessions(): SessionServiceAsync.WithRawResponse
+
+        fun vaults(): VaultServiceAsync.WithRawResponse
 
         /** Generates a PDF from a specified webpage. */
         suspend fun pdf(

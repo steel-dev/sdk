@@ -7,49 +7,57 @@ pub struct SessionsCommandExecutions<'a> {
 
 impl<'a> SessionsCommandExecutions<'a> {
     /// Waits up to 20 seconds for an execution to finish and returns it. Use it when a run answered with state running.
-    pub async fn retrieve(
+    pub fn retrieve(
         &self,
         session_id: &str,
         execution_id: &str,
-    ) -> Result<SessionCommandExecutionRetrieveResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::GET,
-            format!(
-                "/v1/sessions/{}/commands/executions/{}",
-                crate::encoding::segment(session_id),
-                crate::encoding::segment(execution_id)
-            ),
+    ) -> crate::Call<'a, SessionCommandExecutionRetrieveResponse> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/commands/executions/{}",
+            crate::encoding::segment(session_id),
+            crate::encoding::segment(execution_id)
         );
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::GET, path);
+            client.json(request).await
+        })
     }
 
     /// Stops an execution. The running command stops before its next input, and commands that already ran are not undone.
-    pub async fn cancel(
+    pub fn cancel(
         &self,
         session_id: &str,
         execution_id: &str,
-    ) -> Result<SessionCommandExecutionCancelResponse, crate::Error> {
-        let request = crate::client::Request::new(
-            reqwest::Method::POST,
-            format!(
-                "/v1/sessions/{}/commands/executions/{}/cancel",
-                crate::encoding::segment(session_id),
-                crate::encoding::segment(execution_id)
-            ),
+    ) -> crate::Call<'a, SessionCommandExecutionCancelResponse> {
+        let client = self.client;
+        let path = format!(
+            "/v1/sessions/{}/commands/executions/{}/cancel",
+            crate::encoding::segment(session_id),
+            crate::encoding::segment(execution_id)
         );
-        self.client.json(request).await
+        crate::Call::new(async move {
+            let request = crate::client::Request::new(reqwest::Method::POST, path);
+            client.json(request).await
+        })
     }
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandExecutionRetrieveResponse {
-    /// The id of this execution, the same as execution.id. Use it to get or cancel the execution.
+    /// The id of this execution. Use it to get or cancel the execution.
     pub id: String,
-    pub execution: SessionCommandExecutionRetrieveResponseExecution,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: SessionCommandExecutionRetrieveResponseEffect,
     /// The tab the execution used.
     #[serde(default)]
     pub page: Option<SessionCommandExecutionRetrieveResponsePage>,
+    /// Commands started.
+    pub ran: i64,
+    /// This is the stored result of an earlier request. Nothing ran again.
+    pub replayed: bool,
     pub results: Vec<crate::CommandResult>,
+    pub state: SessionCommandExecutionRetrieveResponseState,
     #[serde(
         rename = "bodyExpired",
         default,
@@ -66,28 +74,21 @@ pub struct SessionCommandExecutionRetrieveResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub epoch_changed: Option<bool>,
+    /// Tabs with keys or a mouse button still held down. Left out when nothing is held.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub held: Option<Vec<crate::CommandHeld>>,
     /// Send it as after in the next request.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub next: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub observe: Option<SessionCommandExecutionRetrieveResponseObserve>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandExecutionRetrieveResponseExecution {
-    pub id: String,
-    /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: SessionCommandExecutionRetrieveResponseExecutionEffect,
-    /// Commands started.
-    pub ran: i64,
-    pub replayed: bool,
-    pub state: SessionCommandExecutionRetrieveResponseExecutionState,
+    /// Why the execution stopped early, such as a cancel, a timeout, or a browser restart. A failed command has its error in results instead.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error: Option<crate::CommandErrorInfo>,
+    pub stopped: Option<crate::CommandErrorInfo>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandExecutionRetrieveResponseExecutionEffect {
+pub enum SessionCommandExecutionRetrieveResponseEffect {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "applied")]
@@ -98,10 +99,32 @@ pub enum SessionCommandExecutionRetrieveResponseExecutionEffect {
     Other,
 }
 
+impl SessionCommandExecutionRetrieveResponseEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandExecutionRetrieveResponseEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCommandExecutionRetrieveResponsePage {
+    pub tab: String,
+    pub title: String,
+    pub url: String,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandExecutionRetrieveResponseExecutionState {
-    #[serde(rename = "queued")]
-    Queued,
+pub enum SessionCommandExecutionRetrieveResponseState {
     #[serde(rename = "running")]
     Running,
     #[serde(rename = "completed")]
@@ -112,17 +135,27 @@ pub enum SessionCommandExecutionRetrieveResponseExecutionState {
     Cancelled,
     #[serde(rename = "timeout")]
     Timeout,
-    #[serde(rename = "expired")]
-    Expired,
     #[serde(other)]
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandExecutionRetrieveResponsePage {
-    pub tab: String,
-    pub title: String,
-    pub url: String,
+impl SessionCommandExecutionRetrieveResponseState {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Running => "running",
+            Self::Completed => "completed",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+            Self::Timeout => "timeout",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandExecutionRetrieveResponseState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
@@ -151,13 +184,19 @@ pub struct SessionCommandExecutionRetrieveResponseObserve {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct SessionCommandExecutionCancelResponse {
-    /// The id of this execution, the same as execution.id. Use it to get or cancel the execution.
+    /// The id of this execution. Use it to get or cancel the execution.
     pub id: String,
-    pub execution: SessionCommandExecutionCancelResponseExecution,
+    /// What happened to the page: nothing, a change, or a possible change.
+    pub effect: SessionCommandExecutionCancelResponseEffect,
     /// The tab the execution used.
     #[serde(default)]
     pub page: Option<SessionCommandExecutionCancelResponsePage>,
+    /// Commands started.
+    pub ran: i64,
+    /// This is the stored result of an earlier request. Nothing ran again.
+    pub replayed: bool,
     pub results: Vec<crate::CommandResult>,
+    pub state: SessionCommandExecutionCancelResponseState,
     #[serde(
         rename = "bodyExpired",
         default,
@@ -174,28 +213,21 @@ pub struct SessionCommandExecutionCancelResponse {
         skip_serializing_if = "Option::is_none"
     )]
     pub epoch_changed: Option<bool>,
+    /// Tabs with keys or a mouse button still held down. Left out when nothing is held.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub held: Option<Vec<crate::CommandHeld>>,
     /// Send it as after in the next request.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub next: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub observe: Option<SessionCommandExecutionCancelResponseObserve>,
-}
-
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandExecutionCancelResponseExecution {
-    pub id: String,
-    /// What happened to the page: nothing, a change, or a possible change.
-    pub effect: SessionCommandExecutionCancelResponseExecutionEffect,
-    /// Commands started.
-    pub ran: i64,
-    pub replayed: bool,
-    pub state: SessionCommandExecutionCancelResponseExecutionState,
+    /// Why the execution stopped early, such as a cancel, a timeout, or a browser restart. A failed command has its error in results instead.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub error: Option<crate::CommandErrorInfo>,
+    pub stopped: Option<crate::CommandErrorInfo>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandExecutionCancelResponseExecutionEffect {
+pub enum SessionCommandExecutionCancelResponseEffect {
     #[serde(rename = "none")]
     None,
     #[serde(rename = "applied")]
@@ -206,10 +238,32 @@ pub enum SessionCommandExecutionCancelResponseExecutionEffect {
     Other,
 }
 
+impl SessionCommandExecutionCancelResponseEffect {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::None => "none",
+            Self::Applied => "applied",
+            Self::Unknown => "unknown",
+            Self::Other => "Other",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandExecutionCancelResponseEffect {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct SessionCommandExecutionCancelResponsePage {
+    pub tab: String,
+    pub title: String,
+    pub url: String,
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
-pub enum SessionCommandExecutionCancelResponseExecutionState {
-    #[serde(rename = "queued")]
-    Queued,
+pub enum SessionCommandExecutionCancelResponseState {
     #[serde(rename = "running")]
     Running,
     #[serde(rename = "completed")]
@@ -220,17 +274,27 @@ pub enum SessionCommandExecutionCancelResponseExecutionState {
     Cancelled,
     #[serde(rename = "timeout")]
     Timeout,
-    #[serde(rename = "expired")]
-    Expired,
     #[serde(other)]
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct SessionCommandExecutionCancelResponsePage {
-    pub tab: String,
-    pub title: String,
-    pub url: String,
+impl SessionCommandExecutionCancelResponseState {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Running => "running",
+            Self::Completed => "completed",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+            Self::Timeout => "timeout",
+            Self::Unknown => "Unknown",
+        }
+    }
+}
+
+impl std::fmt::Display for SessionCommandExecutionCancelResponseState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(self.as_str())
+    }
 }
 
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]

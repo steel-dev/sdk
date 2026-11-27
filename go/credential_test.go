@@ -31,10 +31,11 @@ func TestCredentialNewWithOptionalParams(t *testing.T) {
 			Value: steel.F(map[string]string{
 				"foo": "string",
 			}),
-			Label:     steel.F("label"),
-			Namespace: steel.F("namespace"),
-			Origin:    steel.F("origin"),
-			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			AdditionalOrigins: steel.F([]string{"x"}),
+			Label:             steel.F("label"),
+			Namespace:         steel.F("namespace"),
+			Origin:            steel.F("origin"),
+			ProjectID:         steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		},
 	)
 	if err != nil {
@@ -61,10 +62,11 @@ func TestCredentialUpdateWithOptionalParams(t *testing.T) {
 	_, err := client.Credentials.Update(
 		context.TODO(),
 		steel.CredentialUpdateParams{
-			Label:     steel.F("label"),
-			Namespace: steel.F("namespace"),
-			Origin:    steel.F("origin"),
-			ProjectID: steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			AdditionalOrigins: steel.F([]string{"x"}),
+			Label:             steel.F("label"),
+			Namespace:         steel.F("namespace"),
+			Origin:            steel.F("origin"),
+			ProjectID:         steel.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Value: steel.F(map[string]string{
 				"foo": "string",
 			}),

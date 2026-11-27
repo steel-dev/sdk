@@ -19,6 +19,13 @@ import {
   CommandExecutionRetrieveResponse,
   CommandExecutions,
 } from './command-executions';
+import * as CredentialsAPI from './credentials';
+import {
+  CredentialAttachParams,
+  CredentialDetachBindingParams,
+  CredentialReplaceParams,
+  Credentials,
+} from './credentials';
 import * as FilesAPI from './files';
 import { FileUploadParams, Files } from './files';
 import { type Response } from '../../_shims/index';
@@ -29,6 +36,7 @@ export class Sessions extends APIResource {
   commandExecutions: CommandExecutionsAPI.CommandExecutions = new CommandExecutionsAPI.CommandExecutions(
     this._client,
   );
+  credentials: CredentialsAPI.Credentials = new CredentialsAPI.Credentials(this._client);
   files: FilesAPI.Files = new FilesAPI.Files(this._client);
 
   /**
@@ -272,14 +280,13 @@ export type Command =
   | Command.ReloadCommand
   | Command.SnapshotCommand
   | Command.ClickCommand
-  | Command.DblclickCommand
   | Command.HoverCommand
   | Command.FocusCommand
   | Command.TypeCommand
   | Command.FillCommand
   | Command.PressCommand
-  | Command.KeydownCommand
-  | Command.KeyupCommand
+  | Command.KeyboardCommand
+  | Command.ReleaseCommand
   | Command.MouseCommand
   | Command.SelectCommand
   | Command.CheckCommand
@@ -294,7 +301,8 @@ export type Command =
   | Command.PdfCommand
   | Command.ScrollCommand
   | Command.FindCommand
-  | Command.TabCommand;
+  | Command.TabCommand
+  | Command.DialogCommand;
 
 export namespace Command {
   /**
@@ -388,31 +396,14 @@ export namespace Command {
     target: SessionsAPI.CommandTarget;
 
     /**
-     * Fails the command when the element does not have this role or name.
+     * left by default.
      */
-    expect?: SessionsAPI.CommandExpectation;
+    button?: 'left' | 'right' | 'middle';
 
     /**
-     * The iframe to look in. List nested iframes from the outside in.
+     * 2 makes a double click and 3 a triple click. 1 by default.
      */
-    frame?: SessionsAPI.CommandFrame;
-
-    /**
-     * A tab id such as t2. A command on a ref does not need it.
-     */
-    tab?: string;
-  }
-
-  /**
-   * Double-clicks the element with the mouse.
-   */
-  export interface DblclickCommand {
-    command: 'dblclick';
-
-    /**
-     * A ref from a snapshot such as e12, a CSS selector, or a locator.
-     */
-    target: SessionsAPI.CommandTarget;
+    clicks?: number;
 
     /**
      * Fails the command when the element does not have this role or name.
@@ -553,7 +544,9 @@ export namespace Command {
   }
 
   /**
-   * Presses a key, such as Enter, or a combination such as Control+a.
+   * Presses a key, such as Enter, or a combination such as Control+a. On a tab with
+   * an open dialog, Enter without a target accepts the dialog and Escape dismisses
+   * it.
    */
   export interface PressCommand {
     command: 'press';
@@ -582,11 +575,16 @@ export namespace Command {
   }
 
   /**
-   * Holds a key down until its keyup.
+   * Holds a key down, or lets go of a key held down.
    */
-  export interface KeydownCommand {
-    command: 'keydown';
+  export interface KeyboardCommand {
+    action: 'down' | 'up';
 
+    command: 'keyboard';
+
+    /**
+     * One key, not a combination such as Control+a.
+     */
     key: string;
 
     /**
@@ -596,12 +594,10 @@ export namespace Command {
   }
 
   /**
-   * Lets go of a key held with keydown.
+   * Lets go of every key and mouse button held on the tab.
    */
-  export interface KeyupCommand {
-    command: 'keyup';
-
-    key: string;
+  export interface ReleaseCommand {
+    command: 'release';
 
     /**
      * A tab id such as t2. A command on a ref does not need it.
@@ -928,6 +924,10 @@ export namespace Command {
   export interface EvalCommand {
     command: 'eval';
 
+    /**
+     * An expression, or an async function body that gives its value with return. A
+     * promise result is awaited.
+     */
     script: string;
 
     /**
@@ -1029,6 +1029,27 @@ export namespace Command {
 
     url?: string;
   }
+
+  /**
+   * Answers an open dialog. It never sends a key to the page, and fails if the
+   * dialog is not open.
+   */
+  export interface DialogCommand {
+    action: 'accept' | 'dismiss';
+
+    command: 'dialog';
+
+    /**
+     * The id of the dialog, such as d-3, from dialog in a response.
+     */
+    dialog: string;
+
+    /**
+     * The answer to a prompt. Works only with accept. A prompt gets its default text
+     * without it.
+     */
+    text?: string;
+  }
 }
 
 /**
@@ -1073,6 +1094,23 @@ export interface CommandExpectation {
  * The iframe to look in. List nested iframes from the outside in.
  */
 export type CommandFrame = string | CommandLocator | Array<CommandTarget>;
+
+/**
+ * Input still held down on a tab. It applies to later input until released.
+ */
+export interface CommandHeld {
+  /**
+   * Keys still held down, for example with keyboard down.
+   */
+  keys: Array<string>;
+
+  tab: string;
+
+  /**
+   * A mouse button held down with mouse down.
+   */
+  button?: 'left' | 'right' | 'middle';
+}
 
 /**
  * Finds an element. Set exactly one of role, text, label, placeholder, alt, title,
@@ -1121,15 +1159,14 @@ export type CommandResult =
   | CommandResult.ReloadResult
   | CommandResult.SnapshotResult
   | CommandResult.ClickResult
-  | CommandResult.DblclickResult
   | CommandResult.HoverResult
   | CommandResult.FocusResult
   | CommandResult.TypeResult
   | CommandResult.FillResult
   | CommandResult.PressResult
-  | CommandResult.KeydownResult
-  | CommandResult.KeyupResult
+  | CommandResult.KeyboardResult
   | CommandResult.MouseResult
+  | CommandResult.ReleaseResult
   | CommandResult.SelectResult
   | CommandResult.CheckResult
   | CommandResult.UncheckResult
@@ -1143,7 +1180,8 @@ export type CommandResult =
   | CommandResult.PdfResult
   | CommandResult.ScrollResult
   | CommandResult.FindResult
-  | CommandResult.TabResult;
+  | CommandResult.TabResult
+  | CommandResult.DialogResult;
 
 export namespace CommandResult {
   /**
@@ -1160,6 +1198,11 @@ export namespace CommandResult {
     ok: boolean;
 
     error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
 
     url?: string;
   }
@@ -1178,6 +1221,11 @@ export namespace CommandResult {
     ok: boolean;
 
     error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
 
     /**
      * False when there was no history entry.
@@ -1203,6 +1251,11 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
+
+    /**
      * False when there was no history entry.
      */
     navigated?: boolean;
@@ -1224,6 +1277,11 @@ export namespace CommandResult {
     ok: boolean;
 
     error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
 
     url?: string;
   }
@@ -1269,35 +1327,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
-  }
-
-  /**
-   * Result of a dblclick command.
-   */
-  export interface DblclickResult {
-    command: 'dblclick';
 
     /**
-     * What happened to the page: nothing, a change, or a possible change.
+     * The ids of tabs that opened while the command ran.
      */
-    effect: 'none' | 'applied' | 'unknown';
-
-    ok: boolean;
-
-    /**
-     * A dialog that the command opened. It blocks the tab until it closes.
-     */
-    dialog?: SessionsAPI.CommandDialog;
-
-    error?: SessionsAPI.CommandErrorInfo;
-
-    /**
-     * The command started a navigation that was still loading when it returned.
-     */
-    loading?: boolean;
+    opened?: Array<string>;
   }
 
   /**
@@ -1358,9 +1395,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1384,9 +1426,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1403,6 +1450,12 @@ export namespace CommandResult {
     ok: boolean;
 
     /**
+     * The id of the dialog that the key answered. Absent when the key went to the
+     * page.
+     */
+    answered?: string;
+
+    /**
      * A dialog that the command opened. It blocks the tab until it closes.
      */
     dialog?: SessionsAPI.CommandDialog;
@@ -1410,16 +1463,21 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
-   * Result of a keydown command.
+   * Result of a keyboard command.
    */
-  export interface KeydownResult {
-    command: 'keydown';
+  export interface KeyboardResult {
+    command: 'keyboard';
 
     /**
      * What happened to the page: nothing, a change, or a possible change.
@@ -1436,35 +1494,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
-  }
-
-  /**
-   * Result of a keyup command.
-   */
-  export interface KeyupResult {
-    command: 'keyup';
 
     /**
-     * What happened to the page: nothing, a change, or a possible change.
+     * The ids of tabs that opened while the command ran.
      */
-    effect: 'none' | 'applied' | 'unknown';
-
-    ok: boolean;
-
-    /**
-     * A dialog that the command opened. It blocks the tab until it closes.
-     */
-    dialog?: SessionsAPI.CommandDialog;
-
-    error?: SessionsAPI.CommandErrorInfo;
-
-    /**
-     * The command started a navigation that was still loading when it returned.
-     */
-    loading?: boolean;
+    opened?: Array<string>;
   }
 
   /**
@@ -1488,9 +1525,55 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
+  }
+
+  /**
+   * Result of a release command.
+   */
+  export interface ReleaseResult {
+    command: 'release';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * The mouse button that was let go.
+     */
+    button?: 'left' | 'right' | 'middle';
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The keys that were let go.
+     */
+    keys?: Array<string>;
+
+    /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1514,9 +1597,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
 
     /**
      * The values of the selected options.
@@ -1547,9 +1635,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1575,9 +1668,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1603,9 +1701,14 @@ export namespace CommandResult {
     files?: Array<string>;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1629,9 +1732,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 
   /**
@@ -1659,6 +1767,11 @@ export namespace CommandResult {
      * count. { x, y, width, height } or null for box. A list of locators for locator.
      */
     value?: unknown;
+
+    /**
+     * What was read. It tells the type of value.
+     */
+    what?: 'text' | 'html' | 'markdown' | 'value' | 'attr' | 'title' | 'url' | 'count' | 'box' | 'locator';
   }
 
   /**
@@ -1745,9 +1858,14 @@ export namespace CommandResult {
     error?: SessionsAPI.CommandErrorInfo;
 
     /**
-     * The command started a navigation that was still loading when it returned.
+     * The page was still loading when the command returned.
      */
     loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
 
     /**
      * The result of the script as JSON.
@@ -1842,6 +1960,11 @@ export namespace CommandResult {
 
     error?: SessionsAPI.CommandErrorInfo;
 
+    /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
+
     tab?: string;
 
     tabs?: Array<TabResult.Tab>;
@@ -1855,6 +1978,37 @@ export namespace CommandResult {
 
       url: string;
     }
+  }
+
+  /**
+   * Result of a dialog command.
+   */
+  export interface DialogResult {
+    command: 'dialog';
+
+    /**
+     * What happened to the page: nothing, a change, or a possible change.
+     */
+    effect: 'none' | 'applied' | 'unknown';
+
+    ok: boolean;
+
+    /**
+     * A dialog that the command opened. It blocks the tab until it closes.
+     */
+    dialog?: SessionsAPI.CommandDialog;
+
+    error?: SessionsAPI.CommandErrorInfo;
+
+    /**
+     * The page was still loading when the command returned.
+     */
+    loading?: boolean;
+
+    /**
+     * The ids of tabs that opened while the command ran.
+     */
+    opened?: Array<string>;
   }
 }
 
@@ -2301,6 +2455,70 @@ export namespace SessionContext {
 }
 
 /**
+ * The credentials a session is bound to
+ */
+export interface SessionCredentials {
+  /**
+   * Bindings, including KV references with their allowed origins and soft-deleted
+   * targets.
+   */
+  bindings: Array<string | SessionCredentials.UnionMember1>;
+
+  /**
+   * Live credentials bound to the session, oldest binding first. No values.
+   */
+  credentials: Array<SessionCredentials.Credential>;
+
+  /**
+   * Whether the session was created with a `credentials` configuration. Only then
+   * can credentials be attached; otherwise attach and replace answer 409
+   * `credentials_not_enabled`.
+   */
+  credentialsEnabled: boolean;
+
+  /**
+   * `explicit`: the session fills only the credentials listed here. `implicit`: it
+   * fills credentials stored for its namespace and the page origin.
+   */
+  lookup: 'implicit' | 'explicit';
+}
+
+export namespace SessionCredentials {
+  export interface UnionMember1 {
+    allowedOrigins: Array<string>;
+
+    reference: string;
+  }
+
+  export interface Credential {
+    /**
+     * The credential's id (a Secret of kind `credential`)
+     */
+    id: string;
+
+    /**
+     * Other origins the credential may be filled on
+     */
+    additionalOrigins: Array<string>;
+
+    /**
+     * The credential's name
+     */
+    name: string;
+
+    /**
+     * The credential's namespace
+     */
+    namespace: string;
+
+    /**
+     * The website origin the credential is for
+     */
+    origin: string;
+  }
+}
+
+/**
  * Response containing a list of browser sessions with pagination details.
  */
 export interface Sessionslist {
@@ -2600,19 +2818,33 @@ export interface SessionAgentTracesResponse {
 
 export interface SessionCommandsResponse {
   /**
-   * The id of this execution, the same as execution.id. Use it to get or cancel the
-   * execution.
+   * The id of this execution. Use it to get or cancel the execution.
    */
   id: string;
 
-  execution: SessionCommandsResponse.Execution;
+  /**
+   * What happened to the page: nothing, a change, or a possible change.
+   */
+  effect: 'none' | 'applied' | 'unknown';
 
   /**
    * The tab the execution used.
    */
   page: SessionCommandsResponse.Page | null;
 
+  /**
+   * Commands started.
+   */
+  ran: number;
+
+  /**
+   * This is the stored result of an earlier request. Nothing ran again.
+   */
+  replayed: boolean;
+
   results: Array<CommandResult>;
+
+  state: 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout';
 
   bodyExpired?: boolean;
 
@@ -2629,34 +2861,25 @@ export interface SessionCommandsResponse {
   epochChanged?: boolean;
 
   /**
+   * Tabs with keys or a mouse button still held down. Left out when nothing is held.
+   */
+  held?: Array<CommandHeld>;
+
+  /**
    * Send it as after in the next request.
    */
   next?: string;
 
   observe?: SessionCommandsResponse.Observe;
+
+  /**
+   * Why the execution stopped early, such as a cancel, a timeout, or a browser
+   * restart. A failed command has its error in results instead.
+   */
+  stopped?: CommandErrorInfo;
 }
 
 export namespace SessionCommandsResponse {
-  export interface Execution {
-    id: string;
-
-    /**
-     * What happened to the page: nothing, a change, or a possible change.
-     */
-    effect: 'none' | 'applied' | 'unknown';
-
-    /**
-     * Commands started.
-     */
-    ran: number;
-
-    replayed: boolean;
-
-    state: 'queued' | 'running' | 'completed' | 'failed' | 'cancelled' | 'timeout' | 'expired';
-
-    error?: SessionsAPI.CommandErrorInfo;
-  }
-
   /**
    * The tab the execution used.
    */
@@ -2912,7 +3135,7 @@ export interface SessionUpdateMetadataResponse {
 
 export interface SessionCreateParams {
   /**
-   * Block ads in the browser session. Default is false.
+   * Block ads in the browser session. Default is true.
    */
   blockAds?: boolean;
 
@@ -2928,7 +3151,10 @@ export interface SessionCreateParams {
   concurrency?: number;
 
   /**
-   * Configuration for session credentials
+   * Configuration for session credentials. Set enabled to false to disable
+   * credentials, including those inherited from a profile. Credentials are opt-in at
+   * creation; only credentials-enabled sessions can have credentials attached later
+   * (otherwise 409 `credentials_not_enabled`).
    */
   credentials?: SessionCreateParams.Credentials;
 
@@ -3028,7 +3254,8 @@ export interface SessionCreateParams {
   /**
    * Custom proxy URL for the browser session. Overrides useProxy, disabling
    * Steel-provided proxies in favor of your specified proxy. Format:
-   * http(s)://username:password@hostname:port
+   * http(s)://username:password@hostname:port or
+   * socks5://username:password@hostname:port
    */
   proxyUrl?: string;
 
@@ -3052,7 +3279,9 @@ export interface SessionCreateParams {
   sessionContext?: SessionCreateParams.SessionContext;
 
   /**
-   * Optional custom UUID for the session
+   * @deprecated Deprecated. A session ID of your choice. Steel will reject it in a
+   * future release, because the ID that Steel generates records where the session
+   * runs. Omit it, use the `id` in the response, and put your own ID in `metadata`.
    */
   sessionId?: string;
 
@@ -3067,7 +3296,9 @@ export interface SessionCreateParams {
   stealthConfig?: SessionCreateParams.StealthConfig;
 
   /**
-   * Session timeout duration in milliseconds. Default is 300000 (5 minutes).
+   * Session timeout duration in milliseconds. Default is 300000 (5 minutes). On
+   * Launch and Scale, a value over the plan's maximum runs at the maximum; the
+   * response's `timeout` shows the value used.
    */
   timeout?: number;
 
@@ -3089,12 +3320,31 @@ export interface SessionCreateParams {
 
 export namespace SessionCreateParams {
   /**
-   * Configuration for session credentials
+   * Configuration for session credentials. Set enabled to false to disable
+   * credentials, including those inherited from a profile. Credentials are opt-in at
+   * creation; only credentials-enabled sessions can have credentials attached later
+   * (otherwise 409 `credentials_not_enabled`).
    */
   export interface Credentials {
     autoSubmit?: boolean;
 
+    /**
+     * At most 100 bindings. KV references may use { reference, allowedOrigins }, with
+     * at most 20 canonical HTTP(S) origins; omitted or empty origins match nothing.
+     */
+    bindings?: Array<string | Credentials.UnionMember1>;
+
     blurFields?: boolean;
+
+    /**
+     * Bind the session to these credentials (ids of Secrets of kind `credential` in
+     * the session's project). A bound session only ever fills these, never others by
+     * namespace and origin. Implies `lookup: "explicit"`. Change them later with
+     * /v1/sessions/{id}/credentials. Errors: 400 `credential_not_bindable` (param
+     * `credentials.credentialIds`), 400 `too_many_credentials`, 409 `session_id_taken`
+     * (a custom sessionId that already has a session or credential bindings).
+     */
+    credentialIds?: Array<string>;
 
     /**
      * Credential provider to use for runtime credential resolution. Defaults to
@@ -3102,12 +3352,44 @@ export namespace SessionCreateParams {
      */
     credentialProvider?: string;
 
+    /**
+     * Allow any script on the page, including third-party scripts, to request
+     * credential form operations through DOM events. Disabled by default.
+     */
+    domTrigger?: boolean;
+
+    /**
+     * Set to false to disable credential injection for this session.
+     */
+    enabled?: boolean;
+
+    /**
+     * Deprecated and ignored: credentials only ever match their own origin or their
+     * additionalOrigins.
+     */
     exactOrigin?: boolean;
+
+    /**
+     * `implicit` (default without credentialIds or bindings): fill credentials stored
+     * for the session's namespace and the page origin. `explicit` (default when
+     * credentialIds or bindings is supplied): fill only direct credentials and
+     * credentials in bound Vaults, including future members; with none bound, nothing
+     * is filled until some are attached.
+     */
+    lookup?: 'implicit' | 'explicit';
 
     /**
      * Optional allowlist of credential origins to inject into this session.
      */
     origins?: Array<string>;
+  }
+
+  export namespace Credentials {
+    export interface UnionMember1 {
+      allowedOrigins: Array<string>;
+
+      reference: string;
+    }
   }
 
   /**
@@ -4815,14 +5097,13 @@ export interface SessionCommandsParams {
     | SessionCommandsParams.ReloadCommand
     | SessionCommandsParams.SnapshotCommand
     | SessionCommandsParams.ClickCommand
-    | SessionCommandsParams.DblclickCommand
     | SessionCommandsParams.HoverCommand
     | SessionCommandsParams.FocusCommand
     | SessionCommandsParams.TypeCommand
     | SessionCommandsParams.FillCommand
     | SessionCommandsParams.PressCommand
-    | SessionCommandsParams.KeydownCommand
-    | SessionCommandsParams.KeyupCommand
+    | SessionCommandsParams.KeyboardCommand
+    | SessionCommandsParams.ReleaseCommand
     | SessionCommandsParams.MouseCommand
     | SessionCommandsParams.SelectCommand
     | SessionCommandsParams.CheckCommand
@@ -4838,6 +5119,7 @@ export interface SessionCommandsParams {
     | SessionCommandsParams.ScrollCommand
     | SessionCommandsParams.FindCommand
     | SessionCommandsParams.TabCommand
+    | SessionCommandsParams.DialogCommand
     | Array<Command>;
 
   /**
@@ -4951,31 +5233,14 @@ export namespace SessionCommandsParams {
     target: SessionsAPI.CommandTarget;
 
     /**
-     * Fails the command when the element does not have this role or name.
+     * left by default.
      */
-    expect?: SessionsAPI.CommandExpectation;
+    button?: 'left' | 'right' | 'middle';
 
     /**
-     * The iframe to look in. List nested iframes from the outside in.
+     * 2 makes a double click and 3 a triple click. 1 by default.
      */
-    frame?: SessionsAPI.CommandFrame;
-
-    /**
-     * A tab id such as t2. A command on a ref does not need it.
-     */
-    tab?: string;
-  }
-
-  /**
-   * Double-clicks the element with the mouse.
-   */
-  export interface DblclickCommand {
-    command: 'dblclick';
-
-    /**
-     * A ref from a snapshot such as e12, a CSS selector, or a locator.
-     */
-    target: SessionsAPI.CommandTarget;
+    clicks?: number;
 
     /**
      * Fails the command when the element does not have this role or name.
@@ -5116,7 +5381,9 @@ export namespace SessionCommandsParams {
   }
 
   /**
-   * Presses a key, such as Enter, or a combination such as Control+a.
+   * Presses a key, such as Enter, or a combination such as Control+a. On a tab with
+   * an open dialog, Enter without a target accepts the dialog and Escape dismisses
+   * it.
    */
   export interface PressCommand {
     command: 'press';
@@ -5145,11 +5412,16 @@ export namespace SessionCommandsParams {
   }
 
   /**
-   * Holds a key down until its keyup.
+   * Holds a key down, or lets go of a key held down.
    */
-  export interface KeydownCommand {
-    command: 'keydown';
+  export interface KeyboardCommand {
+    action: 'down' | 'up';
 
+    command: 'keyboard';
+
+    /**
+     * One key, not a combination such as Control+a.
+     */
     key: string;
 
     /**
@@ -5159,12 +5431,10 @@ export namespace SessionCommandsParams {
   }
 
   /**
-   * Lets go of a key held with keydown.
+   * Lets go of every key and mouse button held on the tab.
    */
-  export interface KeyupCommand {
-    command: 'keyup';
-
-    key: string;
+  export interface ReleaseCommand {
+    command: 'release';
 
     /**
      * A tab id such as t2. A command on a ref does not need it.
@@ -5491,6 +5761,10 @@ export namespace SessionCommandsParams {
   export interface EvalCommand {
     command: 'eval';
 
+    /**
+     * An expression, or an async function body that gives its value with return. A
+     * promise result is awaited.
+     */
     script: string;
 
     /**
@@ -5594,10 +5868,31 @@ export namespace SessionCommandsParams {
   }
 
   /**
+   * Answers an open dialog. It never sends a key to the page, and fails if the
+   * dialog is not open.
+   */
+  export interface DialogCommand {
+    action: 'accept' | 'dismiss';
+
+    command: 'dialog';
+
+    /**
+     * The id of the dialog, such as d-3, from dialog in a response.
+     */
+    dialog: string;
+
+    /**
+     * The answer to a prompt. Works only with accept. A prompt gets its default text
+     * without it.
+     */
+    text?: string;
+  }
+
+  /**
    * Returns a snapshot, or a diff against the last one, after the commands.
    */
   export interface Observe {
-    mode: 'none' | 'snapshot' | 'diff';
+    mode: 'snapshot' | 'diff';
 
     /**
      * A snapshot id to diff against.
@@ -5862,6 +6157,7 @@ export interface SessionUpdateMetadataParams {
 Sessions.SessionslistSessionsSessionsCursor = SessionslistSessionsSessionsCursor;
 Sessions.Captchas = Captchas;
 Sessions.CommandExecutions = CommandExecutions;
+Sessions.Credentials = Credentials;
 Sessions.Files = Files;
 
 export declare namespace Sessions {
@@ -5871,11 +6167,13 @@ export declare namespace Sessions {
     type CommandErrorInfo as CommandErrorInfo,
     type CommandExpectation as CommandExpectation,
     type CommandFrame as CommandFrame,
+    type CommandHeld as CommandHeld,
     type CommandLocator as CommandLocator,
     type CommandResult as CommandResult,
     type CommandTarget as CommandTarget,
     type Session as Session,
     type SessionContext as SessionContext,
+    type SessionCredentials as SessionCredentials,
     type Sessionslist as Sessionslist,
     type SessionAgentTracesResponse as SessionAgentTracesResponse,
     type SessionCommandsResponse as SessionCommandsResponse,
@@ -5915,6 +6213,13 @@ export declare namespace Sessions {
     CommandExecutions as CommandExecutions,
     type CommandExecutionRetrieveResponse as CommandExecutionRetrieveResponse,
     type CommandExecutionCancelResponse as CommandExecutionCancelResponse,
+  };
+
+  export {
+    Credentials as Credentials,
+    type CredentialAttachParams as CredentialAttachParams,
+    type CredentialDetachBindingParams as CredentialDetachBindingParams,
+    type CredentialReplaceParams as CredentialReplaceParams,
   };
 
   export { Files as Files, type FileUploadParams as FileUploadParams };

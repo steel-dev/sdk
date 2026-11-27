@@ -46,6 +46,11 @@ func (r *CredentialService) New(ctx context.Context, body CredentialNewParams, o
 type CredentialNewParams struct {
 	// Value for the credential
 	Value param.Field[map[string]string] `json:"value" api:"required"`
+	// Canonical http(s) origins, besides `origin`, this credential may be filled
+	// on, such as its login host or identity provider (e.g.
+	// `https://login.example.com`). Only the credential's origin and these ever
+	// match a page, exactly; at most 20.
+	AdditionalOrigins param.Field[[]string] `json:"additionalOrigins"`
 	// Label for the credential
 	Label param.Field[string] `json:"label"`
 	// The namespace the credential is stored against. Defaults to "default".
@@ -65,6 +70,11 @@ type CredentialNewResponse struct {
 	CreatedAt time.Time `json:"createdAt" api:"required" format:"date-time"`
 	// Date and time the credential was last updated
 	UpdatedAt time.Time `json:"updatedAt" api:"required" format:"date-time"`
+	// Canonical http(s) origins, besides `origin`, this credential may be filled
+	// on, such as its login host or identity provider (e.g.
+	// `https://login.example.com`). Only the credential's origin and these ever
+	// match a page, exactly; at most 20.
+	AdditionalOrigins []string `json:"additionalOrigins"`
 	// Label for the credential
 	Label string `json:"label"`
 	// The namespace the credential is stored against. Defaults to "default".
@@ -77,13 +87,14 @@ type CredentialNewResponse struct {
 // credentialNewResponseJSON contains the JSON metadata for the struct
 // [CredentialNewResponse]
 type credentialNewResponseJSON struct {
-	CreatedAt   apijson.Field
-	UpdatedAt   apijson.Field
-	Label       apijson.Field
-	Namespace   apijson.Field
-	Origin      apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	CreatedAt         apijson.Field
+	UpdatedAt         apijson.Field
+	AdditionalOrigins apijson.Field
+	Label             apijson.Field
+	Namespace         apijson.Field
+	Origin            apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
 }
 
 func (r *CredentialNewResponse) UnmarshalJSON(data []byte) (err error) {
@@ -103,6 +114,11 @@ func (r *CredentialService) Update(ctx context.Context, body CredentialUpdatePar
 }
 
 type CredentialUpdateParams struct {
+	// Canonical http(s) origins, besides `origin`, this credential may be filled
+	// on, such as its login host or identity provider (e.g.
+	// `https://login.example.com`). Only the credential's origin and these ever
+	// match a page, exactly; at most 20. Replaces the current list; [] clears it.
+	AdditionalOrigins param.Field[[]string] `json:"additionalOrigins"`
 	// Label for the credential
 	Label param.Field[string] `json:"label"`
 	// The namespace the credential is stored against. Defaults to "default".
@@ -124,6 +140,11 @@ type CredentialUpdateResponse struct {
 	CreatedAt time.Time `json:"createdAt" api:"required" format:"date-time"`
 	// Date and time the credential was last updated
 	UpdatedAt time.Time `json:"updatedAt" api:"required" format:"date-time"`
+	// Canonical http(s) origins, besides `origin`, this credential may be filled
+	// on, such as its login host or identity provider (e.g.
+	// `https://login.example.com`). Only the credential's origin and these ever
+	// match a page, exactly; at most 20.
+	AdditionalOrigins []string `json:"additionalOrigins"`
 	// Label for the credential
 	Label string `json:"label"`
 	// The namespace the credential is stored against. Defaults to "default".
@@ -136,13 +157,14 @@ type CredentialUpdateResponse struct {
 // credentialUpdateResponseJSON contains the JSON metadata for the struct
 // [CredentialUpdateResponse]
 type credentialUpdateResponseJSON struct {
-	CreatedAt   apijson.Field
-	UpdatedAt   apijson.Field
-	Label       apijson.Field
-	Namespace   apijson.Field
-	Origin      apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	CreatedAt         apijson.Field
+	UpdatedAt         apijson.Field
+	AdditionalOrigins apijson.Field
+	Label             apijson.Field
+	Namespace         apijson.Field
+	Origin            apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
 }
 
 func (r *CredentialUpdateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -204,6 +226,11 @@ type CredentialListResponseCredential struct {
 	CreatedAt time.Time `json:"createdAt" api:"required" format:"date-time"`
 	// Date and time the credential was last updated
 	UpdatedAt time.Time `json:"updatedAt" api:"required" format:"date-time"`
+	// Canonical http(s) origins, besides `origin`, this credential may be filled
+	// on, such as its login host or identity provider (e.g.
+	// `https://login.example.com`). Only the credential's origin and these ever
+	// match a page, exactly; at most 20.
+	AdditionalOrigins []string `json:"additionalOrigins"`
 	// Label for the credential
 	Label string `json:"label"`
 	// The namespace the credential is stored against. Defaults to "default".
@@ -216,13 +243,14 @@ type CredentialListResponseCredential struct {
 // credentialListResponseCredentialJSON contains the JSON metadata for the
 // struct [CredentialListResponseCredential]
 type credentialListResponseCredentialJSON struct {
-	CreatedAt   apijson.Field
-	UpdatedAt   apijson.Field
-	Label       apijson.Field
-	Namespace   apijson.Field
-	Origin      apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	CreatedAt         apijson.Field
+	UpdatedAt         apijson.Field
+	AdditionalOrigins apijson.Field
+	Label             apijson.Field
+	Namespace         apijson.Field
+	Origin            apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
 }
 
 func (r *CredentialListResponseCredential) UnmarshalJSON(data []byte) (err error) {

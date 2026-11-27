@@ -2,7 +2,7 @@
 
 <a href="https://pkg.go.dev/github.com/steel-dev/sdk/go"><img src="https://pkg.go.dev/badge/github.com/steel-dev/sdk/go.svg" alt="Go Reference"></a>
 
-The Steel Go library provides convenient access to the [Steel REST API](https://docs.steel.dev)
+The Steel Go library provides convenient access to the [Steel REST API](https://steel.dev/docs)
 from applications written in Go.
 
 ## Installation
@@ -16,7 +16,7 @@ import (
 Or to pin the version:
 
 ```sh
-go get -u 'github.com/steel-dev/sdk/go@v0.23.0'
+go get -u 'github.com/steel-dev/sdk/go@v0.24.0'
 ```
 
 ## Requirements

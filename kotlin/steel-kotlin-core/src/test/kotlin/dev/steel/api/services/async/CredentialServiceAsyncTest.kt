@@ -35,6 +35,7 @@ internal class CredentialServiceAsyncTest {
                                 .putAdditionalProperty("foo", JsonValue.from("string"))
                                 .build()
                         )
+                        .additionalOrigins(listOf("x"))
                         .label("label")
                         .namespace("namespace")
                         .origin("origin")
@@ -56,6 +57,7 @@ internal class CredentialServiceAsyncTest {
             val response =
                 service.update(
                     CredentialUpdateParams.builder()
+                        .additionalOrigins(listOf("x"))
                         .label("label")
                         .namespace("namespace")
                         .origin("origin")

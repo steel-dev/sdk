@@ -32,8 +32,12 @@ import dev.steel.api.services.blocking.ProfileService
 import dev.steel.api.services.blocking.ProfileServiceImpl
 import dev.steel.api.services.blocking.ProjectService
 import dev.steel.api.services.blocking.ProjectServiceImpl
+import dev.steel.api.services.blocking.SecretConnectionService
+import dev.steel.api.services.blocking.SecretConnectionServiceImpl
 import dev.steel.api.services.blocking.SessionService
 import dev.steel.api.services.blocking.SessionServiceImpl
+import dev.steel.api.services.blocking.VaultService
+import dev.steel.api.services.blocking.VaultServiceImpl
 import java.util.function.Consumer
 
 class SteelClientImpl(private val clientOptions: ClientOptions) : SteelClient {
@@ -68,7 +72,13 @@ class SteelClientImpl(private val clientOptions: ClientOptions) : SteelClient {
 
     private val projects: ProjectService by lazy { ProjectServiceImpl(clientOptionsWithUserAgent) }
 
+    private val secretConnections: SecretConnectionService by lazy {
+        SecretConnectionServiceImpl(clientOptionsWithUserAgent)
+    }
+
     private val sessions: SessionService by lazy { SessionServiceImpl(clientOptionsWithUserAgent) }
+
+    private val vaults: VaultService by lazy { VaultServiceImpl(clientOptionsWithUserAgent) }
 
     override fun async(): SteelClientAsync = async
 
@@ -89,7 +99,11 @@ class SteelClientImpl(private val clientOptions: ClientOptions) : SteelClient {
 
     override fun projects(): ProjectService = projects
 
+    override fun secretConnections(): SecretConnectionService = secretConnections
+
     override fun sessions(): SessionService = sessions
+
+    override fun vaults(): VaultService = vaults
 
     override fun pdf(params: ClientPdfParams, requestOptions: RequestOptions): ClientPdfResponse =
         withRawResponse().pdf(params, requestOptions).parse()
@@ -136,8 +150,16 @@ class SteelClientImpl(private val clientOptions: ClientOptions) : SteelClient {
             ProjectServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
+        private val secretConnections: SecretConnectionService.WithRawResponse by lazy {
+            SecretConnectionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
         private val sessions: SessionService.WithRawResponse by lazy {
             SessionServiceImpl.WithRawResponseImpl(clientOptions)
+        }
+
+        private val vaults: VaultService.WithRawResponse by lazy {
+            VaultServiceImpl.WithRawResponseImpl(clientOptions)
         }
 
         override fun withOptions(
@@ -159,7 +181,12 @@ class SteelClientImpl(private val clientOptions: ClientOptions) : SteelClient {
 
         override fun projects(): ProjectService.WithRawResponse = projects
 
+        override fun secretConnections(): SecretConnectionService.WithRawResponse =
+            secretConnections
+
         override fun sessions(): SessionService.WithRawResponse = sessions
+
+        override fun vaults(): VaultService.WithRawResponse = vaults
 
         private val pdfHandler: Handler<ClientPdfResponse> =
             jsonHandler<ClientPdfResponse>(clientOptions.jsonMapper)
